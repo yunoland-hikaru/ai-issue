@@ -70,8 +70,14 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   const style = CATEGORY_STYLES[article.category] ?? CATEGORY_STYLES['AI産業'];
   const title = (lang === 'ko' ? article.title_ko : lang === 'en' ? article.title_en : null) ?? article.title_ja;
   const content = (lang === 'ko' ? article.content_ko : lang === 'en' ? article.content_en : null) ?? article.content_ja;
-  const heroImage = article.image_url ?? article.thumbnail_url;
+  const dalleImage = article.image_url ?? null;
   const ytId = article.video_url ? extractYouTubeId(article.video_url) : null;
+
+  // Split content at paragraph boundaries to inject image in the middle
+  const contentParts = content ? content.split(/(?<=<\/p>)(?=<p>)/) : [];
+  const mid = Math.ceil(contentParts.length / 2);
+  const firstHalf = contentParts.slice(0, mid).join('');
+  const secondHalf = contentParts.slice(mid).join('');
 
 
   return (
@@ -110,20 +116,25 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
         {/* Title */}
         <h1 className="text-xl sm:text-2xl font-bold leading-snug mb-6" style={{ color: 'var(--text-1)' }}>{title}</h1>
 
-        {/* Hero image */}
-        {heroImage && (
-          <div className="rounded-2xl overflow-hidden mb-6 h-48 sm:h-64">
+        {/* Article body — DALL-E image injected after middle paragraph */}
+        {firstHalf && (
+          <div
+            className="leading-relaxed text-sm sm:text-base space-y-4"
+            style={{ color: 'var(--text-2)' }}
+            dangerouslySetInnerHTML={{ __html: firstHalf }}
+          />
+        )}
+        {dalleImage && (
+          <div className="rounded-2xl overflow-hidden my-6">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={heroImage} alt="" className="w-full h-full object-cover" />
+            <img src={dalleImage} alt="" className="w-full h-auto" />
           </div>
         )}
-
-        {/* Article body */}
-        {content && (
+        {secondHalf && (
           <div
             className="leading-relaxed text-sm sm:text-base space-y-4 mb-8"
             style={{ color: 'var(--text-2)' }}
-            dangerouslySetInnerHTML={{ __html: content }}
+            dangerouslySetInnerHTML={{ __html: secondHalf }}
           />
         )}
 
