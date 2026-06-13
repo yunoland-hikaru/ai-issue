@@ -6,7 +6,7 @@ import { useLang } from '@/contexts/LangContext';
 import { CATEGORY_STYLES } from '@/lib/categoryStyles';
 import { formatRelativeTime } from '@/lib/utils';
 import { dummyArticles } from '@/lib/dummy';
-import { supabase } from '@/lib/supabase';
+import { getClient } from '@/lib/supabase';
 import type { Article } from '@/types';
 
 export default function ArticlePage({ params }: { params: Promise<{ id: string }> }) {
@@ -17,7 +17,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     params.then(async ({ id }) => {
       // まずSupabaseで検索、なければダミーデータ
       try {
-        const { data } = await supabase
+        const { data } = await getClient()
           .from('articles')
           .select('*')
           .eq('id', id)
