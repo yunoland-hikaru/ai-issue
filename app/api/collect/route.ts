@@ -10,13 +10,13 @@ const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? '');
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-// POST /api/collect?source=0&limit=3
+// POST /api/collect?source=0&limit=1
 // source: index into RSS_SOURCES (0=AI Times, 1=TechCrunch, 2=VentureBeat, 3=The Verge)
-// limit: max new articles to generate per call (default 3, max 5)
+// limit: max new articles to generate per call (default 1, max 3)
 export async function POST(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const sourceIndex = parseInt(searchParams.get('source') ?? '0', 10);
-  const limit = Math.min(parseInt(searchParams.get('limit') ?? '3', 10), 5);
+  const limit = Math.min(parseInt(searchParams.get('limit') ?? '1', 10), 3);
 
   const source = RSS_SOURCES[sourceIndex];
   if (!source) {
@@ -56,10 +56,9 @@ export async function POST(req: NextRequest) {
     };
     try {
       generated = await generateArticle(item.title, item.content, item.thumbnailUrl);
-      await sleep(2000);
+      if (results.collected + 1 < limit) await sleep(1000);
     } catch (e) {
       results.errors.push(`Generate failed: ${item.title} — ${String(e)}`);
-      await sleep(3000);
       continue;
     }
 
@@ -87,34 +86,28 @@ export async function POST(req: NextRequest) {
 }
 
 async function generateArticle(title: string, content: string, thumbnailUrl?: string) {
-  const model = genai.getGenerativeModel({ model: 'gemini-2.5-flash' });
-  const prompt = `あなたはAI専門メディアの記者です。
-以下の原文をもとに、日本語の記事タイトルと本文を作成してください。
+  const model = genai.getGenerativeModel(
+    { model: 'gemini-2.5-flash' },
+    { apiVersion: 'v1beta' },
+  );
+  const prompt = `AI専門メディアの記者として、以下をJSON形式のみで返してください。
 
 元タイトル: ${title}
-原文: ${content.slice(0, 3000)}
-${thumbnailUrl ? `サムネイル画像URL: ${thumbnailUrl}` : ''}
+原文: ${content.slice(0, 1500)}
+${thumbnailUrl ? `画像URL: ${thumbnailUrl}` : ''}
 
-要件：
-- title_ja: 元タイトルを自然な日本語に翻訳・意訳（30文字以内推奨）
-- content_ja: 800〜1200文字程度の記事本文
-- リードなし、本文から直接開始
-- 段落を<p>タグで区切る
-- 原文にある引用や発言はそのまま引用として使用
-- 関連する画像URLがあればimage_urlとして返す（原文内の画像URLを探す）
-- YouTubeや公式動画URLがあればvideo_urlとして返す
-- 原文リンクは本文に含めない
-
-JSON形式のみで返してください（他のテキスト不要）：
 {
-  "title_ja": "日本語のタイトル",
-  "content_ja": "記事本文（<p>タグで段落区切り）",
-  "image_url": "画像URL または null",
-  "video_url": "動画URL または null",
-  "category": "AI産業 / 新ツール / 研究・技術 / 規制・政策 / 半導体 / AI企業 のいずれか1つ"
+  "title_ja": "日本語タイトル（25文字以内）",
+  "content_ja": "<p>段落1</p><p>段落2</p><p>段落3</p>（400〜600文字）",
+  "image_url": null,
+  "video_url": null,
+  "category": "AI産業|新ツール|研究・技術|規制・政策|半導体|AI企業"
 }`;
 
-  const result = await model.generateContent(prompt);
+  const result = await model.generateContent({
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    generationConfig: { maxOutputTokens: 1024 },
+  });
   const text = result.response.text();
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   return JSON.parse(jsonMatch?.[0] ?? '{}');
