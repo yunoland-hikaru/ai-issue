@@ -12,6 +12,7 @@
     "@anthropic-ai/sdk": "^0.104.1",
     "@google/generative-ai": "^0.24.1",
     "@supabase/supabase-js": "^2.108.1",
+    "@swc/helpers": "^0.5.23",
     "next": "16.2.9",
     "next-intl": "^4.13.0",
     "react": "19.2.4",
