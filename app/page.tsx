@@ -59,7 +59,7 @@ export default function Home() {
   const latestLabel = lang === 'ko' ? '최신 뉴스' : lang === 'en' ? 'Latest News' : '最新ニュース';
 
   return (
-    <div className="min-h-screen" style={{ background: '#0f0f1a' }}>
+    <div className="min-h-screen" style={{ background: 'var(--bg-page)' }}>
       <Navbar />
       <TickerBanner articles={displayArticles} />
       <TabNav active={activeTab} onChange={setActiveTab} />
@@ -68,15 +68,15 @@ export default function Home() {
         {isLoading ? (
           <>
             <div className="flex-1 min-w-0 space-y-4 sm:space-y-5">
-              <div className="rounded-2xl h-52 sm:h-64 animate-pulse" style={{ background: '#1a1a2e' }} />
-              <div className="rounded-2xl p-4 space-y-4" style={{ background: '#1a1a2e' }}>
-                <div className="h-3 w-24 rounded animate-pulse" style={{ background: '#252540' }} />
+              <div className="rounded-2xl h-52 sm:h-64 animate-pulse" style={{ background: 'var(--bg-card)' }} />
+              <div className="rounded-2xl p-4 space-y-4" style={{ background: 'var(--bg-card)' }}>
+                <div className="h-3 w-24 rounded animate-pulse" style={{ background: 'var(--bg-skeleton)' }} />
                 {[...Array(5)].map((_, i) => (
                   <div key={i} className="flex gap-3">
-                    <div className="rounded-lg w-20 h-16 shrink-0 animate-pulse" style={{ background: '#252540' }} />
+                    <div className="rounded-lg w-20 h-16 shrink-0 animate-pulse" style={{ background: 'var(--bg-skeleton)' }} />
                     <div className="flex-1 space-y-2 pt-1">
-                      <div className="h-3 rounded animate-pulse" style={{ background: '#252540' }} />
-                      <div className="h-3 w-3/4 rounded animate-pulse" style={{ background: '#252540' }} />
+                      <div className="h-3 rounded animate-pulse" style={{ background: 'var(--bg-skeleton)' }} />
+                      <div className="h-3 w-3/4 rounded animate-pulse" style={{ background: 'var(--bg-skeleton)' }} />
                     </div>
                   </div>
                 ))}
@@ -88,12 +88,12 @@ export default function Home() {
           <>
             <div className="flex-1 min-w-0 space-y-4 sm:space-y-5">
               {hero && <HeroCard article={hero} />}
-              <section className="rounded-2xl p-4" style={{ background: '#1a1a2e' }}>
-                <h2 className="text-sm font-bold text-white mb-3">{latestLabel}</h2>
+              <section className="rounded-2xl p-4" style={{ background: 'var(--bg-card)' }}>
+                <h2 className="text-sm font-bold mb-3" style={{ color: 'var(--text-1)' }}>{latestLabel}</h2>
                 {rest.length > 0 ? (
                   rest.map((a) => <NewsCard key={a.id} article={a} lang={lang} />)
                 ) : (
-                  <p className="text-sm text-white/40 py-4 text-center">記事がありません</p>
+                  <p className="text-sm py-4 text-center" style={{ color: 'var(--text-4)' }}>記事がありません</p>
                 )}
               </section>
             </div>

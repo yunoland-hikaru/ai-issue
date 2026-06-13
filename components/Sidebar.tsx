@@ -25,11 +25,7 @@ export default function Sidebar({ tools, keywords }: SidebarProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
-      if (res.ok) {
-        setStatus('done');
-      } else {
-        setStatus('error');
-      }
+      setStatus(res.ok ? 'done' : 'error');
     } catch {
       setStatus('error');
     }
@@ -37,8 +33,8 @@ export default function Sidebar({ tools, keywords }: SidebarProps) {
 
   return (
     <aside className="w-full lg:w-72 lg:shrink-0 space-y-4 sm:space-y-5">
-      <section className="rounded-2xl p-4" style={{ background: '#1a1a2e' }}>
-        <h2 className="text-sm font-bold text-white mb-3">{t.sections.todayTools}</h2>
+      <section className="rounded-2xl p-4" style={{ background: 'var(--bg-card)' }}>
+        <h2 className="text-sm font-bold mb-3" style={{ color: 'var(--text-1)' }}>{t.sections.todayTools}</h2>
         <div>
           {tools.map((tool) => (
             <ToolCard key={tool.id} tool={tool} />
@@ -46,31 +42,28 @@ export default function Sidebar({ tools, keywords }: SidebarProps) {
         </div>
       </section>
 
-      <section className="rounded-2xl p-4" style={{ background: '#1a1a2e' }}>
-        <h2 className="text-sm font-bold text-white mb-3">{t.sections.trending}</h2>
+      <section className="rounded-2xl p-4" style={{ background: 'var(--bg-card)' }}>
+        <h2 className="text-sm font-bold mb-3" style={{ color: 'var(--text-1)' }}>{t.sections.trending}</h2>
         <ol className="space-y-2">
           {keywords.map((kw, i) => (
             <li key={kw.id} className="flex items-center gap-3 cursor-pointer group">
-              <span
-                className="w-5 text-center text-xs font-bold"
-                style={{ color: i < 3 ? '#7F77DD' : 'rgba(255,255,255,0.3)' }}
-              >
+              <span className="w-5 text-center text-xs font-bold" style={{ color: i < 3 ? '#7F77DD' : 'var(--text-4)' }}>
                 {i + 1}
               </span>
-              <span className="text-sm text-white/70 group-hover:text-[#7F77DD] transition-colors flex-1">
+              <span className="text-sm flex-1 group-hover:text-[#7F77DD] transition-colors" style={{ color: 'var(--text-2)' }}>
                 {kw.keyword}
               </span>
-              <span className="text-xs text-white/30">{kw.count.toLocaleString()}</span>
+              <span className="text-xs" style={{ color: 'var(--text-4)' }}>{kw.count.toLocaleString()}</span>
             </li>
           ))}
         </ol>
       </section>
 
-      <section className="rounded-2xl p-4" style={{ background: '#1a1a2e' }}>
-        <h2 className="text-sm font-bold text-white mb-1">{t.sections.newsletter}</h2>
-        <p className="text-xs text-white/50 mb-3">{t.sections.newsletterDesc}</p>
+      <section className="rounded-2xl p-4" style={{ background: 'var(--bg-card)' }}>
+        <h2 className="text-sm font-bold mb-1" style={{ color: 'var(--text-1)' }}>{t.sections.newsletter}</h2>
+        <p className="text-xs mb-3" style={{ color: 'var(--text-3)' }}>{t.sections.newsletterDesc}</p>
         {status === 'done' ? (
-          <p className="text-xs text-green-400">{t.sections.newsletterThanks}</p>
+          <p className="text-xs text-green-500">{t.sections.newsletterThanks}</p>
         ) : (
           <form onSubmit={handleSubscribe} className="flex flex-col gap-2">
             <input
@@ -78,12 +71,17 @@ export default function Sidebar({ tools, keywords }: SidebarProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t.sections.newsletterPlaceholder}
-              className="w-full rounded-lg px-3 py-2 text-sm text-white bg-white/5 border border-white/10 focus:outline-none focus:border-[#7F77DD] placeholder-white/25"
+              className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#7F77DD]"
+              style={{
+                color: 'var(--text-1)',
+                background: 'var(--input-bg)',
+                border: '1px solid var(--border-1)',
+              }}
               required
               disabled={status === 'loading'}
             />
             {status === 'error' && (
-              <p className="text-xs text-red-400">エラーが発生しました。再度お試しください。</p>
+              <p className="text-xs text-red-500">エラーが発生しました。再度お試しください。</p>
             )}
             <button
               type="submit"

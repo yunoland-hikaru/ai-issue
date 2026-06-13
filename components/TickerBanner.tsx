@@ -11,18 +11,15 @@ export default function TickerBanner({ articles }: TickerBannerProps) {
 
   return (
     <div
-      className="overflow-hidden whitespace-nowrap flex items-center h-9 text-sm"
-      style={{ background: '#1a1a2e' }}
+      className="overflow-hidden whitespace-nowrap flex items-center h-9 text-sm border-b"
+      style={{ background: 'var(--bg-card)', borderColor: 'var(--border-1)' }}
     >
-      <span
-        className="shrink-0 px-3 text-xs font-bold tracking-widest mr-4 flex items-center gap-1.5"
-        style={{ color: '#f87171' }}
-      >
+      <span className="shrink-0 px-3 text-xs font-bold tracking-widest mr-4 flex items-center gap-1.5" style={{ color: '#f87171' }}>
         <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse inline-block" />
         LIVE
       </span>
       <div className="overflow-hidden flex-1">
-        <span className="inline-block animate-ticker text-white/70">
+        <span className="inline-block animate-ticker" style={{ color: 'var(--text-2)' }}>
           {titles.join('　　·　　')}
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           {titles.join('　　·　　')}

@@ -41,7 +41,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
       }
       setArticle(found);
 
-      // 関連記事取得（同カテゴリ最新3件）
       if (found) {
         try {
           const { data: rel } = await getClient()
@@ -65,7 +64,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
 
   if (!article) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0f0f1a' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-page)' }}>
         <div className="w-6 h-6 rounded-full border-2 border-[#7F77DD] border-t-transparent animate-spin" />
       </div>
     );
@@ -82,20 +81,21 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
     : content ? stripHtml(content).slice(0, 200) + '…' : null;
 
   return (
-    <div className="min-h-screen" style={{ background: '#0f0f1a' }}>
+    <div className="min-h-screen" style={{ background: 'var(--bg-page)' }}>
       {/* Header */}
-      <header style={{ background: '#1a1a2e' }} className="sticky top-0 z-50 border-b border-white/10">
+      <header className="sticky top-0 z-50 border-b" style={{ background: 'var(--bg-nav)', borderColor: 'var(--border-1)' }}>
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center gap-3">
           <Link
             href="/"
-            className="flex items-center gap-1.5 text-sm text-white/50 hover:text-[#7F77DD] transition-colors"
+            className="flex items-center gap-1.5 text-sm hover:text-[#7F77DD] transition-colors"
+            style={{ color: 'var(--text-3)' }}
           >
             <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path d="m15 18-6-6 6-6" />
             </svg>
             トップへ戻る
           </Link>
-          <span className="text-white/20">·</span>
+          <span style={{ color: 'var(--border-1)' }}>·</span>
           <span className="text-base font-bold" style={{ color: '#7F77DD' }}>AI issue</span>
         </div>
       </header>
@@ -109,12 +109,12 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           >
             {article.category}
           </span>
-          <span className="text-xs text-white/40">{formatRelativeTime(article.published_at)}</span>
-          <span className="text-xs text-white/30">· {article.source_name}</span>
+          <span className="text-xs" style={{ color: 'var(--text-4)' }}>{formatRelativeTime(article.published_at)}</span>
+          <span className="text-xs" style={{ color: 'var(--text-4)' }}>· {article.source_name}</span>
         </div>
 
         {/* Title */}
-        <h1 className="text-xl sm:text-2xl font-bold text-white leading-snug mb-6">{title}</h1>
+        <h1 className="text-xl sm:text-2xl font-bold leading-snug mb-6" style={{ color: 'var(--text-1)' }}>{title}</h1>
 
         {/* Hero image */}
         {heroImage && (
@@ -127,12 +127,13 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
         {/* Article body */}
         {content ? (
           <div
-            className="text-white/80 leading-relaxed text-sm sm:text-base space-y-4 mb-8"
+            className="leading-relaxed text-sm sm:text-base space-y-4 mb-8"
+            style={{ color: 'var(--text-2)' }}
             dangerouslySetInnerHTML={{ __html: content }}
           />
         ) : summaryFallback ? (
-          <div className="rounded-2xl p-5 mb-8 text-white/80 leading-relaxed text-sm sm:text-base" style={{ background: '#1a1a2e' }}>
-            <p className="text-xs font-semibold text-[#7F77DD] mb-2">AI要約</p>
+          <div className="rounded-2xl p-5 mb-8 leading-relaxed text-sm sm:text-base" style={{ background: 'var(--bg-card)', color: 'var(--text-2)' }}>
+            <p className="text-xs font-semibold mb-2" style={{ color: '#7F77DD' }}>AI要約</p>
             <p>{summaryFallback}</p>
           </div>
         ) : null}
@@ -155,14 +156,19 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
         {/* Related articles */}
         {related.length > 0 && (
           <section className="mt-10">
-            <h2 className="text-sm font-bold text-white/60 uppercase tracking-widest mb-4">関連記事</h2>
+            <h2 className="text-sm font-bold uppercase tracking-widest mb-4" style={{ color: 'var(--text-3)' }}>関連記事</h2>
             <div className="space-y-3">
               {related.map((rel) => {
                 const relStyle = CATEGORY_STYLES[rel.category] ?? CATEGORY_STYLES['AI産業'];
                 const relTitle = (lang === 'ko' ? rel.title_ko : lang === 'en' ? rel.title_en : null) ?? rel.title_ja;
                 return (
                   <Link key={rel.id} href={`/news/${rel.id}`}>
-                    <article className="flex gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors cursor-pointer">
+                    <article
+                      className="flex gap-3 p-3 rounded-xl transition-colors cursor-pointer"
+                      style={{ background: 'transparent' }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--input-bg)'; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                    >
                       {(rel.image_url ?? rel.thumbnail_url) && (
                         <div className="shrink-0 w-16 h-14 rounded-lg overflow-hidden">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -176,10 +182,10 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                         >
                           {rel.category}
                         </span>
-                        <p className="text-xs sm:text-sm font-medium text-white/80 line-clamp-2 leading-snug">
+                        <p className="text-xs sm:text-sm font-medium line-clamp-2 leading-snug" style={{ color: 'var(--text-2)' }}>
                           {relTitle}
                         </p>
-                        <p className="text-xs text-white/30 mt-1">{formatRelativeTime(rel.published_at)}</p>
+                        <p className="text-xs mt-1" style={{ color: 'var(--text-4)' }}>{formatRelativeTime(rel.published_at)}</p>
                       </div>
                     </article>
                   </Link>

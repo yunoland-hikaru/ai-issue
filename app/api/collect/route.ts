@@ -1,18 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchRssFeed, RSS_SOURCES } from '@/lib/rss';
 import { generateArticle } from '@/lib/claude';
+import { generateImage } from '@/lib/openai';
 import { getServiceClient } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-// POST /api/collect?source=0&limit=5
+// POST /api/collect?source=0&limit=1
 // source: 0=AI Times, 1=TechCrunch, 2=VentureBeat, 3=The Verge
-// limit: max new articles to generate per call (default 5, max 10)
+// limit: max new articles per call (default 1, max 10)
 export async function POST(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const sourceIndex = parseInt(searchParams.get('source') ?? '0', 10);
-  const limit = Math.min(parseInt(searchParams.get('limit') ?? '5', 10), 10);
+  const limit = Math.min(parseInt(searchParams.get('limit') ?? '1', 10), 10);
 
   const source = RSS_SOURCES[sourceIndex];
   if (!source) {
@@ -49,7 +50,7 @@ export async function POST(req: NextRequest) {
     let generated: {
       title_ja: string;
       content_ja: string;
-      image_url: string | null;
+      image_prompt: string | null;
       video_url: string | null;
       category: string;
     };
@@ -60,6 +61,13 @@ export async function POST(req: NextRequest) {
       continue;
     }
 
+    // DALL-E 3で画像生成（プロンプトがある場合のみ、失敗してもスキップ）
+    let imageUrl: string | null = item.thumbnailUrl ?? null;
+    if (generated.image_prompt) {
+      const dalleUrl = await generateImage(generated.image_prompt);
+      if (dalleUrl) imageUrl = dalleUrl;
+    }
+
     const { error } = await supabase.from('articles').insert({
       title_ja: generated.title_ja || item.title,
       title_en: item.title,
@@ -68,7 +76,7 @@ export async function POST(req: NextRequest) {
       source_url: item.url,
       source_name: item.sourceName,
       thumbnail_url: item.thumbnailUrl,
-      image_url: generated.image_url ?? item.thumbnailUrl ?? null,
+      image_url: imageUrl,
       video_url: generated.video_url ?? null,
       published_at: item.publishedAt,
     });

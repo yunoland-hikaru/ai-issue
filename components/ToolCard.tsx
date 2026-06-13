@@ -40,7 +40,6 @@ export default function ToolCard({ tool }: ToolCardProps) {
         setCount(upvotes);
       }
     } catch {
-      // revert on error
       setUpvoted((v) => !v);
       setCount((c) => c - delta);
     } finally {
@@ -49,10 +48,10 @@ export default function ToolCard({ tool }: ToolCardProps) {
   }
 
   return (
-    <div className="flex items-start gap-3 py-3 border-b border-white/5 last:border-0">
+    <div className="flex items-start gap-3 py-3 border-b last:border-0" style={{ borderColor: 'var(--border-2)' }}>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-sm font-semibold text-white">{tool.name}</span>
+          <span className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>{tool.name}</span>
           <span
             className="text-xs px-1.5 py-0.5 rounded-md font-medium"
             style={{ background: badge.bg, color: badge.color }}
@@ -60,17 +59,17 @@ export default function ToolCard({ tool }: ToolCardProps) {
             {pricingLabel}
           </span>
         </div>
-        <p className="text-xs text-white/50 leading-relaxed line-clamp-2">{tool.description_ja}</p>
-        <span className="text-xs text-white/30 mt-1 inline-block">{tool.category}</span>
+        <p className="text-xs leading-relaxed line-clamp-2" style={{ color: 'var(--text-3)' }}>{tool.description_ja}</p>
+        <span className="text-xs mt-1 inline-block" style={{ color: 'var(--text-4)' }}>{tool.category}</span>
       </div>
       <button
         onClick={handleUpvote}
         disabled={loading}
         className="shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg border transition-colors disabled:opacity-50"
         style={{
-          borderColor: upvoted ? '#7F77DD' : 'rgba(255,255,255,0.1)',
+          borderColor: upvoted ? '#7F77DD' : 'var(--border-1)',
           background: upvoted ? 'rgba(127,119,221,0.15)' : 'transparent',
-          color: upvoted ? '#7F77DD' : 'rgba(255,255,255,0.4)',
+          color: upvoted ? '#7F77DD' : 'var(--text-3)',
         }}
       >
         <svg width="12" height="12" fill={upvoted ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">

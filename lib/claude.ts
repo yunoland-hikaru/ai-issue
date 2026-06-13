@@ -49,7 +49,7 @@ ${thumbnailUrl ? `サムネイル画像URL: ${thumbnailUrl}` : ''}
 - リードなし、本文から直接開始
 - 段落を<p>タグで区切る
 - 原文にある引用や発言はそのまま引用として使用
-- 関連する画像URLがあればimage_urlとして返す（原文内の画像URLを探す）
+- image_prompt: 記事内容に合ったDALL-E 3用の画像生成プロンプト（英語、テキストなし、プロフェッショナルなニュースサムネイル向け、16:9）
 - YouTubeや公式動画URLがあればvideo_urlとして返す
 - 原文リンクは本文に含めない
 
@@ -57,7 +57,7 @@ JSON形式のみで返してください（他のテキスト不要）：
 {
   "title_ja": "日本語のタイトル",
   "content_ja": "記事本文（<p>タグで段落区切り）",
-  "image_url": "画像URL または null",
+  "image_prompt": "DALL-E 3 image prompt in English",
   "video_url": "動画URL または null",
   "category": "AI産業 / 新ツール / 研究・技術 / 規制・政策 / 半導体 / AI企業 のいずれか1つ"
 }`,
@@ -70,7 +70,7 @@ JSON形式のみで返してください（他のテキスト不要）：
   return JSON.parse(jsonMatch?.[0] ?? '{}') as {
     title_ja: string;
     content_ja: string;
-    image_url: string | null;
+    image_prompt: string | null;
     video_url: string | null;
     category: string;
   };
