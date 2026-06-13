@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Collect from AI Times (source=0)
         run: |
-          curl -sf -X POST "https://ai-issue.vercel.app/api/collect?source=0&limit=1" \
+          curl -sf -X POST "https://ai-issue.vercel.app/api/collect?source=0&limit=5" \
             && echo "✓ AI Times done" || echo "✗ AI Times failed"
 
       - name: Wait 30s
@@ -19,7 +19,7 @@ jobs:
 
       - name: Collect from TechCrunch (source=1)
         run: |
-          curl -sf -X POST "https://ai-issue.vercel.app/api/collect?source=1&limit=1" \
+          curl -sf -X POST "https://ai-issue.vercel.app/api/collect?source=1&limit=5" \
             && echo "✓ TechCrunch done" || echo "✗ TechCrunch failed"
 
       - name: Wait 30s
@@ -27,7 +27,7 @@ jobs:
 
       - name: Collect from VentureBeat (source=2)
         run: |
-          curl -sf -X POST "https://ai-issue.vercel.app/api/collect?source=2&limit=1" \
+          curl -sf -X POST "https://ai-issue.vercel.app/api/collect?source=2&limit=5" \
             && echo "✓ VentureBeat done" || echo "✗ VentureBeat failed"
 
       - name: Wait 30s
@@ -35,5 +35,5 @@ jobs:
 
       - name: Collect from The Verge (source=3)
         run: |
-          curl -sf -X POST "https://ai-issue.vercel.app/api/collect?source=3&limit=1" \
+          curl -sf -X POST "https://ai-issue.vercel.app/api/collect?source=3&limit=5" \
             && echo "✓ The Verge done" || echo "✗ The Verge failed"
