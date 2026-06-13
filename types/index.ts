@@ -16,10 +16,15 @@ export interface Article {
   summary_ja?: string;
   summary_en?: string;
   summary_ko?: string;
+  content_ja?: string;
+  content_ko?: string;
+  content_en?: string;
   category: ArticleCategory;
   source_url: string;
   source_name: string;
   thumbnail_url?: string;
+  image_url?: string;
+  video_url?: string;
   published_at: string;
   created_at: string;
 }

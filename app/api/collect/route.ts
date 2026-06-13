@@ -31,24 +31,29 @@ export async function POST() {
 
       if (existing) continue;
 
-      let summary: { summary_ja: string; summary_en?: string; summary_ko?: string; category: string };
+      let generated: {
+        content_ja: string;
+        image_url?: string | null;
+        video_url?: string | null;
+        category: string;
+      };
       try {
-        summary = await generateSummary(item.title, item.content);
+        generated = await generateArticle(item.title, item.content, item.thumbnailUrl);
       } catch (e) {
-        results.errors.push(`Summary failed: ${item.title} — ${String(e)}`);
+        results.errors.push(`Generate failed: ${item.title} — ${String(e)}`);
         continue;
       }
 
       const { error } = await supabase.from('articles').insert({
         title_ja: item.title,
         title_en: item.title,
-        summary_ja: summary.summary_ja,
-        summary_en: summary.summary_en,
-        summary_ko: summary.summary_ko,
-        category: summary.category,
+        content_ja: generated.content_ja,
+        category: generated.category,
         source_url: item.url,
         source_name: item.sourceName,
         thumbnail_url: item.thumbnailUrl,
+        image_url: generated.image_url ?? item.thumbnailUrl,
+        video_url: generated.video_url ?? null,
         published_at: item.publishedAt,
       });
 
@@ -63,18 +68,29 @@ export async function POST() {
   return NextResponse.json(results);
 }
 
-async function generateSummary(title: string, content: string) {
+async function generateArticle(title: string, content: string, thumbnailUrl?: string) {
   const model = genai.getGenerativeModel({ model: 'gemini-1.5-flash' });
-  const prompt = `以下のニュース記事を処理してください。
+  const prompt = `あなたはAI専門メディアの記者です。
+以下の原文をもとに、日本語の記事本文を作成してください。
 
 タイトル: ${title}
-本文: ${content.slice(0, 2000)}
+原文: ${content.slice(0, 3000)}
+${thumbnailUrl ? `サムネイル画像URL: ${thumbnailUrl}` : ''}
 
-以下をJSON形式で返してください（他のテキスト不要）：
+要件：
+- 800〜1200文字程度の記事本文
+- リードなし、本文から直接開始
+- 段落を<p>タグで区切る
+- 原文にある引用や発言はそのまま引用として使用
+- 関連する画像URLがあればimage_urlとして返す（原文内の画像URLを探す）
+- YouTubeや公式動画URLがあればvideo_urlとして返す
+- 原文リンクは本文に含めない
+
+JSON形式のみで返してください（他のテキスト不要）：
 {
-  "summary_ja": "日本語で3〜4文のわかりやすい要約",
-  "summary_en": "3-4 sentence English summary",
-  "summary_ko": "한국어로 3~4문장 요약",
+  "content_ja": "記事本文（<p>タグで段落区切り）",
+  "image_url": "画像URL または null",
+  "video_url": "動画URL または null",
   "category": "AI産業 / 新ツール / 研究・技術 / 規制・政策 / 半導体 / AI企業 のいずれか1つ"
 }`;
 
