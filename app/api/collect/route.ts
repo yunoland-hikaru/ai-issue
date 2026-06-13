@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { fetchRssFeed, RSS_SOURCES } from '@/lib/rss';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { getServiceClient } from '@/lib/supabase';
@@ -11,11 +11,14 @@ export const maxDuration = 60;
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-export async function POST() {
-  const supabase = getServiceClient();
-  const results = { collected: 0, errors: [] as string[] };
+export async function POST(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const limit = Math.min(parseInt(searchParams.get('limit') ?? '3', 10), 10);
 
-  for (const source of RSS_SOURCES) {
+  const supabase = getServiceClient();
+  const results = { collected: 0, skipped: 0, errors: [] as string[] };
+
+  outer: for (const source of RSS_SOURCES) {
     let items;
     try {
       items = await fetchRssFeed(source);
@@ -25,13 +28,15 @@ export async function POST() {
     }
 
     for (const item of items) {
+      if (results.collected >= limit) break outer;
+
       const { data: existing } = await supabase
         .from('articles')
         .select('id')
         .eq('source_url', item.url)
         .maybeSingle();
 
-      if (existing) continue;
+      if (existing) { results.skipped++; continue; }
 
       let generated: {
         title_ja: string;

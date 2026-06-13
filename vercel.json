@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "app/api/collect/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/migrate-content/route.ts": {
+      "maxDuration": 60
+    }
+  }
+}
