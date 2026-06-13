@@ -14,7 +14,7 @@ export async function generateImage(prompt: string): Promise<ArrayBuffer | null>
       response_format: 'url',
     });
 
-    const tempUrl = response.data[0]?.url;
+    const tempUrl = response.data?.[0]?.url;
     if (!tempUrl) return null;
 
     // Download image bytes before the temporary URL expires
