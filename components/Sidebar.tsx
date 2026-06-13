@@ -36,7 +36,7 @@ export default function Sidebar({ tools, keywords }: SidebarProps) {
   }
 
   return (
-    <aside className="w-72 shrink-0 space-y-5">
+    <aside className="w-full lg:w-72 lg:shrink-0 space-y-4 sm:space-y-5">
       <section className="rounded-2xl p-4" style={{ background: '#1a1a2e' }}>
         <h2 className="text-sm font-bold text-white mb-3">{t.sections.todayTools}</h2>
         <div>

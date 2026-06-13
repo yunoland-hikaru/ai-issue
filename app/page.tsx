@@ -59,8 +59,8 @@ export default function Home() {
       <TickerBanner articles={articles} />
       <TabNav active={activeTab} onChange={setActiveTab} />
 
-      <main className="max-w-6xl mx-auto px-4 py-6 flex gap-6">
-        <div className="flex-1 min-w-0 space-y-5">
+      <main className="max-w-6xl mx-auto px-4 py-4 sm:py-6 flex flex-col lg:flex-row gap-5">
+        <div className="flex-1 min-w-0 space-y-4 sm:space-y-5">
           {hero && <HeroCard article={hero} />}
           <section className="rounded-2xl p-4" style={{ background: '#1a1a2e' }}>
             <h2 className="text-sm font-bold text-white mb-3">{latestLabel}</h2>

@@ -15,30 +15,30 @@ export default function NewsCard({ article, lang = 'ja' }: NewsCardProps) {
 
   return (
     <Link href={`/news/${article.id}`}>
-      <article className="flex gap-4 py-4 border-b border-white/5 last:border-0 group cursor-pointer">
+      <article className="flex gap-3 py-3 sm:py-4 border-b border-white/5 last:border-0 group cursor-pointer">
         <div className="flex-1 min-w-0">
           <span
-            className="inline-block text-xs font-semibold px-2 py-0.5 rounded-full mb-2"
+            className="inline-block text-xs font-semibold px-2 py-0.5 rounded-full mb-1.5 sm:mb-2"
             style={{ background: style.bg, color: style.text }}
           >
             {article.category}
           </span>
-          <h3 className="text-sm font-medium text-white leading-snug mb-1.5 group-hover:text-[#7F77DD] transition-colors line-clamp-2">
+          <h3 className="text-xs sm:text-sm font-medium text-white leading-snug mb-1 sm:mb-1.5 group-hover:text-[#7F77DD] transition-colors line-clamp-2">
             {title ?? article.title_ja}
           </h3>
           {(summary ?? article.summary_ja) && (
-            <p className="text-xs text-white/50 leading-relaxed line-clamp-2">
+            <p className="hidden sm:block text-xs text-white/50 leading-relaxed line-clamp-2">
               {summary ?? article.summary_ja}
             </p>
           )}
-          <div className="flex items-center gap-2 mt-2 text-xs text-white/30">
+          <div className="flex items-center gap-2 mt-1.5 sm:mt-2 text-xs text-white/30">
             <span>{article.source_name}</span>
             <span>·</span>
             <span>{formatRelativeTime(article.published_at)}</span>
           </div>
         </div>
         {article.thumbnail_url && (
-          <div className="shrink-0 w-20 h-16 rounded-lg overflow-hidden">
+          <div className="shrink-0 w-16 h-14 sm:w-20 sm:h-16 rounded-lg overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={article.thumbnail_url}
