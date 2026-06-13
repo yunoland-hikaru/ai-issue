@@ -16,25 +16,30 @@ type TabKey = 'top' | 'news' | 'tools' | 'companies' | 'policy' | 'favorites';
 export default function Home() {
   const { lang } = useLang();
   const [activeTab, setActiveTab] = useState<TabKey>('top');
-  const [articles, setArticles] = useState<Article[]>(dummyArticles);
+  const [articles, setArticles] = useState<Article[] | null>(null);
   const [tools, setTools] = useState<Tool[]>(dummyTools);
   const [keywords, setKeywords] = useState<TrendingKeyword[]>(dummyKeywords);
 
   useEffect(() => {
-    // Supabaseからデータ取得（設定済みの場合のみ）
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    if (!supabaseUrl || supabaseUrl.includes('your_')) return;
+    if (!supabaseUrl || supabaseUrl.includes('your_')) {
+      setArticles(dummyArticles);
+      return;
+    }
 
     fetch('/api/articles?limit=20')
       .then((r) => r.json())
-      .then((data: Article[]) => { if (data.length > 0) setArticles(data); })
-      .catch(() => {});
+      .then((data: Article[]) => setArticles(data.length > 0 ? data : dummyArticles))
+      .catch(() => setArticles(dummyArticles));
 
     fetch('/api/trending')
       .then((r) => r.json())
       .then((data: TrendingKeyword[]) => { if (data.length > 0) setKeywords(data); })
       .catch(() => {});
   }, []);
+
+  const isLoading = articles === null;
+  const displayArticles = articles ?? [];
 
   const categoryFilter: Record<TabKey, string | null> = {
     top: null,
@@ -46,8 +51,8 @@ export default function Home() {
   };
 
   const filtered = categoryFilter[activeTab]
-    ? articles.filter((a) => a.category === categoryFilter[activeTab])
-    : articles;
+    ? displayArticles.filter((a) => a.category === categoryFilter[activeTab])
+    : displayArticles;
 
   const [hero, ...rest] = filtered;
 
@@ -56,23 +61,45 @@ export default function Home() {
   return (
     <div className="min-h-screen" style={{ background: '#0f0f1a' }}>
       <Navbar />
-      <TickerBanner articles={articles} />
+      <TickerBanner articles={displayArticles} />
       <TabNav active={activeTab} onChange={setActiveTab} />
 
       <main className="max-w-6xl mx-auto px-4 py-4 sm:py-6 flex flex-col lg:flex-row gap-5">
-        <div className="flex-1 min-w-0 space-y-4 sm:space-y-5">
-          {hero && <HeroCard article={hero} />}
-          <section className="rounded-2xl p-4" style={{ background: '#1a1a2e' }}>
-            <h2 className="text-sm font-bold text-white mb-3">{latestLabel}</h2>
-            {rest.length > 0 ? (
-              rest.map((a) => <NewsCard key={a.id} article={a} lang={lang} />)
-            ) : (
-              <p className="text-sm text-white/40 py-4 text-center">記事がありません</p>
-            )}
-          </section>
-        </div>
-
-        <Sidebar tools={tools} keywords={keywords} />
+        {isLoading ? (
+          <>
+            <div className="flex-1 min-w-0 space-y-4 sm:space-y-5">
+              <div className="rounded-2xl h-52 sm:h-64 animate-pulse" style={{ background: '#1a1a2e' }} />
+              <div className="rounded-2xl p-4 space-y-4" style={{ background: '#1a1a2e' }}>
+                <div className="h-3 w-24 rounded animate-pulse" style={{ background: '#252540' }} />
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="flex gap-3">
+                    <div className="rounded-lg w-20 h-16 shrink-0 animate-pulse" style={{ background: '#252540' }} />
+                    <div className="flex-1 space-y-2 pt-1">
+                      <div className="h-3 rounded animate-pulse" style={{ background: '#252540' }} />
+                      <div className="h-3 w-3/4 rounded animate-pulse" style={{ background: '#252540' }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <Sidebar tools={tools} keywords={keywords} />
+          </>
+        ) : (
+          <>
+            <div className="flex-1 min-w-0 space-y-4 sm:space-y-5">
+              {hero && <HeroCard article={hero} />}
+              <section className="rounded-2xl p-4" style={{ background: '#1a1a2e' }}>
+                <h2 className="text-sm font-bold text-white mb-3">{latestLabel}</h2>
+                {rest.length > 0 ? (
+                  rest.map((a) => <NewsCard key={a.id} article={a} lang={lang} />)
+                ) : (
+                  <p className="text-sm text-white/40 py-4 text-center">記事がありません</p>
+                )}
+              </section>
+            </div>
+            <Sidebar tools={tools} keywords={keywords} />
+          </>
+        )}
       </main>
     </div>
   );

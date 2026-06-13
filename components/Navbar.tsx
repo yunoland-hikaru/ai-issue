@@ -6,8 +6,8 @@ import { useLang } from '@/contexts/LangContext';
 import type { Language } from '@/types';
 
 const LANGUAGES: { code: Language; label: string; flag: string }[] = [
-  { code: 'ko', label: '한국어', flag: '🇰🇷' },
   { code: 'ja', label: '日本語', flag: '🇯🇵' },
+  { code: 'ko', label: '한국어', flag: '🇰🇷' },
   { code: 'en', label: 'English', flag: '🇺🇸' },
 ];
 

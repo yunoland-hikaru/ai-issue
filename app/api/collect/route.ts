@@ -34,6 +34,7 @@ export async function POST() {
       if (existing) continue;
 
       let generated: {
+        title_ja: string;
         content_ja: string;
         image_url?: string | null;
         video_url?: string | null;
@@ -49,7 +50,7 @@ export async function POST() {
       }
 
       const { error } = await supabase.from('articles').insert({
-        title_ja: item.title,
+        title_ja: generated.title_ja || item.title,
         title_en: item.title,
         content_ja: generated.content_ja,
         category: generated.category,
@@ -75,14 +76,15 @@ export async function POST() {
 async function generateArticle(title: string, content: string, thumbnailUrl?: string) {
   const model = genai.getGenerativeModel({ model: 'gemini-2.5-flash' });
   const prompt = `あなたはAI専門メディアの記者です。
-以下の原文をもとに、日本語の記事本文を作成してください。
+以下の原文をもとに、日本語の記事タイトルと本文を作成してください。
 
-タイトル: ${title}
+元タイトル: ${title}
 原文: ${content.slice(0, 3000)}
 ${thumbnailUrl ? `サムネイル画像URL: ${thumbnailUrl}` : ''}
 
 要件：
-- 800〜1200文字程度の記事本文
+- title_ja: 元タイトルを自然な日本語に翻訳・意訳（30文字以内推奨）
+- content_ja: 800〜1200文字程度の記事本文
 - リードなし、本文から直接開始
 - 段落を<p>タグで区切る
 - 原文にある引用や発言はそのまま引用として使用
@@ -92,6 +94,7 @@ ${thumbnailUrl ? `サムネイル画像URL: ${thumbnailUrl}` : ''}
 
 JSON形式のみで返してください（他のテキスト不要）：
 {
+  "title_ja": "日本語のタイトル",
   "content_ja": "記事本文（<p>タグで段落区切り）",
   "image_url": "画像URL または null",
   "video_url": "動画URL または null",
