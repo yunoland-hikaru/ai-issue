@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { fetchRssFeed, RSS_SOURCES } from '@/lib/rss';
-import { anthropic } from '@/lib/claude';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { getServiceClient } from '@/lib/supabase';
+
+const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? '');
 
 export const maxDuration = 60;
 
@@ -60,13 +62,8 @@ export async function POST() {
 }
 
 async function generateSummary(title: string, content: string) {
-  const message = await anthropic.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 1024,
-    messages: [
-      {
-        role: 'user',
-        content: `以下のニュース記事を処理してください。
+  const model = genai.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  const prompt = `以下のニュース記事を処理してください。
 
 タイトル: ${title}
 本文: ${content.slice(0, 2000)}
@@ -77,12 +74,10 @@ async function generateSummary(title: string, content: string) {
   "summary_en": "3-4 sentence English summary",
   "summary_ko": "한국어로 3~4문장 요약",
   "category": "AI産業 / 新ツール / 研究・技術 / 規制・政策 / 半導体 / AI企業 のいずれか1つ"
-}`,
-      },
-    ],
-  });
+}`;
 
-  const text = message.content[0].type === 'text' ? message.content[0].text : '{}';
+  const result = await model.generateContent(prompt);
+  const text = result.response.text();
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   return JSON.parse(jsonMatch?.[0] ?? '{}');
 }
