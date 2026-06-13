@@ -14,9 +14,6 @@ function extractYouTubeId(url: string): string | null {
   return m ? m[1] : null;
 }
 
-function stripHtml(html: string): string {
-  return html.replace(/<[^>]*>/g, '').trim();
-}
 
 export default function ArticlePage({ params }: { params: Promise<{ id: string }> }) {
   const { lang } = useLang();
@@ -76,9 +73,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   const heroImage = article.image_url ?? article.thumbnail_url;
   const ytId = article.video_url ? extractYouTubeId(article.video_url) : null;
 
-  const summaryFallback = article.summary_ja
-    ? article.summary_ja
-    : content ? stripHtml(content).slice(0, 200) + '…' : null;
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-page)' }}>
@@ -125,18 +119,13 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
         )}
 
         {/* Article body */}
-        {content ? (
+        {content && (
           <div
             className="leading-relaxed text-sm sm:text-base space-y-4 mb-8"
             style={{ color: 'var(--text-2)' }}
             dangerouslySetInnerHTML={{ __html: content }}
           />
-        ) : summaryFallback ? (
-          <div className="rounded-2xl p-5 mb-8 leading-relaxed text-sm sm:text-base" style={{ background: 'var(--bg-card)', color: 'var(--text-2)' }}>
-            <p className="text-xs font-semibold mb-2" style={{ color: '#7F77DD' }}>AI要約</p>
-            <p>{summaryFallback}</p>
-          </div>
-        ) : null}
+        )}
 
         {/* Video embed */}
         {ytId && (
