@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import { useLang } from '@/contexts/LangContext';
 import type { Language } from '@/types';
 
 const LANGUAGES: { code: Language; label: string; flag: string }[] = [
-  { code: 'ja', label: '日本語', flag: '🇯🇵' },
   { code: 'ko', label: '한국어', flag: '🇰🇷' },
+  { code: 'ja', label: '日本語', flag: '🇯🇵' },
   { code: 'en', label: 'English', flag: '🇺🇸' },
 ];
 
@@ -83,9 +84,9 @@ export default function Navbar() {
   return (
     <nav style={{ background: '#1a1a2e' }} className="sticky top-0 z-50 border-b border-white/10">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-        <span className="text-lg font-bold tracking-tight" style={{ color: '#7F77DD' }}>
+        <Link href="/" className="text-lg font-bold tracking-tight hover:opacity-80 transition-opacity" style={{ color: '#7F77DD' }}>
           AI issue
-        </span>
+        </Link>
 
         {/* Desktop icons */}
         <div className="hidden sm:flex items-center gap-4">
