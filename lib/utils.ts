@@ -1,6 +1,7 @@
 export function formatRelativeTime(dateStr: string): string {
-  // Ensure the string is parsed as UTC (append Z if no timezone info)
-  const normalized = /[Z+\-]\d*$/.test(dateStr.trim()) ? dateStr : dateStr + 'Z';
+  if (!dateStr) return 'たった今';
+  // Append Z only when no timezone info present (+09:00, +0900, Z forms are all covered)
+  const normalized = /Z$|[+\-]\d{2}:?\d{2}$/.test(dateStr.trim()) ? dateStr : dateStr + 'Z';
   const diff = Date.now() - new Date(normalized).getTime();
 
   // Future-dated articles (clock skew, RSS delays) → show "たった今"
