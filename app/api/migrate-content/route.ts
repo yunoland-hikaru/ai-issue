@@ -48,7 +48,7 @@ export async function POST() {
 }
 
 async function generateContent(title: string, summary: string) {
-  const model = genai.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  const model = genai.getGenerativeModel({ model: 'gemini-2.5-flash' });
   const prompt = `あなたはAI専門メディアの記者です。
 以下のタイトルと要約をもとに、日本語の記事本文を作成してください。
 

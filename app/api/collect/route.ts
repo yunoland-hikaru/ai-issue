@@ -9,6 +9,8 @@ const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? '');
 
 export const maxDuration = 60;
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 export async function POST() {
   const supabase = getServiceClient();
   const results = { collected: 0, errors: [] as string[] };
@@ -39,8 +41,10 @@ export async function POST() {
       };
       try {
         generated = await generateArticle(item.title, item.content, item.thumbnailUrl);
+        await sleep(2000); // レート制限対策: 2秒待機
       } catch (e) {
         results.errors.push(`Generate failed: ${item.title} — ${String(e)}`);
+        await sleep(3000);
         continue;
       }
 
@@ -52,7 +56,7 @@ export async function POST() {
         source_url: item.url,
         source_name: item.sourceName,
         thumbnail_url: item.thumbnailUrl,
-        image_url: generated.image_url ?? item.thumbnailUrl,
+        image_url: generated.image_url ?? item.thumbnailUrl ?? null,
         video_url: generated.video_url ?? null,
         published_at: item.publishedAt,
       });
@@ -69,7 +73,7 @@ export async function POST() {
 }
 
 async function generateArticle(title: string, content: string, thumbnailUrl?: string) {
-  const model = genai.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  const model = genai.getGenerativeModel({ model: 'gemini-2.5-flash' });
   const prompt = `あなたはAI専門メディアの記者です。
 以下の原文をもとに、日本語の記事本文を作成してください。
 
