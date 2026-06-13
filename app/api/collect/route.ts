@@ -3,6 +3,8 @@ import { fetchRssFeed, RSS_SOURCES } from '@/lib/rss';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { getServiceClient } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? '');
 
 export const maxDuration = 60;

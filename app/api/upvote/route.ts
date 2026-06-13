@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceClient } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   const { toolId, delta } = await req.json() as { toolId: string; delta: 1 | -1 };
   if (!toolId || ![1, -1].includes(delta)) {
