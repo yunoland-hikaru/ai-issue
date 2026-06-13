@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchRssFeed, RSS_SOURCES } from '@/lib/rss';
-import { generateArticle } from '@/lib/claude';
+import { generateArticle, translateArticle } from '@/lib/claude';
+import type { GeneratedArticle, ArticleTranslation } from '@/lib/claude';
 import { generateImage } from '@/lib/openai';
 import { getServiceClient } from '@/lib/supabase';
 
@@ -47,18 +48,24 @@ export async function POST(req: NextRequest) {
 
     if (existing) { results.skipped++; continue; }
 
-    let generated: {
-      title_ja: string;
-      content_ja: string;
-      image_prompt: string | null;
-      video_url: string | null;
-      category: string;
-    };
+    let generated: GeneratedArticle;
     try {
-      generated = await generateArticle(item.title, item.content, item.thumbnailUrl);
+      generated = await generateArticle(item.title, item.content);
     } catch (e) {
       results.errors.push(`Generate failed: ${item.title} — ${String(e)}`);
       continue;
+    }
+
+    // 韓国語・英語へ翻訳（タイトル・要約・本文）。失敗しても日本語記事は保存する。
+    let translation: ArticleTranslation | null = null;
+    try {
+      translation = await translateArticle(
+        generated.title_ja || item.title,
+        generated.summary_ja,
+        generated.content_ja,
+      );
+    } catch (e) {
+      results.errors.push(`Translate failed: ${item.title} — ${String(e)}`);
     }
 
     // DALL-E 3で画像生成 → Supabase Storageに永続保存
@@ -84,8 +91,14 @@ export async function POST(req: NextRequest) {
 
     const { error } = await supabase.from('articles').insert({
       title_ja: generated.title_ja || item.title,
-      title_en: item.title,
+      title_ko: translation?.title_ko || null,
+      title_en: translation?.title_en || null,
       content_ja: generated.content_ja,
+      content_ko: translation?.content_ko || null,
+      content_en: translation?.content_en || null,
+      summary_ja: generated.summary_ja || null,
+      summary_ko: translation?.summary_ko || null,
+      summary_en: translation?.summary_en || null,
       category: generated.category,
       source_url: item.url,
       source_name: item.sourceName,

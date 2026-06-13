@@ -2,37 +2,31 @@ import Anthropic from '@anthropic-ai/sdk';
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-export async function summarizeArticle(title: string, content: string) {
-  const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 1024,
-    messages: [
-      {
-        role: 'user',
-        content: `以下のニュース記事を日本語で3〜4文にわかりやすく要約してください。
-専門用語は噛み砕いて説明し、読者がAIの知識がなくても理解できるようにしてください。
-
-タイトル: ${title}
-本文: ${content}
-
-また、以下のカテゴリから最も適切なものを1つ選んでください：
-AI産業 / 新ツール / 研究・技術 / 規制・政策 / 半導体 / AI企業
-
-JSON形式で返してください：
-{ "summary_ja": "...", "category": "..." }`,
-      },
-    ],
-  });
-
-  const text = message.content[0].type === 'text' ? message.content[0].text : '';
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  return JSON.parse(jsonMatch?.[0] ?? '{}') as { summary_ja: string; category: string };
+// Pull the first JSON object out of a model response and parse it.
+function parseJson<T>(text: string, fallback: T): T {
+  const match = text.match(/\{[\s\S]*\}/);
+  if (!match) return fallback;
+  try {
+    return JSON.parse(match[0]) as T;
+  } catch {
+    return fallback;
+  }
 }
 
-export async function generateArticle(title: string, content: string, thumbnailUrl?: string) {
+export interface GeneratedArticle {
+  title_ja: string;
+  content_ja: string;
+  summary_ja: string;
+  image_prompt: string | null;
+  video_url: string | null;
+  category: string;
+}
+
+// RSS原文 → 記者スタイルの日本語記事（本文・要約・画像プロンプト・カテゴリ）
+export async function generateArticle(title: string, content: string): Promise<GeneratedArticle> {
   const message = await anthropic.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 2048,
+    max_tokens: 3072,
     messages: [
       {
         role: 'user',
@@ -51,6 +45,7 @@ export async function generateArticle(title: string, content: string, thumbnailU
   - 「AI要約」ではなく本文として作成
   - リードなし、本文から直接開始
   - 原文リンクは含めない
+- summary_ja: 記事本文を3〜4文で要約（カード表示用、HTMLタグなしのプレーンテキスト）
 - image_prompt: content_jaの内容をもとにDALL-E 3で生成する画像のプロンプト（英語）
   - 記事内容を視覚的に表現
   - テキストなし
@@ -63,6 +58,7 @@ JSON形式のみで返してください（他のテキスト不要）：
 {
   "title_ja": "日本語のタイトル",
   "content_ja": "<p>段落1</p><p>段落2</p>...",
+  "summary_ja": "3〜4文のプレーンテキスト要約",
   "image_prompt": "DALL-E 3 image prompt in English based on the article content",
   "video_url": null,
   "category": "AI産業 / 新ツール / 研究・技術 / 規制・政策 / 半導体 / AI企業 のいずれか1つ"
@@ -72,12 +68,64 @@ JSON形式のみで返してください（他のテキスト不要）：
   });
 
   const text = message.content[0].type === 'text' ? message.content[0].text : '';
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  return JSON.parse(jsonMatch?.[0] ?? '{}') as {
-    title_ja: string;
-    content_ja: string;
-    image_prompt: string | null;
-    video_url: string | null;
-    category: string;
-  };
+  return parseJson<GeneratedArticle>(text, {
+    title_ja: '',
+    content_ja: '',
+    summary_ja: '',
+    image_prompt: null,
+    video_url: null,
+    category: 'AI産業',
+  });
+}
+
+export interface ArticleTranslation {
+  title_ko: string;
+  title_en: string;
+  summary_ko: string;
+  summary_en: string;
+  content_ko: string;
+  content_en: string;
+}
+
+// 日本語記事（タイトル・要約・本文）を韓国語・英語に翻訳
+export async function translateArticle(
+  titleJa: string,
+  summaryJa: string,
+  contentJa: string,
+): Promise<ArticleTranslation> {
+  const message = await anthropic.messages.create({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 4096,
+    messages: [
+      {
+        role: 'user',
+        content: `以下の日本語の記事を韓国語と英語に翻訳してください。
+content（本文）のHTMLタグ（<p>など）は構造を保ったまま翻訳してください。
+
+タイトル: ${titleJa}
+要約: ${summaryJa}
+本文: ${contentJa}
+
+JSON形式のみで返してください（他のテキスト不要）：
+{
+  "title_ko": "...",
+  "title_en": "...",
+  "summary_ko": "...",
+  "summary_en": "...",
+  "content_ko": "<p>...</p>",
+  "content_en": "<p>...</p>"
+}`,
+      },
+    ],
+  });
+
+  const text = message.content[0].type === 'text' ? message.content[0].text : '';
+  return parseJson<ArticleTranslation>(text, {
+    title_ko: '',
+    title_en: '',
+    summary_ko: '',
+    summary_en: '',
+    content_ko: '',
+    content_en: '',
+  });
 }

@@ -1,18 +1,18 @@
 import { NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { getServiceClient } from '@/lib/supabase';
+import { generateArticle, translateArticle } from '@/lib/claude';
+import { generateImage } from '@/lib/openai';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? '');
-
+// content_ja が未生成の既存記事を、collectと同じClaude + DALL-Eパイプラインで後追い生成する
 export async function POST() {
   const supabase = getServiceClient();
 
   const { data: articles, error } = await supabase
     .from('articles')
-    .select('id, title_ja, summary_ja, thumbnail_url')
+    .select('id, title_ja, summary_ja, thumbnail_url, image_url')
     .is('content_ja', null)
     .limit(10);
 
@@ -23,13 +23,48 @@ export async function POST() {
 
   for (const article of articles) {
     try {
-      const generated = await generateContent(article.title_ja, article.summary_ja ?? '');
+      // タイトル＋既存要約を原文として、本文・要約・画像プロンプト・カテゴリを生成
+      const generated = await generateArticle(article.title_ja, article.summary_ja ?? article.title_ja);
+
+      // DALL-E 3で画像生成 → Supabase Storageに永続保存（既存画像がなければ）
+      let imageUrl: string | null = article.image_url ?? article.thumbnail_url ?? null;
+      if (!article.image_url && generated.image_prompt) {
+        const imageBuffer = await generateImage(generated.image_prompt);
+        if (imageBuffer) {
+          const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.png`;
+          const { error: uploadError } = await supabase.storage
+            .from('article-images')
+            .upload(fileName, imageBuffer, { contentType: 'image/png', upsert: false });
+
+          if (!uploadError) {
+            const { data: urlData } = supabase.storage.from('article-images').getPublicUrl(fileName);
+            imageUrl = urlData.publicUrl;
+          } else {
+            results.errors.push(`Storage upload failed: ${article.id} — ${uploadError.message}`);
+          }
+        }
+      }
+
+      // 韓国語・英語へ翻訳（失敗しても日本語本文は保存する）
+      let translation = null;
+      try {
+        translation = await translateArticle(article.title_ja, generated.summary_ja, generated.content_ja);
+      } catch (e) {
+        results.errors.push(`Translate failed: ${article.id} — ${String(e)}`);
+      }
 
       const { error: updateError } = await supabase
         .from('articles')
         .update({
           content_ja: generated.content_ja,
-          image_url: generated.image_url ?? article.thumbnail_url ?? null,
+          content_ko: translation?.content_ko || null,
+          content_en: translation?.content_en || null,
+          summary_ja: generated.summary_ja || article.summary_ja || null,
+          summary_ko: translation?.summary_ko || null,
+          summary_en: translation?.summary_en || null,
+          title_ko: translation?.title_ko || null,
+          title_en: translation?.title_en || null,
+          image_url: imageUrl,
           video_url: generated.video_url ?? null,
         })
         .eq('id', article.id);
@@ -45,32 +80,4 @@ export async function POST() {
   }
 
   return NextResponse.json(results);
-}
-
-async function generateContent(title: string, summary: string) {
-  const model = genai.getGenerativeModel({ model: 'gemini-2.5-flash' });
-  const prompt = `あなたはAI専門メディアの記者です。
-以下のタイトルと要約をもとに、日本語の記事本文を作成してください。
-
-タイトル: ${title}
-要約: ${summary}
-
-要件：
-- 800〜1200文字程度の記事本文
-- リードなし、本文から直接開始
-- 段落を<p>タグで区切る
-- AIの動向・背景・影響を深掘りして補足する
-- 原文リンクは本文に含めない
-
-JSON形式のみで返してください（他のテキスト不要）：
-{
-  "content_ja": "記事本文（<p>タグで段落区切り）",
-  "image_url": null,
-  "video_url": null
-}`;
-
-  const result = await model.generateContent(prompt);
-  const text = result.response.text();
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  return JSON.parse(jsonMatch?.[0] ?? '{}');
 }

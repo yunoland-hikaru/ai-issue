@@ -13,19 +13,19 @@ import type { Article, Tool, TrendingKeyword } from '@/types';
 
 type TabKey = 'top' | 'news' | 'tools' | 'companies' | 'policy' | 'favorites';
 
+// ビルド時にインライン化される定数。Supabase未設定ならダミーデータで起動する。
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const hasSupabase = !!supabaseUrl && !supabaseUrl.includes('your_');
+
 export default function Home() {
   const { lang } = useLang();
   const [activeTab, setActiveTab] = useState<TabKey>('top');
-  const [articles, setArticles] = useState<Article[] | null>(null);
-  const [tools, setTools] = useState<Tool[]>(dummyTools);
+  const [articles, setArticles] = useState<Article[] | null>(hasSupabase ? null : dummyArticles);
+  const [tools] = useState<Tool[]>(dummyTools);
   const [keywords, setKeywords] = useState<TrendingKeyword[]>(dummyKeywords);
 
   useEffect(() => {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    if (!supabaseUrl || supabaseUrl.includes('your_')) {
-      setArticles(dummyArticles);
-      return;
-    }
+    if (!hasSupabase) return;
 
     fetch('/api/articles?limit=20')
       .then((r) => r.json())
@@ -44,7 +44,7 @@ export default function Home() {
   const categoryFilter: Record<TabKey, string | null> = {
     top: null,
     news: null,
-    tools: null,
+    tools: '新ツール',
     companies: 'AI企業',
     policy: '規制・政策',
     favorites: null,
@@ -87,7 +87,7 @@ export default function Home() {
         ) : (
           <>
             <div className="flex-1 min-w-0 space-y-4 sm:space-y-5">
-              {hero && <HeroCard article={hero} />}
+              {hero && <HeroCard article={hero} lang={lang} />}
               <section className="rounded-2xl p-4" style={{ background: 'var(--bg-card)' }}>
                 <h2 className="text-sm font-bold mb-3" style={{ color: 'var(--text-1)' }}>{latestLabel}</h2>
                 {rest.length > 0 ? (

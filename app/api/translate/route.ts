@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceClient } from '@/lib/supabase';
-import Anthropic from '@anthropic-ai/sdk';
+import { translateArticle } from '@/lib/claude';
 
 export const dynamic = 'force-dynamic';
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
+// 既存記事を後追いで翻訳する補助エンドポイント（収集パイプラインは collect 内で翻訳済み）
 export async function POST(req: NextRequest) {
   const { articleId } = await req.json();
   if (!articleId) return NextResponse.json({ error: 'articleId required' }, { status: 400 });
@@ -13,7 +12,7 @@ export async function POST(req: NextRequest) {
   const supabase = getServiceClient();
   const { data: article, error } = await supabase
     .from('articles')
-    .select('id, title_ja, summary_ja')
+    .select('id, title_ja, summary_ja, content_ja')
     .eq('id', articleId)
     .single();
 
@@ -21,31 +20,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Article not found' }, { status: 404 });
   }
 
-  const message = await anthropic.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 1024,
-    messages: [
-      {
-        role: 'user',
-        content: `以下の日本語テキストを韓国語と英語に翻訳してください。
-
-タイトル: ${article.title_ja}
-要約: ${article.summary_ja}
-
-JSONで返してください：
-{
-  "title_ko": "...",
-  "title_en": "...",
-  "summary_ko": "...",
-  "summary_en": "..."
-}`,
-      },
-    ],
-  });
-
-  const text = message.content[0].type === 'text' ? message.content[0].text : '{}';
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  const translations = JSON.parse(jsonMatch?.[0] ?? '{}');
+  const translations = await translateArticle(
+    article.title_ja,
+    article.summary_ja ?? '',
+    article.content_ja ?? '',
+  );
 
   await supabase.from('articles').update(translations).eq('id', articleId);
 

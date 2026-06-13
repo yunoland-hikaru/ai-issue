@@ -109,7 +109,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           >
             {article.category}
           </span>
-          <span className="text-xs" style={{ color: 'var(--text-4)' }}>{formatRelativeTime(article.published_at)}</span>
+          <span className="text-xs" style={{ color: 'var(--text-4)' }}>{formatRelativeTime(article.created_at ?? article.published_at)}</span>
           <span className="text-xs" style={{ color: 'var(--text-4)' }}>· {article.source_name}</span>
         </div>
 
