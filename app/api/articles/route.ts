@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { getClient } from '@/lib/supabase';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const category = searchParams.get('category');
   const limit = Number(searchParams.get('limit') ?? '20');
 
+  const supabase = getClient();
   let query = supabase
     .from('articles')
     .select('*')
