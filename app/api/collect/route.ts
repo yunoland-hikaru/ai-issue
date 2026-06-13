@@ -61,11 +61,25 @@ export async function POST(req: NextRequest) {
       continue;
     }
 
-    // DALL-E 3で画像生成（プロンプトがある場合のみ、失敗してもスキップ）
+    // DALL-E 3で画像生成 → Supabase Storageに永続保存
     let imageUrl: string | null = item.thumbnailUrl ?? null;
     if (generated.image_prompt) {
-      const dalleUrl = await generateImage(generated.image_prompt);
-      if (dalleUrl) imageUrl = dalleUrl;
+      const imageBuffer = await generateImage(generated.image_prompt);
+      if (imageBuffer) {
+        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.png`;
+        const { error: uploadError } = await supabase.storage
+          .from('article-images')
+          .upload(fileName, imageBuffer, { contentType: 'image/png', upsert: false });
+
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage
+            .from('article-images')
+            .getPublicUrl(fileName);
+          imageUrl = urlData.publicUrl;
+        } else {
+          results.errors.push(`Storage upload failed: ${uploadError.message}`);
+        }
+      }
     }
 
     const { error } = await supabase.from('articles').insert({
