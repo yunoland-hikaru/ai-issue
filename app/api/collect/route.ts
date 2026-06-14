@@ -4,6 +4,7 @@ import { generateArticle, translateArticle } from '@/lib/claude';
 import type { GeneratedArticle, ArticleTranslation } from '@/lib/claude';
 import { generateImage } from '@/lib/openai';
 import { searchStockImage } from '@/lib/stock';
+import { logoUrlForDomain } from '@/lib/logo';
 import { getServiceClient } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -119,6 +120,7 @@ export async function POST(req: NextRequest) {
       source_name: item.sourceName,
       thumbnail_url: item.thumbnailUrl,
       image_url: imageUrl,
+      logo_url: logoUrlForDomain(generated.company_domain),
       video_url: generated.video_url ?? null,
       published_at: item.publishedAt,
     });

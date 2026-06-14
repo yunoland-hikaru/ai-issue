@@ -3,6 +3,7 @@ import { getServiceClient } from '@/lib/supabase';
 import { generateArticle, translateArticle } from '@/lib/claude';
 import { generateImage } from '@/lib/openai';
 import { searchStockImage } from '@/lib/stock';
+import { logoUrlForDomain } from '@/lib/logo';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -81,6 +82,7 @@ export async function POST() {
           title_ko: translation?.title_ko || null,
           title_en: translation?.title_en || null,
           image_url: imageUrl,
+          logo_url: logoUrlForDomain(generated.company_domain),
           video_url: generated.video_url ?? null,
         })
         .eq('id', article.id);

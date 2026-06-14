@@ -19,6 +19,7 @@ export interface GeneratedArticle {
   summary_ja: string;
   image_keywords: string | null;
   image_prompt: string | null;
+  company_domain: string | null;
   video_url: string | null;
   category: string;
 }
@@ -57,6 +58,7 @@ export async function generateArticle(title: string, content: string): Promise<G
   - 暴力・武器・流血・残虐など不快な描写は避ける
   - 文字・ロゴタイプ・透かしを含めない
   - クリーンでプロフェッショナルなエディトリアル風、16:9横長
+- company_domain: 記事の主役となる企業の公式ドメイン（例: "openai.com", "anthropic.com", "nvidia.com"）。特定の企業が主役でなければ null
 - video_url: YouTubeや公式動画URLがあれば返す、なければnull
 - category: 下記から1つ選択
 
@@ -67,6 +69,7 @@ JSON形式のみで返してください（他のテキスト不要）：
   "summary_ja": "3〜4文のプレーンテキスト要約",
   "image_keywords": "english stock photo keywords",
   "image_prompt": "English prompt: abstract conceptual editorial illustration of the topic, no real people, no logos, no text",
+  "company_domain": "openai.com or null",
   "video_url": null,
   "category": "AI産業 / 新ツール / 研究・技術 / 規制・政策 / 半導体 / AI企業 のいずれか1つ"
 }`,
@@ -81,6 +84,7 @@ JSON形式のみで返してください（他のテキスト不要）：
     summary_ja: '',
     image_keywords: null,
     image_prompt: null,
+    company_domain: null,
     video_url: null,
     category: 'AI産業',
   });

@@ -70,10 +70,11 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   const style = CATEGORY_STYLES[article.category] ?? CATEGORY_STYLES['AI産業'];
   const title = (lang === 'ko' ? article.title_ko : lang === 'en' ? article.title_en : null) ?? article.title_ja;
   const content = (lang === 'ko' ? article.content_ko : lang === 'en' ? article.content_en : null) ?? article.content_ja;
-  const dalleImage = article.image_url ?? null;
+  const heroImage = article.image_url ?? null;   // 上部ヒーロー: ストック/AI画像
+  const logo = article.logo_url ?? null;          // 本文中央: 企業ロゴ
   const ytId = article.video_url ? extractYouTubeId(article.video_url) : null;
 
-  // Split content at paragraph boundaries to inject image in the middle
+  // Split content at paragraph boundaries to inject the logo in the middle
   const contentParts = content ? content.split(/(?<=<\/p>)(?=<p>)/) : [];
   const mid = Math.ceil(contentParts.length / 2);
   const firstHalf = contentParts.slice(0, mid).join('');
@@ -115,7 +116,15 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
         {/* Title */}
         <h1 className="text-xl sm:text-2xl font-bold leading-snug mb-6" style={{ color: 'var(--text-1)' }}>{title}</h1>
 
-        {/* Article body — DALL-E image injected after middle paragraph */}
+        {/* Hero image (top) — stock / AI photo */}
+        {heroImage && (
+          <div className="rounded-2xl overflow-hidden mb-6">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={heroImage} alt="" className="w-full h-auto" />
+          </div>
+        )}
+
+        {/* Article body — company logo injected after middle paragraph */}
         {firstHalf && (
           <div
             className="leading-relaxed text-sm sm:text-base space-y-4"
@@ -123,10 +132,15 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
             dangerouslySetInnerHTML={{ __html: firstHalf }}
           />
         )}
-        {dalleImage && (
-          <div className="rounded-2xl overflow-hidden my-6">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={dalleImage} alt="" className="w-full h-auto" />
+        {logo && (
+          <div className="my-6 flex justify-center">
+            <div
+              className="rounded-2xl px-10 py-6 flex items-center justify-center"
+              style={{ background: 'var(--bg-card)', border: '1px solid var(--border-1)' }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={logo} alt="" className="h-14 w-14 object-contain" />
+            </div>
           </div>
         )}
         {secondHalf && (

@@ -24,6 +24,7 @@ export interface Article {
   source_name: string;
   thumbnail_url?: string;
   image_url?: string;
+  logo_url?: string;
   video_url?: string;
   published_at: string;
   created_at: string;
