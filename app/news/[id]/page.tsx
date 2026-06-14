@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import { useLang } from '@/contexts/LangContext';
 import { CATEGORY_STYLES } from '@/lib/categoryStyles';
-import { formatRelativeTime } from '@/lib/utils';
+import { formatDateTime } from '@/lib/utils';
 import { companyNameFromLogoUrl } from '@/lib/logo';
 import { dummyArticles } from '@/lib/dummy';
 import { getClient } from '@/lib/supabase';
@@ -106,7 +106,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
               {company}
             </span>
           )}
-          <span className="text-sm" style={{ color: 'var(--text-4)' }}>{formatRelativeTime(article.created_at)}</span>
+          <span className="text-sm" style={{ color: 'var(--text-4)' }}>{formatDateTime(article.created_at, lang)}</span>
         </div>
 
         {/* Title */}
@@ -208,7 +208,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                         <p className="text-sm sm:text-base font-medium line-clamp-2 leading-snug" style={{ color: 'var(--text-2)' }}>
                           {relTitle}
                         </p>
-                        <p className="text-sm mt-1" style={{ color: 'var(--text-4)' }}>{formatRelativeTime(rel.created_at)}</p>
+                        <p className="text-sm mt-1" style={{ color: 'var(--text-4)' }}>{formatDateTime(rel.created_at, lang)}</p>
                       </div>
                     </article>
                   </Link>

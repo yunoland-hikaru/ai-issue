@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { Article } from '@/types';
-import { formatRelativeTime } from '@/lib/utils';
+import { formatDateTime } from '@/lib/utils';
 import { companyNameFromLogoUrl } from '@/lib/logo';
 
 interface NewsCardProps {
@@ -39,7 +39,7 @@ export default function NewsCard({ article, lang = 'ja' }: NewsCardProps) {
                 <span>·</span>
               </>
             )}
-            <span>{formatRelativeTime(article.created_at)}</span>
+            <span>{formatDateTime(article.created_at, lang)}</span>
           </div>
         </div>
         {article.image_url && (

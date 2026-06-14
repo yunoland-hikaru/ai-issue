@@ -4,6 +4,7 @@ import { Noto_Sans_JP, Noto_Sans_KR, Montserrat } from 'next/font/google';
 import { LangProvider } from '@/contexts/LangContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import Footer from '@/components/Footer';
+import TopDateBar from '@/components/TopDateBar';
 import type { Language } from '@/types';
 import './globals.css';
 
@@ -104,6 +105,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
           <LangProvider initialLang={initialLang}>
+            <TopDateBar />
             {children}
             <Footer />
           </LangProvider>

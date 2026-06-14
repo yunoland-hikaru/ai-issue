@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { Article } from '@/types';
 import { useLang } from '@/contexts/LangContext';
-import { formatRelativeTime } from '@/lib/utils';
+import { formatDateTime } from '@/lib/utils';
 import { companyNameFromLogoUrl } from '@/lib/logo';
 
 export default function SearchOverlay({ onClose }: { onClose: () => void }) {
@@ -97,7 +97,7 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium leading-snug line-clamp-2" style={{ color: 'var(--text-1)' }}>{title}</p>
                   <p className="text-xs mt-1" style={{ color: 'var(--text-4)' }}>
-                    {company ? `${company} · ` : ''}{formatRelativeTime(a.created_at)}
+                    {company ? `${company} · ` : ''}{formatDateTime(a.created_at, lang)}
                   </p>
                 </div>
               </Link>
