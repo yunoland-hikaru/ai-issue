@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Noto_Sans_JP, Noto_Sans_KR, Montserrat } from 'next/font/google';
 import { LangProvider } from '@/contexts/LangContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import Footer from '@/components/Footer';
 import './globals.css';
 
 // ロゴ用ワードマーク（テスラ風のジオメトリックな高級感）。
@@ -58,7 +59,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
-          <LangProvider>{children}</LangProvider>
+          <LangProvider>
+            {children}
+            <Footer />
+          </LangProvider>
         </ThemeProvider>
       </body>
     </html>

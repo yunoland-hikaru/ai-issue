@@ -23,18 +23,24 @@ export default function Logo({
   size = 'md',
   href = '/',
   className = '',
+  tone = 'auto',
 }: {
   size?: Size;
   href?: string | null;
   className?: string;
+  /** 'auto' = テーマ追従, 'onDark' = 常に白（暗い背景＝フッター用） */
+  tone?: 'auto' | 'onDark';
 }) {
   const s = SIZES[size];
+  const circle = tone === 'onDark' ? '#ffffff' : 'var(--text-1)';
+  const triangle = tone === 'onDark' ? '#0f0f1a' : 'var(--bg-nav)';
+  const wordColor = tone === 'onDark' ? '#ffffff' : 'var(--text-1)';
 
   const inner = (
     <span className={`inline-flex items-center ${s.gap} ${className}`}>
       <svg viewBox="0 0 100 100" aria-hidden className={`${s.mark} shrink-0`}>
-        <circle cx="50" cy="50" r="50" fill="var(--text-1)" />
-        <polygon points="50,27 73,69 27,69" fill="var(--bg-nav)" />
+        <circle cx="50" cy="50" r="50" fill={circle} />
+        <polygon points="50,27 73,69 27,69" fill={triangle} />
       </svg>
       <span
         className={`${s.word} leading-none`}
@@ -42,7 +48,7 @@ export default function Logo({
           fontFamily: 'var(--font-montserrat), sans-serif',
           fontWeight: 800,
           letterSpacing: '-0.02em',
-          color: 'var(--text-1)',
+          color: wordColor,
         }}
       >
         AI&nbsp;issue

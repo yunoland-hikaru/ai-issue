@@ -43,6 +43,28 @@ export interface Messages {
     errorMsg: string;
     agreeRequired: string;
   };
+  contactForm: {
+    pageTitle: string;
+    intro: string;
+    name: string;
+    email: string;
+    message: string;
+    submit: string;
+    thanks: string;
+    errorMsg: string;
+  };
+  footer: {
+    tagline: string;
+    navHeading: string;
+    infoHeading: string;
+    home: string;
+    newsletter: string;
+    contact: string;
+    privacy: string;
+    terms: string;
+    rights: string;
+    toTop: string;
+  };
   pricing: {
     free: string;
     paid: string;
@@ -106,6 +128,28 @@ const ja: Messages = {
     alreadyRegistered: 'このメールアドレスは既に登録されています。',
     errorMsg: 'エラーが発生しました。時間をおいて再度お試しください。',
     agreeRequired: '個人情報の取り扱いに同意してください。',
+  },
+  contactForm: {
+    pageTitle: 'お問い合わせ',
+    intro: 'ご質問・ご要望はこちらからお送りください。いただいた内容には順次ご返信いたします。',
+    name: 'お名前',
+    email: 'メールアドレス',
+    message: 'お問い合わせ内容',
+    submit: '送信する',
+    thanks: 'お問い合わせを送信しました。ありがとうございます。',
+    errorMsg: 'エラーが発生しました。時間をおいて再度お試しください。',
+  },
+  footer: {
+    tagline: 'AIの世界を、毎日ひと目で。',
+    navHeading: 'ナビゲーション',
+    infoHeading: 'インフォメーション',
+    home: 'ホーム',
+    newsletter: 'ニュースレター申込',
+    contact: 'お問い合わせ',
+    privacy: 'プライバシーポリシー',
+    terms: '利用規約',
+    rights: 'All rights reserved.',
+    toTop: 'トップへ戻る',
   },
   pricing: {
     free: '無料',

@@ -59,6 +59,19 @@ body {
   display: none;
 }
 
+/* 法務ページ（プライバシー/利用規約）の本文スタイル */
+.legal { color: var(--text-2); font-size: 0.95rem; line-height: 1.85; }
+.legal h2 { color: var(--text-1); font-size: 1.05rem; font-weight: 700; margin: 1.9rem 0 0.6rem; }
+.legal p { margin: 0.6rem 0; }
+.legal ul { margin: 0.6rem 0; padding-left: 1.25rem; list-style: disc; }
+.legal li { margin: 0.3rem 0; }
+.legal strong { color: var(--text-1); font-weight: 700; }
+.legal hr { border: none; border-top: 1px solid var(--border-1); margin: 1.6rem 0; }
+.legal a { color: var(--accent); text-decoration: underline; }
+.legal table { width: 100%; border-collapse: collapse; margin: 0.9rem 0; font-size: 0.9rem; }
+.legal th, .legal td { border: 1px solid var(--border-1); padding: 8px 10px; text-align: left; }
+.legal th { background: var(--input-bg); color: var(--text-1); font-weight: 600; }
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
