@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Article } from '@/types';
 import { CATEGORY_STYLES } from '@/lib/categoryStyles';
 import { formatRelativeTime } from '@/lib/utils';
+import { companyNameFromLogoUrl } from '@/lib/logo';
 
 interface HeroCardProps {
   article: Article;
@@ -13,6 +14,7 @@ export default function HeroCard({ article, lang = 'ja' }: HeroCardProps) {
   const title = (lang === 'ko' ? article.title_ko : lang === 'en' ? article.title_en : null) ?? article.title_ja;
   const summary = (lang === 'ko' ? article.summary_ko : lang === 'en' ? article.summary_en : null) ?? article.summary_ja;
   const image = article.image_url;
+  const company = companyNameFromLogoUrl(article.logo_url);
 
   return (
     <Link href={`/news/${article.id}`}>
@@ -29,12 +31,21 @@ export default function HeroCard({ article, lang = 'ja' }: HeroCardProps) {
           </div>
         )}
         <div className="p-4 sm:p-5">
-          <span
-            className="inline-block text-xs font-semibold px-2.5 py-1 rounded-full mb-2 sm:mb-3"
-            style={{ background: style.bg, color: style.text }}
-          >
-            {article.category}
-          </span>
+          <div className="flex items-center gap-2 mb-2 sm:mb-3 flex-wrap">
+            <span
+              className="inline-block text-xs font-semibold px-2.5 py-1 rounded-full"
+              style={{ background: style.bg, color: style.text }}
+            >
+              {article.category}
+            </span>
+            {article.logo_url && (
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium" style={{ color: 'var(--text-3)' }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={article.logo_url} alt="" className="h-4 w-4 rounded-sm object-contain" />
+                {company}
+              </span>
+            )}
+          </div>
           <h2
             className="text-base sm:text-xl font-bold leading-snug mb-2 sm:mb-3 group-hover:text-[#7F77DD] transition-colors"
             style={{ color: 'var(--text-1)' }}
