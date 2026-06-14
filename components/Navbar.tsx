@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
 import { useLang } from '@/contexts/LangContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import Logo from './Logo';
 import type { Language } from '@/types';
 
 const LANGUAGES: { code: Language; label: string; flag: string }[] = [
@@ -39,24 +39,24 @@ export default function Navbar() {
         aria-label={theme === 'dark' ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
       >
         {theme === 'dark' ? (
-          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="5" />
             <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
           </svg>
         ) : (
-          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
           </svg>
         )}
       </button>
 
       <button className="transition-colors" style={{ color: 'var(--text-3)' }} aria-label={t.nav.search}>
-        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
           <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
         </svg>
       </button>
       <button className="transition-colors" style={{ color: 'var(--text-3)' }} aria-label={t.nav.notifications}>
-        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" />
         </svg>
       </button>
@@ -68,7 +68,7 @@ export default function Navbar() {
           style={{ color: 'var(--text-3)' }}
           aria-label={t.nav.language}
         >
-          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="10" />
             <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
           </svg>
@@ -82,9 +82,9 @@ export default function Navbar() {
               <button
                 key={l.code}
                 onClick={() => { setLang(l.code); setDropdownOpen(false); }}
-                className="w-full flex items-center gap-2 px-4 py-2.5 text-sm transition-colors"
+                className="w-full flex items-center gap-2 px-4 py-2.5 text-base transition-colors"
                 style={{
-                  color: lang === l.code ? '#7F77DD' : 'var(--text-2)',
+                  color: lang === l.code ? 'var(--accent)' : 'var(--text-2)',
                   background: 'transparent',
                 }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--input-bg)'; }}
@@ -104,7 +104,7 @@ export default function Navbar() {
       </div>
 
       <button className="transition-colors" style={{ color: 'var(--text-3)' }} aria-label={t.nav.user}>
-        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
         </svg>
       </button>
@@ -113,10 +113,8 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 border-b" style={{ background: 'var(--bg-nav)', borderColor: 'var(--border-1)' }}>
-      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-        <Link href="/" className="text-lg font-bold tracking-tight hover:opacity-80 transition-opacity" style={{ color: '#7F77DD' }}>
-          AI issue
-        </Link>
+      <div className="max-w-6xl mx-auto px-4 h-[72px] flex items-center justify-between">
+        <Logo size="lg" />
 
         {/* Desktop icons */}
         <div className="hidden sm:flex items-center gap-4">

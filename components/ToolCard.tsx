@@ -67,9 +67,9 @@ export default function ToolCard({ tool }: ToolCardProps) {
         disabled={loading}
         className="shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg border transition-colors disabled:opacity-50"
         style={{
-          borderColor: upvoted ? '#7F77DD' : 'var(--border-1)',
+          borderColor: upvoted ? 'var(--accent)' : 'var(--border-1)',
           background: upvoted ? 'rgba(127,119,221,0.15)' : 'transparent',
-          color: upvoted ? '#7F77DD' : 'var(--text-3)',
+          color: upvoted ? 'var(--accent)' : 'var(--text-3)',
         }}
       >
         <svg width="12" height="12" fill={upvoted ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">

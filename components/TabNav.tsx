@@ -20,10 +20,10 @@ export default function TabNav({ active, onChange }: TabNavProps) {
           <button
             key={key}
             onClick={() => onChange(key)}
-            className="shrink-0 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors"
+            className="shrink-0 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium border-b-2 transition-colors"
             style={{
-              borderColor: active === key ? '#7F77DD' : 'transparent',
-              color: active === key ? '#7F77DD' : 'var(--text-3)',
+              borderColor: active === key ? 'var(--accent)' : 'transparent',
+              color: active === key ? 'var(--accent)' : 'var(--text-3)',
             }}
           >
             {t.tabs[key]}

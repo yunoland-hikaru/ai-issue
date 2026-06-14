@@ -2,14 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
-import TickerBanner from '@/components/TickerBanner';
 import TabNav from '@/components/TabNav';
 import HeroCard from '@/components/HeroCard';
 import NewsCard from '@/components/NewsCard';
 import Sidebar from '@/components/Sidebar';
-import { dummyTools, dummyKeywords } from '@/lib/dummy';
 import { useLang } from '@/contexts/LangContext';
-import type { Article, Tool, TrendingKeyword } from '@/types';
+import type { Article } from '@/types';
 
 type TabKey = 'top' | 'news' | 'tools' | 'companies' | 'policy' | 'favorites';
 
@@ -21,8 +19,7 @@ export default function Home() {
   const { lang } = useLang();
   const [activeTab, setActiveTab] = useState<TabKey>('top');
   const [articles, setArticles] = useState<Article[] | null>(hasSupabase ? null : []);
-  const [tools] = useState<Tool[]>(dummyTools);
-  const [keywords, setKeywords] = useState<TrendingKeyword[]>(dummyKeywords);
+  const [popular, setPopular] = useState<Article[]>([]);
 
   useEffect(() => {
     if (!hasSupabase) return;
@@ -32,9 +29,9 @@ export default function Home() {
       .then((data: Article[]) => setArticles(Array.isArray(data) ? data : []))
       .catch(() => setArticles([]));
 
-    fetch('/api/trending')
+    fetch('/api/articles?sort=popular&limit=10')
       .then((r) => r.json())
-      .then((data: TrendingKeyword[]) => { if (Array.isArray(data) && data.length > 0) setKeywords(data); })
+      .then((data: Article[]) => { if (Array.isArray(data)) setPopular(data); })
       .catch(() => {});
   }, []);
 
@@ -69,7 +66,6 @@ export default function Home() {
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-page)' }}>
       <Navbar />
-      <TickerBanner articles={displayArticles} />
       <TabNav active={activeTab} onChange={setActiveTab} />
 
       <main className="max-w-6xl mx-auto px-4 py-4 sm:py-6 flex flex-col lg:flex-row gap-5">
@@ -90,33 +86,33 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            <Sidebar tools={tools} keywords={keywords} />
+            <Sidebar popular={popular} />
           </>
         ) : isEmpty ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center py-24 sm:py-32">
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5" style={{ background: 'var(--bg-card)' }}>
-              <svg width="28" height="28" fill="none" stroke="#7F77DD" strokeWidth="1.8" viewBox="0 0 24 24">
+              <svg width="28" height="28" fill="none" stroke="var(--accent)" strokeWidth="1.8" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="9" />
                 <path d="M12 7v5l3 2" />
               </svg>
             </div>
-            <h2 className="text-lg sm:text-xl font-bold mb-2" style={{ color: 'var(--text-1)' }}>{preparing.title}</h2>
-            <p className="text-sm" style={{ color: 'var(--text-3)' }}>{preparing.desc}</p>
+            <h2 className="text-xl sm:text-2xl font-bold mb-2" style={{ color: 'var(--text-1)' }}>{preparing.title}</h2>
+            <p className="text-base" style={{ color: 'var(--text-3)' }}>{preparing.desc}</p>
           </div>
         ) : (
           <>
             <div className="flex-1 min-w-0 space-y-4 sm:space-y-5">
               {hero && <HeroCard article={hero} lang={lang} />}
               <section className="rounded-2xl p-4" style={{ background: 'var(--bg-card)' }}>
-                <h2 className="text-sm font-bold mb-3" style={{ color: 'var(--text-1)' }}>{latestLabel}</h2>
+                <h2 className="text-base font-bold mb-3" style={{ color: 'var(--text-1)' }}>{latestLabel}</h2>
                 {rest.length > 0 ? (
                   rest.map((a) => <NewsCard key={a.id} article={a} lang={lang} />)
                 ) : (
-                  <p className="text-sm py-4 text-center" style={{ color: 'var(--text-4)' }}>記事がありません</p>
+                  <p className="text-base py-4 text-center" style={{ color: 'var(--text-4)' }}>記事がありません</p>
                 )}
               </section>
             </div>
-            <Sidebar tools={tools} keywords={keywords} />
+            <Sidebar popular={popular} />
           </>
         )}
       </main>

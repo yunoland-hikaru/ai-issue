@@ -30,17 +30,17 @@ export default function HeroCard({ article, lang = 'ja' }: HeroCardProps) {
         )}
         <div className="p-4 sm:p-5">
           <h2
-            className="text-base sm:text-xl font-bold leading-snug mb-2 sm:mb-3 group-hover:text-[#7F77DD] transition-colors"
+            className="text-lg sm:text-2xl font-bold leading-snug mb-2 sm:mb-3 group-hover:text-[var(--accent)] transition-colors"
             style={{ color: 'var(--text-1)' }}
           >
             {title}
           </h2>
           {summary && (
-            <p className="text-xs sm:text-sm leading-relaxed line-clamp-2 sm:line-clamp-3" style={{ color: 'var(--text-3)' }}>
+            <p className="text-sm sm:text-base leading-relaxed line-clamp-2 sm:line-clamp-3" style={{ color: 'var(--text-3)' }}>
               {summary}
             </p>
           )}
-          <div className="flex items-center gap-2 mt-3 sm:mt-4 text-xs" style={{ color: 'var(--text-4)' }}>
+          <div className="flex items-center gap-2 mt-3 sm:mt-4 text-sm" style={{ color: 'var(--text-4)' }}>
             {article.logo_url && (
               <>
                 <span className="inline-flex items-center gap-1.5" style={{ color: 'var(--text-3)' }}>

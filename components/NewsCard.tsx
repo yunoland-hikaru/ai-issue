@@ -18,17 +18,17 @@ export default function NewsCard({ article, lang = 'ja' }: NewsCardProps) {
       <article className="flex gap-3 py-3 sm:py-4 border-b last:border-0 group cursor-pointer" style={{ borderColor: 'var(--border-2)' }}>
         <div className="flex-1 min-w-0">
           <h3
-            className="text-xs sm:text-sm font-medium leading-snug mb-1 sm:mb-1.5 group-hover:text-[#7F77DD] transition-colors line-clamp-2"
+            className="text-sm sm:text-base font-medium leading-snug mb-1 sm:mb-1.5 group-hover:text-[var(--accent)] transition-colors line-clamp-2"
             style={{ color: 'var(--text-1)' }}
           >
             {title ?? article.title_ja}
           </h3>
           {(summary ?? article.summary_ja) && (
-            <p className="hidden sm:block text-xs leading-relaxed line-clamp-2" style={{ color: 'var(--text-3)' }}>
+            <p className="hidden sm:block text-sm leading-relaxed line-clamp-2" style={{ color: 'var(--text-3)' }}>
               {summary ?? article.summary_ja}
             </p>
           )}
-          <div className="flex items-center gap-2 mt-1.5 sm:mt-2 text-xs" style={{ color: 'var(--text-4)' }}>
+          <div className="flex items-center gap-2 mt-1.5 sm:mt-2 text-sm" style={{ color: 'var(--text-4)' }}>
             {article.logo_url && (
               <>
                 <span className="inline-flex items-center gap-1" style={{ color: 'var(--text-3)' }}>

@@ -26,6 +26,7 @@ export interface Article {
   image_url?: string;
   logo_url?: string;
   video_url?: string;
+  views?: number;
   published_at: string;
   created_at: string;
 }

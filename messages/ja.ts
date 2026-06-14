@@ -17,6 +17,7 @@ export interface Messages {
     latestNews: string;
     todayTools: string;
     trending: string;
+    mostPopular: string;
     newsletter: string;
     newsletterDesc: string;
     newsletterPlaceholder: string;
@@ -60,6 +61,7 @@ const ja: Messages = {
     latestNews: '最新ニュース',
     todayTools: '今日の新着AIツール',
     trending: '話題のキーワード',
+    mostPopular: 'MOST POPULAR',
     newsletter: 'ニュースレター',
     newsletterDesc: 'AIの最新情報をメールで受け取る',
     newsletterPlaceholder: 'your@email.com',

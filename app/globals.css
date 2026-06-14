@@ -17,7 +17,9 @@
   --border-1:    rgba(0,0,0,0.09);
   --border-2:    rgba(0,0,0,0.05);
   --input-bg:    rgba(0,0,0,0.04);
-  --accent:      #7F77DD;
+  /* ライトは目に優しい落ち着いた赤、ダークは紫（下の .dark で上書き）。
+     アクセントは必ず var(--accent) を使う（直に #7F77DD と書かない）。 */
+  --accent:      #D64550;
 }
 
 /* ── Dark mode ── */
@@ -48,15 +50,6 @@ body {
   color: var(--text-1);
   font-family: var(--font-noto-jp), var(--font-noto-kr), system-ui, sans-serif;
   transition: background 0.2s, color 0.2s;
-}
-
-@keyframes ticker {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-.animate-ticker {
-  animation: ticker 40s linear infinite;
 }
 
 .scrollbar-none {

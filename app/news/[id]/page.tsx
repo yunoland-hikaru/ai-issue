@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Navbar from '@/components/Navbar';
 import { useLang } from '@/contexts/LangContext';
 import { CATEGORY_STYLES } from '@/lib/categoryStyles';
 import { formatRelativeTime } from '@/lib/utils';
@@ -39,6 +40,13 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
       }
       setArticle(found);
 
+      // 閲覧数を+1（MOST POPULARランキング用、失敗は無視）
+      fetch('/api/view', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      }).catch(() => {});
+
       if (found) {
         try {
           const { data: rel } = await getClient()
@@ -63,7 +71,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   if (!article) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-page)' }}>
-        <div className="w-6 h-6 rounded-full border-2 border-[#7F77DD] border-t-transparent animate-spin" />
+        <div className="w-6 h-6 rounded-full border-2 border-[var(--accent)] border-t-transparent animate-spin" />
       </div>
     );
   }
@@ -79,45 +87,30 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-page)' }}>
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b" style={{ background: 'var(--bg-nav)', borderColor: 'var(--border-1)' }}>
-        <div className="max-w-3xl mx-auto px-4 h-14 flex items-center gap-3">
-          <Link
-            href="/"
-            className="flex items-center gap-1.5 text-sm hover:text-[#7F77DD] transition-colors"
-            style={{ color: 'var(--text-3)' }}
-          >
-            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path d="m15 18-6-6 6-6" />
-            </svg>
-            トップへ戻る
-          </Link>
-          <span style={{ color: 'var(--border-1)' }}>·</span>
-          <span className="text-base font-bold" style={{ color: '#7F77DD' }}>AI issue</span>
-        </div>
-      </header>
+      {/* Header — トップと同一（Navbar） */}
+      <Navbar />
 
       <main className="max-w-3xl mx-auto px-4 py-6 sm:py-10">
         {/* Category + company badge + date */}
         <div className="flex items-center gap-3 mb-4 flex-wrap">
           <span
-            className="inline-block text-xs font-semibold px-3 py-1 rounded-full"
+            className="inline-block text-sm font-semibold px-3 py-1 rounded-full"
             style={{ background: style.bg, color: style.text }}
           >
             {article.category}
           </span>
           {logo && (
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium" style={{ color: 'var(--text-3)' }}>
+            <span className="inline-flex items-center gap-1.5 text-sm font-medium" style={{ color: 'var(--text-3)' }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={logo} alt="" className="h-4 w-4 rounded-sm object-contain" />
               {company}
             </span>
           )}
-          <span className="text-xs" style={{ color: 'var(--text-4)' }}>{formatRelativeTime(article.created_at)}</span>
+          <span className="text-sm" style={{ color: 'var(--text-4)' }}>{formatRelativeTime(article.created_at)}</span>
         </div>
 
         {/* Title */}
-        <h1 className="text-xl sm:text-2xl font-bold leading-snug mb-6" style={{ color: 'var(--text-1)' }}>{title}</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold leading-snug mb-6" style={{ color: 'var(--text-1)' }}>{title}</h1>
 
         {/* Hero image (top) — stock / AI photo */}
         {heroImage && (
@@ -130,7 +123,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
         {/* Article body */}
         {content && (
           <div
-            className="leading-relaxed text-sm sm:text-base space-y-4 mb-8"
+            className="leading-relaxed text-base sm:text-lg space-y-4 mb-8"
             style={{ color: 'var(--text-2)' }}
             dangerouslySetInnerHTML={{ __html: content }}
           />
@@ -154,7 +147,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
         {/* Related articles */}
         {related.length > 0 && (
           <section className="mt-10">
-            <h2 className="text-sm font-bold uppercase tracking-widest mb-4" style={{ color: 'var(--text-3)' }}>関連記事</h2>
+            <h2 className="text-base font-bold uppercase tracking-widest mb-4" style={{ color: 'var(--text-3)' }}>関連記事</h2>
             <div className="space-y-3">
               {related.map((rel) => {
                 const relStyle = CATEGORY_STYLES[rel.category] ?? CATEGORY_STYLES['AI産業'];
@@ -175,15 +168,15 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                       )}
                       <div className="flex-1 min-w-0">
                         <span
-                          className="inline-block text-xs font-semibold px-2 py-0.5 rounded-full mb-1"
+                          className="inline-block text-sm font-semibold px-2 py-0.5 rounded-full mb-1"
                           style={{ background: relStyle.bg, color: relStyle.text }}
                         >
                           {rel.category}
                         </span>
-                        <p className="text-xs sm:text-sm font-medium line-clamp-2 leading-snug" style={{ color: 'var(--text-2)' }}>
+                        <p className="text-sm sm:text-base font-medium line-clamp-2 leading-snug" style={{ color: 'var(--text-2)' }}>
                           {relTitle}
                         </p>
-                        <p className="text-xs mt-1" style={{ color: 'var(--text-4)' }}>{formatRelativeTime(rel.created_at)}</p>
+                        <p className="text-sm mt-1" style={{ color: 'var(--text-4)' }}>{formatRelativeTime(rel.created_at)}</p>
                       </div>
                     </article>
                   </Link>
