@@ -6,6 +6,7 @@ import { useLang } from '@/contexts/LangContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import Logo from './Logo';
 import SearchOverlay from './SearchOverlay';
+import SearchBox from './SearchBox';
 import type { Language } from '@/types';
 
 const LANGUAGES: { code: Language; label: string; flag: string }[] = [
@@ -53,16 +54,6 @@ export default function Navbar() {
         )}
       </button>
 
-      <button
-        onClick={() => { setSearchOpen(true); setMenuOpen(false); }}
-        className="transition-colors"
-        style={{ color: 'var(--text-3)' }}
-        aria-label={t.nav.search}
-      >
-        <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-        </svg>
-      </button>
       <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setDropdownOpen((v) => !v)}
@@ -129,12 +120,31 @@ export default function Navbar() {
     </Link>
   );
 
+  // モバイル用の検索アイコン（タップでオーバーレイ）。デスクトップはインラインのSearchBox。
+  const mobileSearchButton = (
+    <button
+      onClick={() => { setSearchOpen(true); setMenuOpen(false); }}
+      className="transition-colors"
+      style={{ color: 'var(--text-3)' }}
+      aria-label={t.nav.search}
+    >
+      <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+      </svg>
+    </button>
+  );
+
   return (
     <nav className="sticky top-0 z-50 border-b" style={{ background: 'var(--bg-nav)', borderColor: 'var(--border-1)' }}>
       <div className="max-w-6xl mx-auto px-4 h-14 sm:h-[72px] flex items-center justify-between">
         <Logo size="lg" />
 
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Inline search (desktop) */}
+          <div className="hidden sm:block">
+            <SearchBox />
+          </div>
+
           {/* Newsletter CTA — 常時表示 */}
           {newsletterCta}
 
@@ -169,6 +179,7 @@ export default function Navbar() {
           className="sm:hidden border-t px-4 py-3 flex items-center gap-5"
           style={{ background: 'var(--bg-nav)', borderColor: 'var(--border-1)' }}
         >
+          {mobileSearchButton}
           {iconButtons}
         </div>
       )}
