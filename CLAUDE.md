@@ -66,6 +66,14 @@ ALTER TABLE articles ADD COLUMN IF NOT EXISTS views integer NOT NULL DEFAULT 0;
 -- ↑ views: 記事閲覧数。MOST POPULARランキング(`/api/articles?sort=popular`)の元データ。
 --   記事を開くと `/api/view` が+1。未追加でも sort=popular は新着順にフォールバックして動く。
 
+-- ニュースレター申込フォーム(/newsletter)の追加項目。subscribers は email(unique) が既存。
+ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS name text;
+ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS company text;
+ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS title text;
+ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS phone text;
+ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS consent boolean DEFAULT false;
+-- ↑ 未追加でも /api/subscribe は email のみで登録するフォールバックあり（フォームは壊れない）。
+
 ## 環境変数（.env.local / Vercel 両方に）
 
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `PEXELS_API_KEY`（無料ストック）, `LOGODEV_TOKEN`（高解像度ロゴ、pk_...）。

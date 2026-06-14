@@ -24,6 +24,25 @@ export interface Messages {
     newsletterButton: string;
     newsletterThanks: string;
   };
+  newsletterForm: {
+    pageTitle: string;
+    breadcrumb: string;
+    consentHeading: string;
+    consentBody: string;
+    name: string;
+    company: string;
+    jobTitle: string;
+    phone: string;
+    email: string;
+    optional: string;
+    agree: string;
+    submit: string;
+    cancel: string;
+    thanks: string;
+    alreadyRegistered: string;
+    errorMsg: string;
+    agreeRequired: string;
+  };
   pricing: {
     free: string;
     paid: string;
@@ -67,6 +86,26 @@ const ja: Messages = {
     newsletterPlaceholder: 'your@email.com',
     newsletterButton: '登録する',
     newsletterThanks: '登録ありがとうございます！',
+  },
+  newsletterForm: {
+    pageTitle: 'ニュースレター申込',
+    breadcrumb: 'ニュースレター申込',
+    consentHeading: '個人情報の取り扱いについての同意事項',
+    consentBody:
+      'ニュースレター配信のため、以下のとおり個人情報を収集・利用します。1) 収集項目: お名前・メールアドレス（任意で会社名・役職・連絡先）。2) 利用目的: ニュースレターの配信および本人確認。3) 保有期間: 配信停止のお申し出があるまで。同意されない場合もサービスのご利用は可能ですが、ニュースレターは配信されません。',
+    name: 'お名前',
+    company: '会社・団体名',
+    jobTitle: '役職',
+    phone: '電話番号',
+    email: 'メールアドレス',
+    optional: '任意',
+    agree: '個人情報の収集・利用に同意します',
+    submit: '申し込む',
+    cancel: 'キャンセル',
+    thanks: 'ニュースレターの申し込みが完了しました。',
+    alreadyRegistered: 'このメールアドレスは既に登録されています。',
+    errorMsg: 'エラーが発生しました。時間をおいて再度お試しください。',
+    agreeRequired: '個人情報の取り扱いに同意してください。',
   },
   pricing: {
     free: '無料',
