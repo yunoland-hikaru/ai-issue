@@ -2,11 +2,8 @@ export type Language = 'ja' | 'ko' | 'en';
 
 export type ArticleCategory =
   | 'AI産業'
-  | '新ツール'
-  | '研究・技術'
-  | '規制・政策'
-  | '半導体'
-  | 'AI企業';
+  | 'AI技術'
+  | '規制・政策';
 
 export interface Article {
   id: string;

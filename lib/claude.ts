@@ -60,7 +60,10 @@ export async function generateArticle(title: string, content: string): Promise<G
   - クリーンでプロフェッショナルなエディトリアル風、16:9横長
 - company_domain: 記事の主役となる企業の公式ドメイン（例: "openai.com", "anthropic.com", "nvidia.com"）。特定の企業が主役でなければ null
 - video_url: YouTubeや公式動画URLがあれば返す、なければnull
-- category: 下記から1つ選択
+- category: 記事内容に最も近いものを下記3つから1つ選択
+  - "AI産業": 企業・製品・サービス・投資・市場・半導体などのビジネス/業界動向
+  - "AI技術": モデル・研究成果・新しいAIツール・技術的ブレイクスルー
+  - "規制・政策": 政府・法規制・倫理・安全性・政策に関する話題
 
 JSON形式のみで返してください（他のテキスト不要）：
 {
@@ -71,7 +74,7 @@ JSON形式のみで返してください（他のテキスト不要）：
   "image_prompt": "English prompt: abstract conceptual editorial illustration of the topic, no real people, no logos, no text",
   "company_domain": "openai.com or null",
   "video_url": null,
-  "category": "AI産業 / 新ツール / 研究・技術 / 規制・政策 / 半導体 / AI企業 のいずれか1つ"
+  "category": "AI産業 / AI技術 / 規制・政策 のいずれか1つ"
 }`,
       },
     ],

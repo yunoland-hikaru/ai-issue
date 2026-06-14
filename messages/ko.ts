@@ -8,12 +8,10 @@ const ko: Messages = {
     user: '사용자',
   },
   tabs: {
-    top: '홈',
-    news: 'AI 뉴스',
-    tools: '신규 툴',
-    companies: '기업 동향',
+    top: '전체',
+    industry: 'AI 산업',
+    tech: 'AI 기술',
     policy: '규제·정책',
-    favorites: '즐겨찾기',
   },
   sections: {
     latestNews: '최신 뉴스',

@@ -9,7 +9,7 @@ import Sidebar from '@/components/Sidebar';
 import { useLang } from '@/contexts/LangContext';
 import type { Article } from '@/types';
 
-type TabKey = 'top' | 'news' | 'tools' | 'companies' | 'policy' | 'favorites';
+type TabKey = 'top' | 'industry' | 'tech' | 'policy';
 
 // ビルド時にインライン化される定数。Supabase未設定なら空状態（準備中）で起動する。
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -40,11 +40,9 @@ export default function Home() {
 
   const categoryFilter: Record<TabKey, string | null> = {
     top: null,
-    news: null,
-    tools: '新ツール',
-    companies: 'AI企業',
+    industry: 'AI産業',
+    tech: 'AI技術',
     policy: '規制・政策',
-    favorites: null,
   };
 
   const filtered = categoryFilter[activeTab]

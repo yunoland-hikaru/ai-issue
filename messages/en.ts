@@ -8,12 +8,10 @@ const en: Messages = {
     user: 'User',
   },
   tabs: {
-    top: 'Top',
-    news: 'AI News',
-    tools: 'New Tools',
-    companies: 'Companies',
+    top: 'All',
+    industry: 'AI Industry',
+    tech: 'AI Technology',
     policy: 'Policy',
-    favorites: 'Favorites',
   },
   sections: {
     latestNews: 'Latest News',

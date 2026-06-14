@@ -7,11 +7,9 @@ export interface Messages {
   };
   tabs: {
     top: string;
-    news: string;
-    tools: string;
-    companies: string;
+    industry: string;
+    tech: string;
     policy: string;
-    favorites: string;
   };
   sections: {
     latestNews: string;
@@ -92,12 +90,10 @@ const ja: Messages = {
     user: 'ユーザー',
   },
   tabs: {
-    top: 'トップ',
-    news: 'AIニュース',
-    tools: '新着ツール',
-    companies: '企業動向',
+    top: '全て',
+    industry: 'AI産業',
+    tech: 'AI技術',
     policy: '規制・政策',
-    favorites: 'お気に入り',
   },
   sections: {
     latestNews: '最新ニュース',

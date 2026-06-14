@@ -7,7 +7,7 @@ export const dummyArticles: Article[] = [
     title_en: 'OpenAI announces GPT-5 with dramatically improved reasoning',
     summary_ja:
       'OpenAIはGPT-5を正式発表しました。前モデルと比較して推論能力が大幅に向上し、複雑な数学や科学的問題をより正確に解けるようになりました。また、マルチモーダル対応も強化され、画像・音声・テキストをより自然に組み合わせた処理が可能です。',
-    category: 'AI企業',
+    category: 'AI産業',
     source_url: 'https://openai.com',
     source_name: 'OpenAI',
     thumbnail_url: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=640&q=80',
@@ -43,7 +43,7 @@ export const dummyArticles: Article[] = [
     title_ja: 'Google DeepMind、タンパク質構造予測AI「AlphaFold 3」を医療向けに商用化',
     summary_ja:
       'Google DeepMindはAlphaFold 3の商用APIを製薬企業向けに提供開始しました。新薬開発の初期段階で候補分子とタンパク質の相互作用予測が可能になり、創薬期間を大幅に短縮できると期待されています。',
-    category: '研究・技術',
+    category: 'AI技術',
     source_url: 'https://venturebeat.com',
     source_name: 'VentureBeat',
     thumbnail_url: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=640&q=80',
@@ -55,7 +55,7 @@ export const dummyArticles: Article[] = [
     title_ja: 'NVIDIAのBlackwell GPUが品薄 — AI需要急増でデータセンター向け供給に遅れ',
     summary_ja:
       'NVIDIAの最新GPU「Blackwell」アーキテクチャの需要が供給を大幅に上回っており、主要クラウドプロバイダーへの納期が数カ月遅延しています。AI学習需要の急増が半導体供給チェーン全体に圧力をかけています。',
-    category: '半導体',
+    category: 'AI産業',
     source_url: 'https://theverge.com',
     source_name: 'The Verge',
     thumbnail_url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=640&q=80',
@@ -67,7 +67,7 @@ export const dummyArticles: Article[] = [
     title_ja: 'Cursor、AIコードエディタ市場でGitHub Copilotを抜き首位に — 月間ユーザー100万人超',
     summary_ja:
       'AIコードエディタ「Cursor」が月間アクティブユーザー100万人を突破し、GitHub Copilotを抜いてシェア首位に立ったと報じられています。エージェント型コーディング機能の使いやすさが開発者に支持されています。',
-    category: '新ツール',
+    category: 'AI技術',
     source_url: 'https://techcrunch.com',
     source_name: 'TechCrunch',
     published_at: new Date(Date.now() - 1000 * 60 * 360).toISOString(),

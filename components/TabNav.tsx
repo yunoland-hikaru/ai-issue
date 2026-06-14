@@ -2,7 +2,7 @@
 
 import { useLang } from '@/contexts/LangContext';
 
-const TAB_KEYS = ['top', 'news', 'tools', 'companies', 'policy', 'favorites'] as const;
+const TAB_KEYS = ['top', 'industry', 'tech', 'policy'] as const;
 type TabKey = typeof TAB_KEYS[number];
 
 interface TabNavProps {
