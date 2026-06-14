@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
       results.errors.push(`Translate failed: ${item.title} — ${String(e)}`);
     }
 
-    // DALL-E 3で画像生成 → Supabase Storageに永続保存
+    // gpt-image-1で画像生成 → Supabase Storageに永続保存
     let imageUrl: string | null = item.thumbnailUrl ?? null;
     if (generated.image_prompt) {
       const imageBuffer = await generateImage(generated.image_prompt);
@@ -86,6 +86,8 @@ export async function POST(req: NextRequest) {
         } else {
           results.errors.push(`Storage upload failed: ${uploadError.message}`);
         }
+      } else {
+        results.errors.push(`Image generation failed: ${item.title}`);
       }
     }
 

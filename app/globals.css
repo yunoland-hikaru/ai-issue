@@ -38,7 +38,7 @@
 body {
   background: var(--bg-page);
   color: var(--text-1);
-  font-family: 'Noto Sans JP', 'Noto Sans KR', system-ui, sans-serif;
+  font-family: var(--font-noto-jp), var(--font-noto-kr), system-ui, sans-serif;
   transition: background 0.2s, color 0.2s;
 }
 

@@ -1,7 +1,25 @@
 import type { Metadata } from 'next';
+import { Noto_Sans_JP, Noto_Sans_KR } from 'next/font/google';
 import { LangProvider } from '@/contexts/LangContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import './globals.css';
+
+// next/fontでセルフホスト（外部リクエストなし）。CJKフォントは大きいため preload は無効化。
+const notoSansJP = Noto_Sans_JP({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  display: 'swap',
+  preload: false,
+  variable: '--font-noto-jp',
+});
+
+const notoSansKR = Noto_Sans_KR({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  display: 'swap',
+  preload: false,
+  variable: '--font-noto-kr',
+});
 
 export const metadata: Metadata = {
   title: 'AI issue — AIニュースをわかりやすく',
@@ -21,13 +39,9 @@ const themeScript = `
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ja" className="h-full antialiased">
+    <html lang="ja" className={`h-full antialiased ${notoSansJP.variable} ${notoSansKR.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap"
-          rel="stylesheet"
-        />
       </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
