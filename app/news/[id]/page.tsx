@@ -135,11 +135,11 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
         {logo && (
           <div className="my-6 flex justify-center">
             <div
-              className="rounded-2xl px-10 py-6 flex items-center justify-center"
+              className="rounded-2xl px-12 py-8 flex items-center justify-center"
               style={{ background: 'var(--bg-card)', border: '1px solid var(--border-1)' }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={logo} alt="" className="h-14 w-14 object-contain" />
+              <img src={logo} alt="" className="h-16 w-16 sm:h-20 sm:w-20 object-contain" />
             </div>
           </div>
         )}
