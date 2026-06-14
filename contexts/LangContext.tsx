@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useSyncExternalStore } from 'react';
+import { createContext, useContext, useState } from 'react';
 import type { Language } from '@/types';
 import ja from '@/messages/ja';
 import ko from '@/messages/ko';
@@ -8,7 +8,6 @@ import en from '@/messages/en';
 import type { Messages } from '@/messages/ja';
 
 const MESSAGES: Record<Language, Messages> = { ja, ko, en };
-const LANGS: Language[] = ['ja', 'ko', 'en'];
 
 interface LangContextValue {
   lang: Language;
@@ -22,49 +21,28 @@ const LangContext = createContext<LangContextValue>({
   t: ja,
 });
 
-// アクセス国（ブラウザ言語）から既定言語を決定: 韓国→ko / 日本→ja / それ以外→en。
-// 手動で切り替えた場合は localStorage の選択を優先する。
-function detectLang(): Language {
-  try {
-    const saved = localStorage.getItem('lang');
-    if (saved && (LANGS as string[]).includes(saved)) return saved as Language;
-  } catch { /* ignore */ }
-  const pref = (navigator.languages?.[0] || navigator.language || '').toLowerCase();
-  if (pref.startsWith('ko')) return 'ko';
-  if (pref.startsWith('ja')) return 'ja';
-  return 'en';
-}
+/**
+ * 初期言語はサーバ(layout)が「Cookie優先 → IP国 → en」で決め、initialLangで渡す。
+ * SSRと初回描画が一致するためチラつきなし。切替時はCookieに保存しサーバが次回も反映。
+ */
+export function LangProvider({
+  initialLang,
+  children,
+}: {
+  initialLang: Language;
+  children: React.ReactNode;
+}) {
+  const [lang, setLangState] = useState<Language>(initialLang);
 
-// 外部ストア（useSyncExternalStoreで購読）。effect内setStateを避ける。
-let currentLang: Language = 'ja';
-let detected = false;
-const listeners = new Set<() => void>();
-const emit = () => listeners.forEach((l) => l());
-
-function subscribe(cb: () => void) {
-  listeners.add(cb);
-  // 初回購読時（ハイドレーション後）にアクセス国/保存値を確定する。
-  if (!detected) {
-    detected = true;
-    const next = detectLang();
-    if (next !== currentLang) { currentLang = next; emit(); }
+  function setLang(next: Language) {
+    setLangState(next);
+    try {
+      document.cookie = `lang=${next}; path=/; max-age=31536000; samesite=lax`;
+    } catch { /* ignore */ }
   }
-  return () => listeners.delete(cb);
-}
-
-function setLangStore(next: Language) {
-  detected = true;
-  currentLang = next;
-  try { localStorage.setItem('lang', next); } catch { /* ignore */ }
-  emit();
-}
-
-export function LangProvider({ children }: { children: React.ReactNode }) {
-  // SSRと初回クライアント描画は 'ja' で一致させ、購読後に確定言語へ切り替える。
-  const lang = useSyncExternalStore(subscribe, () => currentLang, () => 'ja' as Language);
 
   return (
-    <LangContext.Provider value={{ lang, setLang: setLangStore, t: MESSAGES[lang] }}>
+    <LangContext.Provider value={{ lang, setLang, t: MESSAGES[lang] }}>
       {children}
     </LangContext.Provider>
   );

@@ -1,9 +1,19 @@
 import type { Metadata, Viewport } from 'next';
+import { cookies, headers } from 'next/headers';
 import { Noto_Sans_JP, Noto_Sans_KR, Montserrat } from 'next/font/google';
 import { LangProvider } from '@/contexts/LangContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import Footer from '@/components/Footer';
+import type { Language } from '@/types';
 import './globals.css';
+
+// 既定言語: Cookie(手動選択)優先 → アクセス国(VercelのIPジオ) → それ以外は英語。
+function pickLang(cookieLang: string | undefined, country: string | null): Language {
+  if (cookieLang === 'ja' || cookieLang === 'ko' || cookieLang === 'en') return cookieLang;
+  if (country === 'KR') return 'ko';
+  if (country === 'JP') return 'ja';
+  return 'en';
+}
 
 // Google AdSense クライアントID
 const ADSENSE_CLIENT = 'ca-pub-8382620748313839';
@@ -76,9 +86,12 @@ const themeScript = `
 })();
 `;
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const [cookieStore, headerStore] = await Promise.all([cookies(), headers()]);
+  const initialLang = pickLang(cookieStore.get('lang')?.value, headerStore.get('x-vercel-ip-country'));
+
   return (
-    <html lang="ja" className={`h-full antialiased ${notoSansJP.variable} ${notoSansKR.variable} ${montserrat.variable}`}>
+    <html lang={initialLang} className={`h-full antialiased ${notoSansJP.variable} ${notoSansKR.variable} ${montserrat.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         {/* Google AdSense ローダー（SSRのheadに実体の<script>を出す。crawlerが検出できる形）。 */}
@@ -90,7 +103,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
-          <LangProvider>
+          <LangProvider initialLang={initialLang}>
             {children}
             <Footer />
           </LangProvider>
