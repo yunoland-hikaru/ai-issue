@@ -3,6 +3,7 @@ import { fetchRssFeed, RSS_SOURCES } from '@/lib/rss';
 import { generateArticle, translateArticle } from '@/lib/claude';
 import type { GeneratedArticle, ArticleTranslation } from '@/lib/claude';
 import { generateImage } from '@/lib/openai';
+import { searchStockImage } from '@/lib/stock';
 import { getServiceClient } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -68,29 +69,39 @@ export async function POST(req: NextRequest) {
       results.errors.push(`Translate failed: ${item.title} — ${String(e)}`);
     }
 
-    // gpt-image-1で画像生成 → Supabase Storageに永続保存
-    // 著作権対策: RSS元画像（第三者著作物）はフォールバックに使わない。
-    // 生成失敗時は image_url = null（画像なし）とする。
+    // 画像: ① 無料ストック(Pexels)を優先 → ② 無ければgpt-image-1で生成
+    // どちらもライセンス上問題なし。RSS元画像（第三者著作物）は使わない。
     let imageUrl: string | null = null;
-    if (generated.image_prompt) {
-      const imageBuffer = await generateImage(generated.image_prompt);
-      if (imageBuffer) {
-        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.png`;
-        const { error: uploadError } = await supabase.storage
-          .from('article-images')
-          .upload(fileName, imageBuffer, { contentType: 'image/png', upsert: false });
+    let imageBuffer: Buffer | null = null;
+    let contentType = 'image/png';
+    let ext = 'png';
 
-        if (!uploadError) {
-          const { data: urlData } = supabase.storage
-            .from('article-images')
-            .getPublicUrl(fileName);
-          imageUrl = urlData.publicUrl;
-        } else {
-          results.errors.push(`Storage upload failed: ${uploadError.message}`);
-        }
-      } else {
-        results.errors.push(`Image generation failed: ${item.title}`);
+    if (generated.image_keywords) {
+      const stock = await searchStockImage(generated.image_keywords);
+      if (stock) {
+        imageBuffer = stock;
+        contentType = 'image/jpeg';
+        ext = 'jpg';
       }
+    }
+    if (!imageBuffer && generated.image_prompt) {
+      imageBuffer = await generateImage(generated.image_prompt);
+    }
+
+    if (imageBuffer) {
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from('article-images')
+        .upload(fileName, imageBuffer, { contentType, upsert: false });
+
+      if (!uploadError) {
+        const { data: urlData } = supabase.storage.from('article-images').getPublicUrl(fileName);
+        imageUrl = urlData.publicUrl;
+      } else {
+        results.errors.push(`Storage upload failed: ${uploadError.message}`);
+      }
+    } else if (generated.image_keywords || generated.image_prompt) {
+      results.errors.push(`Image unavailable (stock + AI both failed): ${item.title}`);
     }
 
     const { error } = await supabase.from('articles').insert({

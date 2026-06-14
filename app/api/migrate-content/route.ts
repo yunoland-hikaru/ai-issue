@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServiceClient } from '@/lib/supabase';
 import { generateArticle, translateArticle } from '@/lib/claude';
 import { generateImage } from '@/lib/openai';
+import { searchStockImage } from '@/lib/stock';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -26,16 +27,30 @@ export async function POST() {
       // タイトル＋既存要約を原文として、本文・要約・画像プロンプト・カテゴリを生成
       const generated = await generateArticle(article.title_ja, article.summary_ja ?? article.title_ja);
 
-      // gpt-image-1で画像生成 → Supabase Storageに永続保存（既存画像がなければ）
-      // 著作権対策: RSS元画像はフォールバックに使わない。
+      // 画像: 既存がなければ ① 無料ストック → ② AI生成 でSupabase Storageに永続保存
       let imageUrl: string | null = article.image_url ?? null;
-      if (!article.image_url && generated.image_prompt) {
-        const imageBuffer = await generateImage(generated.image_prompt);
+      if (!article.image_url) {
+        let imageBuffer: Buffer | null = null;
+        let contentType = 'image/png';
+        let ext = 'png';
+
+        if (generated.image_keywords) {
+          const stock = await searchStockImage(generated.image_keywords);
+          if (stock) {
+            imageBuffer = stock;
+            contentType = 'image/jpeg';
+            ext = 'jpg';
+          }
+        }
+        if (!imageBuffer && generated.image_prompt) {
+          imageBuffer = await generateImage(generated.image_prompt);
+        }
+
         if (imageBuffer) {
-          const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.png`;
+          const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
           const { error: uploadError } = await supabase.storage
             .from('article-images')
-            .upload(fileName, imageBuffer, { contentType: 'image/png', upsert: false });
+            .upload(fileName, imageBuffer, { contentType, upsert: false });
 
           if (!uploadError) {
             const { data: urlData } = supabase.storage.from('article-images').getPublicUrl(fileName);

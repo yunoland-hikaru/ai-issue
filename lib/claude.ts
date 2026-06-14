@@ -17,6 +17,7 @@ export interface GeneratedArticle {
   title_ja: string;
   content_ja: string;
   summary_ja: string;
+  image_keywords: string | null;
   image_prompt: string | null;
   video_url: string | null;
   category: string;
@@ -46,6 +47,9 @@ export async function generateArticle(title: string, content: string): Promise<G
   - リードなし、本文から直接開始
   - 原文リンクは含めない
 - summary_ja: 記事本文を3〜4文で要約（カード表示用、HTMLタグなしのプレーンテキスト）
+- image_keywords: 無料ストック写真検索用の一般的な英語キーワード（2〜3語）
+  - 記事テーマを表す一般語（例: "artificial intelligence", "data center", "semiconductor chip"）
+  - 実在の企業名・人名・ブランド名は使わない
 - image_prompt: content_jaの内容をもとに生成する画像のプロンプト（英語）
   - 記事の主題を象徴的・概念的に表現した抽象イラスト
   - 実在の人物・顔・著名人は描かない
@@ -61,6 +65,7 @@ JSON形式のみで返してください（他のテキスト不要）：
   "title_ja": "日本語のタイトル",
   "content_ja": "<p>段落1</p><p>段落2</p>...",
   "summary_ja": "3〜4文のプレーンテキスト要約",
+  "image_keywords": "english stock photo keywords",
   "image_prompt": "English prompt: abstract conceptual editorial illustration of the topic, no real people, no logos, no text",
   "video_url": null,
   "category": "AI産業 / 新ツール / 研究・技術 / 規制・政策 / 半導体 / AI企業 のいずれか1つ"
@@ -74,6 +79,7 @@ JSON形式のみで返してください（他のテキスト不要）：
     title_ja: '',
     content_ja: '',
     summary_ja: '',
+    image_keywords: null,
     image_prompt: null,
     video_url: null,
     category: 'AI産業',
