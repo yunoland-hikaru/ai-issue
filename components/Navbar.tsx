@@ -145,13 +145,13 @@ export default function Navbar() {
             <SearchBox />
           </div>
 
-          {/* Newsletter CTA — 常時表示 */}
-          {newsletterCta}
-
           {/* Desktop icons */}
           <div className="hidden sm:flex items-center gap-4">
             {iconButtons}
           </div>
+
+          {/* Newsletter CTA — 常時表示（最右） */}
+          {newsletterCta}
 
           {/* Hamburger button (mobile only) */}
           <button
