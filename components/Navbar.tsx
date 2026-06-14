@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import { useLang } from '@/contexts/LangContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import Logo from './Logo';
@@ -105,23 +106,43 @@ export default function Navbar() {
     </>
   );
 
+  // ニュースレター登録CTA。全ページの上部に常時表示（ダーク/ライト切替の左隣）。
+  const newsletterCta = (
+    <Link
+      href="/newsletter"
+      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold shrink-0 transition-opacity hover:opacity-90"
+      style={{ background: 'var(--accent)', color: '#fff' }}
+      aria-label={t.sections.newsletter}
+    >
+      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <path d="m3 7 9 6 9-6" />
+      </svg>
+      <span className="hidden sm:inline">{t.sections.newsletter}</span>
+    </Link>
+  );
+
   return (
     <nav className="sticky top-0 z-50 border-b" style={{ background: 'var(--bg-nav)', borderColor: 'var(--border-1)' }}>
       <div className="max-w-6xl mx-auto px-4 h-14 sm:h-[72px] flex items-center justify-between">
         <Logo size="lg" />
 
-        {/* Desktop icons */}
-        <div className="hidden sm:flex items-center gap-4">
-          {iconButtons}
-        </div>
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Newsletter CTA — 常時表示 */}
+          {newsletterCta}
 
-        {/* Hamburger button (mobile only) */}
-        <button
-          className="sm:hidden transition-colors p-1"
-          style={{ color: 'var(--text-3)' }}
-          onClick={() => setMenuOpen((v) => !v)}
-          aria-label="メニュー"
-        >
+          {/* Desktop icons */}
+          <div className="hidden sm:flex items-center gap-4">
+            {iconButtons}
+          </div>
+
+          {/* Hamburger button (mobile only) */}
+          <button
+            className="sm:hidden transition-colors p-1"
+            style={{ color: 'var(--text-3)' }}
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label="メニュー"
+          >
           {menuOpen ? (
             <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path d="M18 6 6 18M6 6l12 12" />
@@ -131,7 +152,8 @@ export default function Navbar() {
               <path d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           )}
-        </button>
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
