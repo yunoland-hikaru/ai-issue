@@ -38,11 +38,11 @@ export default function NewsCard({ article, lang = 'ja' }: NewsCardProps) {
             <span>{formatRelativeTime(article.created_at)}</span>
           </div>
         </div>
-        {(article.image_url ?? article.thumbnail_url) && (
+        {article.image_url && (
           <div className="shrink-0 w-16 h-14 sm:w-20 sm:h-16 rounded-lg overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={article.image_url ?? article.thumbnail_url}
+              src={article.image_url}
               alt=""
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />

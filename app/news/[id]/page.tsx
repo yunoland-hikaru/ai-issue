@@ -168,10 +168,10 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                       onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--input-bg)'; }}
                       onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                     >
-                      {(rel.image_url ?? rel.thumbnail_url) && (
+                      {rel.image_url && (
                         <div className="shrink-0 w-16 h-14 rounded-lg overflow-hidden">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={rel.image_url ?? rel.thumbnail_url} alt="" className="w-full h-full object-cover" />
+                          <img src={rel.image_url} alt="" className="w-full h-full object-cover" />
                         </div>
                       )}
                       <div className="flex-1 min-w-0">

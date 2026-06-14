@@ -4,6 +4,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // Returns raw image bytes so the caller can persist to permanent storage.
 // gpt-image-1 returns base64 (no URL). 1536x1024 is the closest 16:9 landscape size.
+// quality 'medium' でコスト約1/4（high比）に抑える。
 export async function generateImage(prompt: string): Promise<Buffer | null> {
   try {
     const response = await openai.images.generate({
@@ -11,7 +12,7 @@ export async function generateImage(prompt: string): Promise<Buffer | null> {
       prompt,
       n: 1,
       size: '1536x1024',
-      quality: 'high',
+      quality: 'medium',
     });
 
     const b64 = response.data?.[0]?.b64_json;

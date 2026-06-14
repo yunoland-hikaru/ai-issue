@@ -69,7 +69,9 @@ export async function POST(req: NextRequest) {
     }
 
     // gpt-image-1で画像生成 → Supabase Storageに永続保存
-    let imageUrl: string | null = item.thumbnailUrl ?? null;
+    // 著作権対策: RSS元画像（第三者著作物）はフォールバックに使わない。
+    // 生成失敗時は image_url = null（画像なし）とする。
+    let imageUrl: string | null = null;
     if (generated.image_prompt) {
       const imageBuffer = await generateImage(generated.image_prompt);
       if (imageBuffer) {

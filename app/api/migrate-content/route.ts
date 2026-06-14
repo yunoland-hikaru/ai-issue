@@ -26,8 +26,9 @@ export async function POST() {
       // タイトル＋既存要約を原文として、本文・要約・画像プロンプト・カテゴリを生成
       const generated = await generateArticle(article.title_ja, article.summary_ja ?? article.title_ja);
 
-      // DALL-E 3で画像生成 → Supabase Storageに永続保存（既存画像がなければ）
-      let imageUrl: string | null = article.image_url ?? article.thumbnail_url ?? null;
+      // gpt-image-1で画像生成 → Supabase Storageに永続保存（既存画像がなければ）
+      // 著作権対策: RSS元画像はフォールバックに使わない。
+      let imageUrl: string | null = article.image_url ?? null;
       if (!article.image_url && generated.image_prompt) {
         const imageBuffer = await generateImage(generated.image_prompt);
         if (imageBuffer) {

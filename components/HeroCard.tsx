@@ -12,7 +12,7 @@ export default function HeroCard({ article, lang = 'ja' }: HeroCardProps) {
   const style = CATEGORY_STYLES[article.category] ?? CATEGORY_STYLES['AI産業'];
   const title = (lang === 'ko' ? article.title_ko : lang === 'en' ? article.title_en : null) ?? article.title_ja;
   const summary = (lang === 'ko' ? article.summary_ko : lang === 'en' ? article.summary_en : null) ?? article.summary_ja;
-  const image = article.image_url ?? article.thumbnail_url;
+  const image = article.image_url;
 
   return (
     <Link href={`/news/${article.id}`}>
