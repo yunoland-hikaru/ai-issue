@@ -20,7 +20,7 @@ export default function TopDateBar() {
   }, []);
 
   return (
-    <div className="border-b" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-1)' }}>
+    <div className="sticky top-0 z-50 border-b" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-1)' }}>
       <div
         className="max-w-6xl mx-auto px-4 h-8 flex items-center justify-end text-xs"
         style={{ color: 'var(--text-4)' }}

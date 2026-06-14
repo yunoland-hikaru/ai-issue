@@ -19,7 +19,6 @@ export default function Navbar() {
   const { lang, setLang, t } = useLang();
   const { theme, toggleTheme } = useTheme();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -123,8 +122,8 @@ export default function Navbar() {
   // モバイル用の検索アイコン（タップでオーバーレイ）。デスクトップはインラインのSearchBox。
   const mobileSearchButton = (
     <button
-      onClick={() => { setSearchOpen(true); setMenuOpen(false); }}
-      className="transition-colors"
+      onClick={() => setSearchOpen(true)}
+      className="transition-colors sm:hidden"
       style={{ color: 'var(--text-3)' }}
       aria-label={t.nav.search}
     >
@@ -135,54 +134,26 @@ export default function Navbar() {
   );
 
   return (
-    <nav className="sticky top-0 z-50 border-b" style={{ background: 'var(--bg-nav)', borderColor: 'var(--border-1)' }}>
-      <div className="max-w-6xl mx-auto px-4 h-14 sm:h-[72px] flex items-center justify-between">
+    <nav className="sticky top-8 z-40 border-b" style={{ background: 'var(--bg-nav)', borderColor: 'var(--border-1)' }}>
+      <div className="max-w-6xl mx-auto px-4 h-14 sm:h-[72px] flex items-center justify-between gap-2">
         <Logo size="lg" />
 
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Inline search (desktop) */}
+        <div className="flex items-center gap-3 sm:gap-3">
+          {/* Search: inline box on desktop, icon→overlay on mobile */}
           <div className="hidden sm:block">
             <SearchBox />
           </div>
+          {mobileSearchButton}
 
-          {/* Desktop icons */}
-          <div className="hidden sm:flex items-center gap-4">
+          {/* Theme / language / login — 全デバイスで常時表示 */}
+          <div className="flex items-center gap-3 sm:gap-4">
             {iconButtons}
           </div>
 
           {/* Newsletter CTA — 常時表示（最右） */}
           {newsletterCta}
-
-          {/* Hamburger button (mobile only) */}
-          <button
-            className="sm:hidden transition-colors p-1"
-            style={{ color: 'var(--text-3)' }}
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label="メニュー"
-          >
-          {menuOpen ? (
-            <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path d="M18 6 6 18M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          )}
-          </button>
         </div>
       </div>
-
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div
-          className="sm:hidden border-t px-4 py-3 flex items-center gap-5"
-          style={{ background: 'var(--bg-nav)', borderColor: 'var(--border-1)' }}
-        >
-          {mobileSearchButton}
-          {iconButtons}
-        </div>
-      )}
 
       {searchOpen && <SearchOverlay onClose={() => setSearchOpen(false)} />}
     </nav>
