@@ -13,6 +13,11 @@ const en: Messages = {
     tech: 'AI Technology',
     policy: 'Policy',
   },
+  search: {
+    placeholder: 'Search articles...',
+    noResults: 'No articles found',
+    hint: 'Type a keyword to search',
+  },
   sections: {
     latestNews: 'Latest News',
     todayTools: "Today's AI Tools",

@@ -8,12 +8,20 @@ export async function GET(req: NextRequest) {
   const category = searchParams.get('category');
   const sort = searchParams.get('sort');
   const limit = Number(searchParams.get('limit') ?? '20');
+  // 検索クエリ。PostgRESTのor()を壊す文字は除去。
+  const term = (searchParams.get('q') ?? '').replace(/[,()%*]/g, ' ').trim();
 
   const supabase = getClient();
 
   function base() {
     let q = supabase.from('articles').select('*').limit(limit);
     if (category) q = q.eq('category', category);
+    if (term) {
+      q = q.or(
+        `title_ja.ilike.%${term}%,title_ko.ilike.%${term}%,title_en.ilike.%${term}%,` +
+        `summary_ja.ilike.%${term}%,summary_ko.ilike.%${term}%,summary_en.ilike.%${term}%`,
+      );
+    }
     return q;
   }
 

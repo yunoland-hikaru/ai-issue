@@ -11,6 +11,11 @@ export interface Messages {
     tech: string;
     policy: string;
   };
+  search: {
+    placeholder: string;
+    noResults: string;
+    hint: string;
+  };
   sections: {
     latestNews: string;
     todayTools: string;
@@ -94,6 +99,11 @@ const ja: Messages = {
     industry: 'AI産業',
     tech: 'AI技術',
     policy: '規制・政策',
+  },
+  search: {
+    placeholder: '記事を検索...',
+    noResults: '記事が見つかりませんでした',
+    hint: 'キーワードを入力してください',
   },
   sections: {
     latestNews: '最新ニュース',

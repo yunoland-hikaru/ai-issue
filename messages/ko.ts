@@ -13,6 +13,11 @@ const ko: Messages = {
     tech: 'AI 기술',
     policy: '규제·정책',
   },
+  search: {
+    placeholder: '기사 검색...',
+    noResults: '검색 결과가 없습니다',
+    hint: '검색어를 입력하세요',
+  },
   sections: {
     latestNews: '최신 뉴스',
     todayTools: '오늘의 신규 AI 툴',

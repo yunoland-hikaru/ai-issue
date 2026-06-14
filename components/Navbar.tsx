@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useLang } from '@/contexts/LangContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import Logo from './Logo';
+import SearchOverlay from './SearchOverlay';
 import type { Language } from '@/types';
 
 const LANGUAGES: { code: Language; label: string; flag: string }[] = [
@@ -18,6 +19,7 @@ export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -51,7 +53,12 @@ export default function Navbar() {
         )}
       </button>
 
-      <button className="transition-colors" style={{ color: 'var(--text-3)' }} aria-label={t.nav.search}>
+      <button
+        onClick={() => { setSearchOpen(true); setMenuOpen(false); }}
+        className="transition-colors"
+        style={{ color: 'var(--text-3)' }}
+        aria-label={t.nav.search}
+      >
         <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
           <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
         </svg>
@@ -165,6 +172,8 @@ export default function Navbar() {
           {iconButtons}
         </div>
       )}
+
+      {searchOpen && <SearchOverlay onClose={() => setSearchOpen(false)} />}
     </nav>
   );
 }
