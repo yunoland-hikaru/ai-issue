@@ -2,9 +2,14 @@ import Link from 'next/link';
 
 type Size = 'md' | 'lg';
 
-const SIZES: Record<Size, { mark: number; word: string; gap: string }> = {
-  md: { mark: 30, word: 'text-2xl', gap: 'gap-2.5' },
-  lg: { mark: 46, word: 'text-[2.6rem]', gap: 'gap-3' },
+// mark/word はクラスで指定（レスポンシブ対応）。lg はモバイル控えめ→sm以上で大きく。
+const SIZES: Record<Size, { mark: string; word: string; gap: string }> = {
+  md: { mark: 'h-[30px] w-[30px]', word: 'text-2xl', gap: 'gap-2.5' },
+  lg: {
+    mark: 'h-8 w-8 sm:h-[46px] sm:w-[46px]',
+    word: 'text-2xl sm:text-[2.6rem]',
+    gap: 'gap-2 sm:gap-3',
+  },
 };
 
 /**
@@ -12,6 +17,7 @@ const SIZES: Record<Size, { mark: number; word: string; gap: string }> = {
  * マーク = favicon と同じ「円＋上向き三角」。テーマ追従（円=テキスト色, 三角=背景色）で
  * ライトは黒丸/白三角、ダークは白丸/黒三角になり常に視認できる。
  * ワードマーク = Montserrat(太め, テスラ風のジオメトリック)。色はライト=黒/ダーク=白。
+ * lg はモバイルでは小さめ、sm以上で大きく表示する。
  */
 export default function Logo({
   size = 'md',
@@ -26,13 +32,7 @@ export default function Logo({
 
   const inner = (
     <span className={`inline-flex items-center ${s.gap} ${className}`}>
-      <svg
-        width={s.mark}
-        height={s.mark}
-        viewBox="0 0 100 100"
-        aria-hidden
-        className="shrink-0"
-      >
+      <svg viewBox="0 0 100 100" aria-hidden className={`${s.mark} shrink-0`}>
         <circle cx="50" cy="50" r="50" fill="var(--text-1)" />
         <polygon points="50,27 73,69 27,69" fill="var(--bg-nav)" />
       </svg>

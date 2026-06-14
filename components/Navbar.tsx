@@ -113,7 +113,7 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 border-b" style={{ background: 'var(--bg-nav)', borderColor: 'var(--border-1)' }}>
-      <div className="max-w-6xl mx-auto px-4 h-[72px] flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-4 h-14 sm:h-[72px] flex items-center justify-between">
         <Logo size="lg" />
 
         {/* Desktop icons */}
