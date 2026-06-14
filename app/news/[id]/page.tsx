@@ -18,7 +18,7 @@ function extractYouTubeId(url: string): string | null {
 
 
 export default function ArticlePage({ params }: { params: Promise<{ id: string }> }) {
-  const { lang } = useLang();
+  const { lang, t } = useLang();
   const [article, setArticle] = useState<Article | null>(null);
   const [related, setRelated] = useState<Article[]>([]);
 
@@ -141,6 +141,38 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                 allowFullScreen
               />
             </div>
+          </div>
+        )}
+
+        {/* Source attribution — 原文へのリンク（出典明示） */}
+        {article.source_url && (
+          <div
+            className="mt-8 pt-5 text-sm flex flex-wrap items-center gap-x-1.5 gap-y-1"
+            style={{ borderTop: '1px solid var(--border-1)', color: 'var(--text-3)' }}
+          >
+            <span>{t.article.source}:</span>
+            <a
+              href={article.source_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 font-medium transition-colors hover:text-[var(--accent)]"
+              style={{ color: 'var(--text-2)' }}
+            >
+              {article.source_name || article.source_url}
+              <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M7 17 17 7M8 7h9v9" />
+              </svg>
+            </a>
+            <span>·</span>
+            <a
+              href={article.source_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium transition-colors hover:opacity-80"
+              style={{ color: 'var(--accent)' }}
+            >
+              {t.article.readOriginal}
+            </a>
           </div>
         )}
 
