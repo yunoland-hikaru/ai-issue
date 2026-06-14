@@ -1,9 +1,13 @@
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
 import { Noto_Sans_JP, Noto_Sans_KR, Montserrat } from 'next/font/google';
 import { LangProvider } from '@/contexts/LangContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import Footer from '@/components/Footer';
 import './globals.css';
+
+// Google AdSense クライアントID
+const ADSENSE_CLIENT = 'ca-pub-8382620748313839';
 
 // ロゴ用ワードマーク（テスラ風のジオメトリックな高級感）。
 const montserrat = Montserrat({
@@ -33,6 +37,7 @@ const notoSansKR = Noto_Sans_KR({
 export const metadata: Metadata = {
   title: 'AI issue — AIニュースをわかりやすく',
   description: '毎日溢れるAI関連ニュース・新着AIツール情報をAIが自動収集し、わかりやすく届けるメディアプラットフォーム',
+  other: { 'google-adsense-account': ADSENSE_CLIENT },
 };
 
 // 仕様デフォルトのライト背景にモバイルの上部バー色を合わせる
@@ -64,6 +69,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Footer />
           </LangProvider>
         </ThemeProvider>
+        {/* Google AdSense（自動広告）。承認後、自動でページ内に広告が配置される。 */}
+        <Script
+          id="google-adsense"
+          async
+          strategy="afterInteractive"
+          crossOrigin="anonymous"
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+        />
       </body>
     </html>
   );
