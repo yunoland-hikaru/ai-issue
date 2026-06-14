@@ -14,7 +14,7 @@ export const maxDuration = 60;
 
 /**
  * ニュースレターのダイジェスト配信。cron-job.org が毎日 JST 08:00(=UTC 23:00) に叩く。
- * 前日 JST 08:00〜22:00 の記事をまとめ、購読者全員に Resend で送信。
+ * 前日のJST 1日分(00:00〜翌00:00)の記事をまとめ、購読者全員に Resend で送信。
  * 認証: Authorization: Bearer <NEWSLETTER_SECRET>。
  */
 export async function POST(req: NextRequest) {
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
   const supabase = getServiceClient();
   const { startUTC, endUTC, label } = yesterdayJstWindow();
 
-  // 対象記事（前日 JST 08〜22時）
+  // 対象記事（前日のJST 1日分）
   const { data: articles, error: aErr } = await supabase
     .from('articles')
     .select('*')

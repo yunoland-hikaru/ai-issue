@@ -6,7 +6,7 @@ export const NEWSLETTER_FROM = process.env.NEWSLETTER_FROM || 'AI issue <news@ai
 
 /**
  * JST 08:00 に送る「前日分」の集計ウィンドウ。
- * 前日 JST 08:00〜22:00 に created_at がある記事を対象にする（UTCで返す）。
+ * 前日のJST 1日全体(00:00〜翌00:00) に created_at がある記事を対象にする（UTCで返す）。
  */
 export function yesterdayJstWindow(now: Date = new Date()) {
   const JST = 9 * 3600 * 1000;
@@ -15,9 +15,10 @@ export function yesterdayJstWindow(now: Date = new Date()) {
   const y = jstYesterday.getUTCFullYear();
   const m = jstYesterday.getUTCMonth();
   const d = jstYesterday.getUTCDate();
-  // JST時刻 → UTC は 9時間引く（Date.UTC が日付繰り上げを正規化）
-  const startUTC = new Date(Date.UTC(y, m, d, 8 - 9, 0, 0));
-  const endUTC = new Date(Date.UTC(y, m, d, 22 - 9, 0, 0));
+  // 前日のJST 1日まるごと(00:00〜翌00:00)。JST→UTCは9時間引く（Date.UTCが繰り上げ正規化）。
+  // 収集が24時間(2時間毎)になったため、深夜帯の記事も取りこぼさない。
+  const startUTC = new Date(Date.UTC(y, m, d, 0 - 9, 0, 0));
+  const endUTC = new Date(Date.UTC(y, m, d, 24 - 9, 0, 0));
   const label = `${y}年${m + 1}月${d}日`;
   return { startUTC, endUTC, label };
 }
