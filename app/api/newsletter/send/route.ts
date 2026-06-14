@@ -56,12 +56,20 @@ export async function POST(req: NextRequest) {
   const subject = `【AI issue】${label}のAIニュース ${articles.length}本`;
 
   // 購読者ごとにメール作成（配信停止リンクを個別化）。Resendの一括送信は100件/回まで。
-  const messages = emails.map((email) => ({
-    from: NEWSLETTER_FROM,
-    to: email,
-    subject,
-    html: buildDigestHtml(articles as Article[], label, unsubscribeUrl(email, secret)),
-  }));
+  // List-Unsubscribe（RFC 8058のワンクリック）でGmail等の信頼度・配信性を上げる。
+  const messages = emails.map((email) => {
+    const unsub = unsubscribeUrl(email, secret);
+    return {
+      from: NEWSLETTER_FROM,
+      to: email,
+      subject,
+      html: buildDigestHtml(articles as Article[], label, unsub),
+      headers: {
+        'List-Unsubscribe': `<${unsub}>`,
+        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+      },
+    };
+  });
 
   let sent = 0;
   const errors: string[] = [];
