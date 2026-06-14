@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next';
-import Script from 'next/script';
 import { Noto_Sans_JP, Noto_Sans_KR, Montserrat } from 'next/font/google';
 import { LangProvider } from '@/contexts/LangContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
@@ -61,6 +60,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ja" className={`h-full antialiased ${notoSansJP.variable} ${notoSansKR.variable} ${montserrat.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        {/* Google AdSense ローダー（SSRのheadに実体の<script>を出す。crawlerが検出できる形）。 */}
+        <script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+          crossOrigin="anonymous"
+        />
       </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
@@ -69,14 +74,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Footer />
           </LangProvider>
         </ThemeProvider>
-        {/* Google AdSense（自動広告）。承認後、自動でページ内に広告が配置される。 */}
-        <Script
-          id="google-adsense"
-          async
-          strategy="afterInteractive"
-          crossOrigin="anonymous"
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
-        />
       </body>
     </html>
   );
