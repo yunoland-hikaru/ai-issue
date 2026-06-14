@@ -46,11 +46,13 @@ export async function generateArticle(title: string, content: string): Promise<G
   - リードなし、本文から直接開始
   - 原文リンクは含めない
 - summary_ja: 記事本文を3〜4文で要約（カード表示用、HTMLタグなしのプレーンテキスト）
-- image_prompt: content_jaの内容をもとにDALL-E 3で生成する画像のプロンプト（英語）
-  - 記事内容を視覚的に表現
-  - テキストなし
-  - プロフェッショナルなニュース記事用
-  - 16:9比率
+- image_prompt: content_jaの内容をもとに生成する画像のプロンプト（英語）
+  - 記事の主題を象徴的・概念的に表現した抽象イラスト
+  - 実在の人物・顔・著名人は描かない
+  - 企業ロゴ・商標・ブランド名・製品の実物は含めない
+  - 暴力・武器・流血・残虐など不快な描写は避ける
+  - 文字・ロゴタイプ・透かしを含めない
+  - クリーンでプロフェッショナルなエディトリアル風、16:9横長
 - video_url: YouTubeや公式動画URLがあれば返す、なければnull
 - category: 下記から1つ選択
 
@@ -59,7 +61,7 @@ JSON形式のみで返してください（他のテキスト不要）：
   "title_ja": "日本語のタイトル",
   "content_ja": "<p>段落1</p><p>段落2</p>...",
   "summary_ja": "3〜4文のプレーンテキスト要約",
-  "image_prompt": "DALL-E 3 image prompt in English based on the article content",
+  "image_prompt": "English prompt: abstract conceptual editorial illustration of the topic, no real people, no logos, no text",
   "video_url": null,
   "category": "AI産業 / 新ツール / 研究・技術 / 規制・政策 / 半導体 / AI企業 のいずれか1つ"
 }`,
