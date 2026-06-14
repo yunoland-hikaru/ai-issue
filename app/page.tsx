@@ -7,20 +7,20 @@ import TabNav from '@/components/TabNav';
 import HeroCard from '@/components/HeroCard';
 import NewsCard from '@/components/NewsCard';
 import Sidebar from '@/components/Sidebar';
-import { dummyArticles, dummyTools, dummyKeywords } from '@/lib/dummy';
+import { dummyTools, dummyKeywords } from '@/lib/dummy';
 import { useLang } from '@/contexts/LangContext';
 import type { Article, Tool, TrendingKeyword } from '@/types';
 
 type TabKey = 'top' | 'news' | 'tools' | 'companies' | 'policy' | 'favorites';
 
-// ビルド時にインライン化される定数。Supabase未設定ならダミーデータで起動する。
+// ビルド時にインライン化される定数。Supabase未設定なら空状態（準備中）で起動する。
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const hasSupabase = !!supabaseUrl && !supabaseUrl.includes('your_');
 
 export default function Home() {
   const { lang } = useLang();
   const [activeTab, setActiveTab] = useState<TabKey>('top');
-  const [articles, setArticles] = useState<Article[] | null>(hasSupabase ? null : dummyArticles);
+  const [articles, setArticles] = useState<Article[] | null>(hasSupabase ? null : []);
   const [tools] = useState<Tool[]>(dummyTools);
   const [keywords, setKeywords] = useState<TrendingKeyword[]>(dummyKeywords);
 
@@ -29,12 +29,12 @@ export default function Home() {
 
     fetch('/api/articles?limit=20')
       .then((r) => r.json())
-      .then((data: Article[]) => setArticles(data.length > 0 ? data : dummyArticles))
-      .catch(() => setArticles(dummyArticles));
+      .then((data: Article[]) => setArticles(Array.isArray(data) ? data : []))
+      .catch(() => setArticles([]));
 
     fetch('/api/trending')
       .then((r) => r.json())
-      .then((data: TrendingKeyword[]) => { if (data.length > 0) setKeywords(data); })
+      .then((data: TrendingKeyword[]) => { if (Array.isArray(data) && data.length > 0) setKeywords(data); })
       .catch(() => {});
   }, []);
 
@@ -56,7 +56,15 @@ export default function Home() {
 
   const [hero, ...rest] = filtered;
 
+  const isEmpty = !isLoading && displayArticles.length === 0;
+
   const latestLabel = lang === 'ko' ? '최신 뉴스' : lang === 'en' ? 'Latest News' : '最新ニュース';
+  const preparing =
+    lang === 'ko'
+      ? { title: '준비 중입니다', desc: '기사를 준비하고 있습니다. 잠시만 기다려 주세요.' }
+      : lang === 'en'
+        ? { title: 'Coming soon', desc: 'Articles are being prepared. Please check back shortly.' }
+        : { title: 'ただいま準備中です', desc: '記事を準備しています。今しばらくお待ちください。' };
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-page)' }}>
@@ -84,6 +92,17 @@ export default function Home() {
             </div>
             <Sidebar tools={tools} keywords={keywords} />
           </>
+        ) : isEmpty ? (
+          <div className="flex-1 flex flex-col items-center justify-center text-center py-24 sm:py-32">
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5" style={{ background: 'var(--bg-card)' }}>
+              <svg width="28" height="28" fill="none" stroke="#7F77DD" strokeWidth="1.8" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v5l3 2" />
+              </svg>
+            </div>
+            <h2 className="text-lg sm:text-xl font-bold mb-2" style={{ color: 'var(--text-1)' }}>{preparing.title}</h2>
+            <p className="text-sm" style={{ color: 'var(--text-3)' }}>{preparing.desc}</p>
+          </div>
         ) : (
           <>
             <div className="flex-1 min-w-0 space-y-4 sm:space-y-5">
