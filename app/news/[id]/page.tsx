@@ -109,8 +109,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
           >
             {article.category}
           </span>
-          <span className="text-xs" style={{ color: 'var(--text-4)' }}>{formatRelativeTime(article.created_at ?? article.published_at)}</span>
-          <span className="text-xs" style={{ color: 'var(--text-4)' }}>· {article.source_name}</span>
+          <span className="text-xs" style={{ color: 'var(--text-4)' }}>{formatRelativeTime(article.created_at)}</span>
         </div>
 
         {/* Title */}
@@ -185,7 +184,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                         <p className="text-xs sm:text-sm font-medium line-clamp-2 leading-snug" style={{ color: 'var(--text-2)' }}>
                           {relTitle}
                         </p>
-                        <p className="text-xs mt-1" style={{ color: 'var(--text-4)' }}>{formatRelativeTime(rel.published_at)}</p>
+                        <p className="text-xs mt-1" style={{ color: 'var(--text-4)' }}>{formatRelativeTime(rel.created_at)}</p>
                       </div>
                     </article>
                   </Link>

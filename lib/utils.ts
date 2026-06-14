@@ -2,10 +2,8 @@ export function formatRelativeTime(dateStr: string): string {
   if (!dateStr) return 'たった今';
   // Append Z only when no timezone info present (+09:00, +0900, Z forms are all covered)
   const normalized = /Z$|[+\-]\d{2}:?\d{2}$/.test(dateStr.trim()) ? dateStr : dateStr + 'Z';
-  const diff = Date.now() - new Date(normalized).getTime();
-
-  // Future-dated articles (clock skew, RSS delays) → show "たった今"
-  if (diff < 0) return 'たった今';
+  // 生成直後の記事は「0分前」と出したいので、軽微なクロックスキューは0にクランプ
+  const diff = Math.max(0, Date.now() - new Date(normalized).getTime());
 
   const minutes = Math.floor(diff / 60000);
   if (minutes < 60) return `${minutes}分前`;

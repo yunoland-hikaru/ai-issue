@@ -35,9 +35,7 @@ export default function NewsCard({ article, lang = 'ja' }: NewsCardProps) {
             </p>
           )}
           <div className="flex items-center gap-2 mt-1.5 sm:mt-2 text-xs" style={{ color: 'var(--text-4)' }}>
-            <span>{article.source_name}</span>
-            <span>·</span>
-            <span>{formatRelativeTime(article.published_at)}</span>
+            <span>{formatRelativeTime(article.created_at)}</span>
           </div>
         </div>
         {(article.image_url ?? article.thumbnail_url) && (

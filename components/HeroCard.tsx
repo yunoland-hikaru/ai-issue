@@ -47,9 +47,7 @@ export default function HeroCard({ article, lang = 'ja' }: HeroCardProps) {
             </p>
           )}
           <div className="flex items-center gap-2 mt-3 sm:mt-4 text-xs" style={{ color: 'var(--text-4)' }}>
-            <span>{article.source_name}</span>
-            <span>·</span>
-            <span>{formatRelativeTime(article.published_at)}</span>
+            <span>{formatRelativeTime(article.created_at)}</span>
           </div>
         </div>
       </article>
