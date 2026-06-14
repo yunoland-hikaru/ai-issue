@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Noto_Sans_JP, Noto_Sans_KR } from 'next/font/google';
 import { LangProvider } from '@/contexts/LangContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
@@ -26,13 +26,18 @@ export const metadata: Metadata = {
   description: '毎日溢れるAI関連ニュース・新着AIツール情報をAIが自動収集し、わかりやすく届けるメディアプラットフォーム',
 };
 
-// Runs before React hydration to prevent flash of wrong theme
+// 仕様デフォルトのライト背景にモバイルの上部バー色を合わせる
+export const viewport: Viewport = {
+  themeColor: '#f5f5fa',
+};
+
+// Runs before React hydration to prevent flash of wrong theme.
+// 仕様: デフォルトは常にライト。OSの prefers-color-scheme には追従しない
+// （端末ごとに既定背景が変わる問題を防ぐ）。明示的に 'dark' を保存した場合のみダーク。
 const themeScript = `
 (function(){
   try{
-    var t=localStorage.getItem('theme');
-    if(!t) t=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
-    if(t==='dark') document.documentElement.classList.add('dark');
+    if(localStorage.getItem('theme')==='dark') document.documentElement.classList.add('dark');
   }catch(e){}
 })();
 `;
