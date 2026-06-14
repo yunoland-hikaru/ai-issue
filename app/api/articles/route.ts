@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   let query = supabase
     .from('articles')
     .select('*')
-    .order('published_at', { ascending: false })
+    .order('created_at', { ascending: false })
     .limit(limit);
 
   if (category) query = query.eq('category', category);

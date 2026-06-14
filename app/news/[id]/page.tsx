@@ -45,7 +45,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
             .select('*')
             .eq('category', found.category)
             .neq('id', found.id)
-            .order('published_at', { ascending: false })
+            .order('created_at', { ascending: false })
             .limit(3);
           if (rel && rel.length > 0) {
             setRelated(rel);
