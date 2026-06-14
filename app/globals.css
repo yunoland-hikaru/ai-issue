@@ -61,7 +61,7 @@ body {
 
 /* 法務ページ（プライバシー/利用規約）の本文スタイル */
 .legal { color: var(--text-2); font-size: 0.95rem; line-height: 1.85; }
-.legal h2 { color: var(--text-1); font-size: 1.05rem; font-weight: 700; margin: 1.9rem 0 0.6rem; }
+.legal h2 { color: var(--text-1); font-size: 1.05rem; font-weight: 700; margin: 1.9rem 0 0.6rem; padding-top: 1.4rem; border-top: 1px solid var(--border-2); }
 .legal p { margin: 0.6rem 0; }
 .legal ul { margin: 0.6rem 0; padding-left: 1.25rem; list-style: disc; }
 .legal li { margin: 0.3rem 0; }

@@ -43,9 +43,10 @@ export async function POST(req: NextRequest) {
     /* ignore */
   }
 
-  // 2) 管理者へメール転送（Resend）
+  // 2) 管理者へメール転送（Resend）。受信先は既定で contact@ai-issue.com
+  //    （ブランドアドレス。転送設定で管理者の実アドレスへ届く）。
   let mailed = false;
-  const to = process.env.CONTACT_TO;
+  const to = process.env.CONTACT_TO || 'contact@ai-issue.com';
   if (process.env.RESEND_API_KEY && to) {
     try {
       const resend = new Resend(process.env.RESEND_API_KEY);
