@@ -79,6 +79,15 @@ ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS consent boolean DEFAULT false;
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `PEXELS_API_KEY`（無料ストック）, `LOGODEV_TOKEN`（高解像度ロゴ、pk_...）。
 ※ PEXELS_API_KEY/LOGODEV_TOKEN が無くても動く（ストック→AI生成、logo.dev→DDGにフォールバック）。GEMINI_API_KEY は廃止済み。
 
+ニュースレター配信用: `RESEND_API_KEY`（Resend、ai-issue.com認証済み）, `NEWSLETTER_SECRET`（送信API認証＋配信停止トークン署名）, `NEWSLETTER_FROM`（既定 `AI issue <news@ai-issue.com>`）, `NEXT_PUBLIC_SITE_URL`（既定 `https://ai-issue.com`、メール内リンク用）。
+
+## ニュースレター（ダイジェスト配信）
+
+- 申込: `/newsletter`（詳細フォーム: 氏名*・会社・役職・連絡先・メール*＋個人情報同意*）→ `/api/subscribe` → subscribers。
+- 配信: `POST /api/newsletter/send`（`Authorization: Bearer NEWSLETTER_SECRET`）。cron-job.orgが毎日 **JST 08:00 = UTC 23:00**（cron `0 23 * * *`）に叩く。前日 JST 08〜22時の記事をまとめ、Resendで購読者全員へ。各記事は `SITE_URL/news/[id]` へリンク。記事0件ならスキップ。
+- 配信停止: メール内リンク → `GET /api/unsubscribe?e=&t=`（HMAC署名トークン検証 → subscribers削除）。
+- ウィンドウ計算とHTML生成は `lib/newsletter.ts`。
+
 ## コスト目安
 
 1記事 ≈ $0.11（Sonnet生成$0.032 + Haiku翻訳$0.013 + 画像: Pexels$0 or gpt-image medium$0.063）。
