@@ -33,6 +33,7 @@ export default function Footer() {
                 {f.navHeading}
               </h3>
               <Link href="/" className={linkCls} style={linkStyle} onMouseEnter={hover} onMouseLeave={unhover}>{f.home}</Link>
+              <Link href="/about" className={linkCls} style={linkStyle} onMouseEnter={hover} onMouseLeave={unhover}>{f.about}</Link>
               <Link href="/newsletter" className={linkCls} style={linkStyle} onMouseEnter={hover} onMouseLeave={unhover}>{f.newsletter}</Link>
             </nav>
 

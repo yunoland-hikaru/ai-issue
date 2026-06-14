@@ -61,6 +61,7 @@ const ko: Messages = {
     navHeading: '내비게이션',
     infoHeading: '인포메이션',
     home: '홈',
+    about: '서비스 소개',
     newsletter: '뉴스레터 신청',
     contact: '문의하기',
     privacy: '개인정보처리방침',

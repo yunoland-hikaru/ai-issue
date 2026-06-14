@@ -58,6 +58,7 @@ export interface Messages {
     navHeading: string;
     infoHeading: string;
     home: string;
+    about: string;
     newsletter: string;
     contact: string;
     privacy: string;
@@ -144,6 +145,7 @@ const ja: Messages = {
     navHeading: 'ナビゲーション',
     infoHeading: 'インフォメーション',
     home: 'ホーム',
+    about: 'サービス紹介',
     newsletter: 'ニュースレター申込',
     contact: 'お問い合わせ',
     privacy: 'プライバシーポリシー',

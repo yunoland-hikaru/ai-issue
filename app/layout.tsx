@@ -33,9 +33,30 @@ const notoSansKR = Noto_Sans_KR({
   variable: '--font-noto-kr',
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://ai-issue.com';
+const SITE_DESC = '毎日溢れるAI関連ニュース・新着AIツール情報をAIが自動収集し、わかりやすく届けるメディアプラットフォーム';
+
 export const metadata: Metadata = {
-  title: 'AI issue — AIニュースをわかりやすく',
-  description: '毎日溢れるAI関連ニュース・新着AIツール情報をAIが自動収集し、わかりやすく届けるメディアプラットフォーム',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'AI issue — AIニュースをわかりやすく',
+    template: '%s — AI issue',
+  },
+  description: SITE_DESC,
+  applicationName: 'AI issue',
+  alternates: { canonical: '/' },
+  openGraph: {
+    type: 'website',
+    siteName: 'AI issue',
+    url: SITE_URL,
+    title: 'AI issue — AIニュースをわかりやすく',
+    description: SITE_DESC,
+  },
+  twitter: {
+    card: 'summary',
+    title: 'AI issue — AIニュースをわかりやすく',
+    description: SITE_DESC,
+  },
   other: { 'google-adsense-account': ADSENSE_CLIENT },
 };
 

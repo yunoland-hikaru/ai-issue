@@ -61,6 +61,7 @@ const en: Messages = {
     navHeading: 'Navigation',
     infoHeading: 'Information',
     home: 'Home',
+    about: 'About',
     newsletter: 'Newsletter Signup',
     contact: 'Contact',
     privacy: 'Privacy Policy',
