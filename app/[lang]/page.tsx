@@ -31,7 +31,7 @@ async function getHomeData(): Promise<{ articles: Article[]; popular: Article[] 
   try {
     const sb = getClient();
     const [latest, pop] = await Promise.all([
-      sb.from('articles').select('*').order('created_at', { ascending: false }).limit(20),
+      sb.from('articles').select('*').order('created_at', { ascending: false }).limit(50),
       sb.from('articles')
         .select('*')
         .order('views', { ascending: false })

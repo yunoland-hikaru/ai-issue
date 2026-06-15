@@ -23,13 +23,23 @@ export default function HomeView({
   initialPopular: Article[];
 }) {
   const [activeTab, setActiveTab] = useState<TabKey>('top');
+  // 「最新ニュース」リストの表示件数。10件ずつ「もっと見る」で増やす。
+  const PAGE_SIZE = 10;
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const articles = initialArticles;
   const popular = initialPopular;
 
-  // ロゴクリックでホームに既にいる場合、タブを全て(top)に戻しスクロールも最上部へ。
+  // タブ切替時は表示件数を初期(10)に戻す。
+  function changeTab(tab: TabKey) {
+    setActiveTab(tab);
+    setVisibleCount(PAGE_SIZE);
+  }
+
+  // ロゴクリックでホームに既にいる場合、タブを全て(top)・表示件数を初期に戻しスクロールも最上部へ。
   useEffect(() => {
     function reset() {
       setActiveTab('top');
+      setVisibleCount(PAGE_SIZE);
       window.scrollTo({ top: 0 });
     }
     window.addEventListener(HOME_RESET_EVENT, reset);
@@ -50,7 +60,11 @@ export default function HomeView({
   const [hero, ...rest] = filtered;
   const isEmpty = articles.length === 0;
 
+  const visibleRest = rest.slice(0, visibleCount);
+  const hasMore = rest.length > visibleCount;
+
   const latestLabel = lang === 'ko' ? '최신 뉴스' : lang === 'en' ? 'Latest News' : '最新ニュース';
+  const moreLabel = lang === 'ko' ? '더보기' : lang === 'en' ? 'Show more' : 'もっと見る';
   const preparing =
     lang === 'ko'
       ? { title: '준비 중입니다', desc: '기사를 준비하고 있습니다. 잠시만 기다려 주세요.' }
@@ -61,7 +75,7 @@ export default function HomeView({
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-page)' }}>
       <Navbar />
-      <TabNav active={activeTab} onChange={setActiveTab} />
+      <TabNav active={activeTab} onChange={changeTab} />
 
       <main className="max-w-6xl mx-auto px-4 py-4 sm:py-6 flex flex-col lg:flex-row gap-5">
         {isEmpty ? (
@@ -82,7 +96,20 @@ export default function HomeView({
               <section className="rounded-2xl p-4" style={{ background: 'var(--bg-card)' }}>
                 <h2 className="text-base font-bold mb-3" style={{ color: 'var(--text-1)' }}>{latestLabel}</h2>
                 {rest.length > 0 ? (
-                  rest.map((a) => <NewsCard key={a.id} article={a} lang={lang} />)
+                  <>
+                    {visibleRest.map((a) => <NewsCard key={a.id} article={a} lang={lang} />)}
+                    {hasMore && (
+                      <button
+                        onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+                        className="mt-4 w-full py-2.5 rounded-lg text-sm font-semibold transition-colors"
+                        style={{ background: 'var(--input-bg)', color: 'var(--text-2)', border: '1px solid var(--border-1)' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-skeleton)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--input-bg)'; }}
+                      >
+                        {moreLabel}
+                      </button>
+                    )}
+                  </>
                 ) : (
                   <p className="text-base py-4 text-center" style={{ color: 'var(--text-4)' }}>記事がありません</p>
                 )}
