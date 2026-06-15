@@ -1,6 +1,11 @@
+'use client';
+
 import Link from 'next/link';
 
 type Size = 'md' | 'lg';
+
+// ロゴクリック時に発火。ホーム(/[lang])に既にいる場合でも HomeView がタブ=全て＋スクロール最上部にリセットするための合図。
+export const HOME_RESET_EVENT = 'ai-issue:home-reset';
 
 // mark/word はクラスで指定（レスポンシブ対応）。lg はモバイル控えめ→sm以上で大きく。
 const SIZES: Record<Size, { mark: string; word: string; gap: string }> = {
@@ -58,8 +63,16 @@ export default function Logo({
 
   if (href === null) return inner;
 
+  // ホームへ遷移 + スクロール最上部 + (ホームにいるなら)カテゴリタブを全てに戻す。
+  function handleClick() {
+    try {
+      window.dispatchEvent(new CustomEvent(HOME_RESET_EVENT));
+      window.scrollTo({ top: 0 });
+    } catch { /* SSR等は無視 */ }
+  }
+
   return (
-    <Link href={href} className="hover:opacity-80 transition-opacity" aria-label="AI issue">
+    <Link href={href} onClick={handleClick} className="hover:opacity-80 transition-opacity" aria-label="AI issue">
       {inner}
     </Link>
   );

@@ -61,6 +61,7 @@ const en: Messages = {
   },
   footer: {
     tagline: 'The AI world, every day at a glance.',
+    description: 'Check it at a glance in Japanese, Korean, and English.',
     navHeading: 'Navigation',
     infoHeading: 'Information',
     home: 'Home',

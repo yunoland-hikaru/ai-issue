@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import TabNav from '@/components/TabNav';
 import HeroCard from '@/components/HeroCard';
 import NewsCard from '@/components/NewsCard';
 import Sidebar from '@/components/Sidebar';
+import { HOME_RESET_EVENT } from '@/components/Logo';
 import type { Article, Language } from '@/types';
 
 type TabKey = 'top' | 'industry' | 'tech' | 'policy';
@@ -24,6 +25,16 @@ export default function HomeView({
   const [activeTab, setActiveTab] = useState<TabKey>('top');
   const articles = initialArticles;
   const popular = initialPopular;
+
+  // ロゴクリックでホームに既にいる場合、タブを全て(top)に戻しスクロールも最上部へ。
+  useEffect(() => {
+    function reset() {
+      setActiveTab('top');
+      window.scrollTo({ top: 0 });
+    }
+    window.addEventListener(HOME_RESET_EVENT, reset);
+    return () => window.removeEventListener(HOME_RESET_EVENT, reset);
+  }, []);
 
   const categoryFilter: Record<TabKey, string | null> = {
     top: null,

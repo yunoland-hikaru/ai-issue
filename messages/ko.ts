@@ -61,6 +61,7 @@ const ko: Messages = {
   },
   footer: {
     tagline: 'AI 세상, 매일 한눈에.',
+    description: '일본어·한국어·영어로 한눈에 확인하세요.',
     navHeading: '내비게이션',
     infoHeading: '인포메이션',
     home: '홈',

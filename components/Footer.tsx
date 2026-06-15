@@ -68,6 +68,9 @@ export default function Footer() {
             <p className="mt-4 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
               {f.tagline}
             </p>
+            <p className="mt-1.5 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              {f.description}
+            </p>
 
             {/* SNS（プレースホルダ。SOCIAL_LINKS の url を埋めると有効化） */}
             <div className="mt-5 flex items-center gap-2.5">

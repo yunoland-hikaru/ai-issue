@@ -58,6 +58,7 @@ export interface Messages {
   };
   footer: {
     tagline: string;
+    description: string;
     navHeading: string;
     infoHeading: string;
     home: string;
@@ -148,6 +149,7 @@ const ja: Messages = {
   },
   footer: {
     tagline: 'AIの世界を、毎日ひと目で。',
+    description: '日本語・韓国語・英語で、ひと目でチェック。',
     navHeading: 'ナビゲーション',
     infoHeading: 'インフォメーション',
     home: 'ホーム',
