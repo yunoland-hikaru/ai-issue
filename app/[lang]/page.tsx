@@ -7,8 +7,8 @@ import HomeView from './HomeView';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://ai-issue.com';
 
-// ニュースは頻繁に増えるため5分ごとに再生成（ISR）。SEOの静的配信と鮮度を両立。
-export const revalidate = 300;
+// ニュースは頻繁に増えるため1分ごとに再生成（ISR）。SEOの静的配信と鮮度を両立。
+export const revalidate = 60;
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params;
