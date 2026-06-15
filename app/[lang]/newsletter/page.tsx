@@ -5,11 +5,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import { useLang } from '@/contexts/LangContext';
+import { localePath } from '@/lib/i18n';
 
 export default function NewsletterPage() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const f = t.newsletterForm;
   const router = useRouter();
+  const home = localePath(lang, '/');
 
   const [form, setForm] = useState({ name: '', company: '', title: '', phone: '', email: '' });
   const [consent, setConsent] = useState(false);
@@ -67,7 +69,7 @@ export default function NewsletterPage() {
       <main className="max-w-2xl mx-auto px-4 py-6 sm:py-10">
         {/* Breadcrumb + title */}
         <nav className="text-sm mb-2" style={{ color: 'var(--text-4)' }}>
-          <Link href="/" className="hover:text-[var(--accent)] transition-colors">Home</Link>
+          <Link href={home} className="hover:text-[var(--accent)] transition-colors">Home</Link>
           <span className="mx-1.5">/</span>
           <span style={{ color: 'var(--accent)' }}>{f.breadcrumb}</span>
         </nav>
@@ -85,7 +87,7 @@ export default function NewsletterPage() {
             </div>
             <p className="text-base font-medium mb-6" style={{ color: 'var(--text-1)' }}>{message}</p>
             <Link
-              href="/"
+              href={home}
               className="inline-block py-2.5 px-6 rounded-lg text-base font-semibold transition-opacity hover:opacity-90"
               style={{ background: 'var(--accent)', color: '#fff' }}
             >
@@ -149,7 +151,7 @@ export default function NewsletterPage() {
               </button>
               <button
                 type="button"
-                onClick={() => router.push('/')}
+                onClick={() => router.push(home)}
                 className="flex-1 py-3 rounded-lg text-base font-semibold transition-colors"
                 style={{ background: 'var(--input-bg)', color: 'var(--text-2)', border: '1px solid var(--border-1)' }}
               >

@@ -1,42 +1,29 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import TabNav from '@/components/TabNav';
 import HeroCard from '@/components/HeroCard';
 import NewsCard from '@/components/NewsCard';
 import Sidebar from '@/components/Sidebar';
-import { useLang } from '@/contexts/LangContext';
-import type { Article } from '@/types';
+import type { Article, Language } from '@/types';
 
 type TabKey = 'top' | 'industry' | 'tech' | 'policy';
 
-// ビルド時にインライン化される定数。Supabase未設定なら空状態（準備中）で起動する。
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const hasSupabase = !!supabaseUrl && !supabaseUrl.includes('your_');
-
-export default function Home() {
-  const { lang } = useLang();
+// 記事データはサーバー(page.tsx)から initialArticles/initialPopular で受け取り初期HTMLに含める（SEO）。
+// タブ切替は取得済みの記事をクライアントで絞り込むだけ。
+export default function HomeView({
+  lang,
+  initialArticles,
+  initialPopular,
+}: {
+  lang: Language;
+  initialArticles: Article[];
+  initialPopular: Article[];
+}) {
   const [activeTab, setActiveTab] = useState<TabKey>('top');
-  const [articles, setArticles] = useState<Article[] | null>(hasSupabase ? null : []);
-  const [popular, setPopular] = useState<Article[]>([]);
-
-  useEffect(() => {
-    if (!hasSupabase) return;
-
-    fetch('/api/articles?limit=20')
-      .then((r) => r.json())
-      .then((data: Article[]) => setArticles(Array.isArray(data) ? data : []))
-      .catch(() => setArticles([]));
-
-    fetch('/api/articles?sort=popular&limit=10')
-      .then((r) => r.json())
-      .then((data: Article[]) => { if (Array.isArray(data)) setPopular(data); })
-      .catch(() => {});
-  }, []);
-
-  const isLoading = articles === null;
-  const displayArticles = articles ?? [];
+  const articles = initialArticles;
+  const popular = initialPopular;
 
   const categoryFilter: Record<TabKey, string | null> = {
     top: null,
@@ -46,12 +33,11 @@ export default function Home() {
   };
 
   const filtered = categoryFilter[activeTab]
-    ? displayArticles.filter((a) => a.category === categoryFilter[activeTab])
-    : displayArticles;
+    ? articles.filter((a) => a.category === categoryFilter[activeTab])
+    : articles;
 
   const [hero, ...rest] = filtered;
-
-  const isEmpty = !isLoading && displayArticles.length === 0;
+  const isEmpty = articles.length === 0;
 
   const latestLabel = lang === 'ko' ? '최신 뉴스' : lang === 'en' ? 'Latest News' : '最新ニュース';
   const preparing =
@@ -67,26 +53,7 @@ export default function Home() {
       <TabNav active={activeTab} onChange={setActiveTab} />
 
       <main className="max-w-6xl mx-auto px-4 py-4 sm:py-6 flex flex-col lg:flex-row gap-5">
-        {isLoading ? (
-          <>
-            <div className="flex-1 min-w-0 space-y-4 sm:space-y-5">
-              <div className="rounded-2xl h-52 sm:h-64 animate-pulse" style={{ background: 'var(--bg-card)' }} />
-              <div className="rounded-2xl p-4 space-y-4" style={{ background: 'var(--bg-card)' }}>
-                <div className="h-3 w-24 rounded animate-pulse" style={{ background: 'var(--bg-skeleton)' }} />
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="flex gap-3">
-                    <div className="rounded-lg w-20 h-16 shrink-0 animate-pulse" style={{ background: 'var(--bg-skeleton)' }} />
-                    <div className="flex-1 space-y-2 pt-1">
-                      <div className="h-3 rounded animate-pulse" style={{ background: 'var(--bg-skeleton)' }} />
-                      <div className="h-3 w-3/4 rounded animate-pulse" style={{ background: 'var(--bg-skeleton)' }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <Sidebar popular={popular} />
-          </>
-        ) : isEmpty ? (
+        {isEmpty ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center py-24 sm:py-32">
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5" style={{ background: 'var(--bg-card)' }}>
               <svg width="28" height="28" fill="none" stroke="var(--accent)" strokeWidth="1.8" viewBox="0 0 24 24">

@@ -6,6 +6,7 @@ import type { Article } from '@/types';
 import { useLang } from '@/contexts/LangContext';
 import { formatDateTime } from '@/lib/utils';
 import { companyNameFromLogoUrl } from '@/lib/logo';
+import { localePath } from '@/lib/i18n';
 
 export default function SearchOverlay({ onClose }: { onClose: () => void }) {
   const { t, lang } = useLang();
@@ -83,7 +84,7 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
             return (
               <Link
                 key={a.id}
-                href={`/news/${a.id}`}
+                href={localePath(lang, `/news/${a.id}`)}
                 onClick={onClose}
                 className="flex gap-3 px-4 py-3 border-b last:border-0 transition-colors hover:bg-[var(--input-bg)]"
                 style={{ borderColor: 'var(--border-2)' }}

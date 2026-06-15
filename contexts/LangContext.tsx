@@ -1,7 +1,9 @@
 'use client';
 
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import type { Language } from '@/types';
+import { LOCALES } from '@/lib/i18n';
 import ja from '@/messages/ja';
 import ko from '@/messages/ko';
 import en from '@/messages/en';
@@ -22,23 +24,31 @@ const LangContext = createContext<LangContextValue>({
 });
 
 /**
- * 初期言語はサーバ(layout)が「Cookie優先 → IP国 → en」で決め、initialLangで渡す。
- * SSRと初回描画が一致するためチラつきなし。切替時はCookieに保存しサーバが次回も反映。
+ * 言語はURLのロケール接頭辞(/ja /ko /en)が正本。layout がルートパラメータから lang を渡す。
+ * 切替時は同じパスのロケール部分を差し替えて遷移し、Cookieにも保存（ルート"/"再訪時に proxy が反映）。
  */
 export function LangProvider({
-  initialLang,
+  lang,
   children,
 }: {
-  initialLang: Language;
+  lang: Language;
   children: React.ReactNode;
 }) {
-  const [lang, setLangState] = useState<Language>(initialLang);
+  const router = useRouter();
+  const pathname = usePathname();
 
   function setLang(next: Language) {
-    setLangState(next);
     try {
       document.cookie = `lang=${next}; path=/; max-age=31536000; samesite=lax`;
     } catch { /* ignore */ }
+
+    const segments = (pathname || `/${lang}`).split('/');
+    if (LOCALES.includes(segments[1] as Language)) {
+      segments[1] = next;
+    } else {
+      segments.splice(1, 0, next);
+    }
+    router.push(segments.join('/') || `/${next}`);
   }
 
   return (

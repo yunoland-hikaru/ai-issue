@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Article } from '@/types';
 import { formatDateTime } from '@/lib/utils';
 import { companyNameFromLogoUrl } from '@/lib/logo';
+import { localePath } from '@/lib/i18n';
 
 interface HeroCardProps {
   article: Article;
@@ -15,7 +16,7 @@ export default function HeroCard({ article, lang = 'ja' }: HeroCardProps) {
   const company = companyNameFromLogoUrl(article.logo_url);
 
   return (
-    <Link href={`/news/${article.id}`}>
+    <Link href={localePath(lang, `/news/${article.id}`)}>
       <article className="relative rounded-2xl overflow-hidden group cursor-pointer" style={{ background: 'var(--bg-card)' }}>
         {image && (
           <div className="relative h-44 sm:h-56 md:h-64 overflow-hidden">

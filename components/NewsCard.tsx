@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Article } from '@/types';
 import { formatDateTime } from '@/lib/utils';
 import { companyNameFromLogoUrl } from '@/lib/logo';
+import { localePath } from '@/lib/i18n';
 
 interface NewsCardProps {
   article: Article;
@@ -14,7 +15,7 @@ export default function NewsCard({ article, lang = 'ja' }: NewsCardProps) {
   const company = companyNameFromLogoUrl(article.logo_url);
 
   return (
-    <Link href={`/news/${article.id}`}>
+    <Link href={localePath(lang, `/news/${article.id}`)}>
       <article className="flex gap-3 py-3 sm:py-4 border-b last:border-0 group cursor-pointer" style={{ borderColor: 'var(--border-2)' }}>
         <div className="flex-1 min-w-0">
           <h3

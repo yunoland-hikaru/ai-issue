@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import type { Article } from '@/types';
 import { useLang } from '@/contexts/LangContext';
+import { localePath } from '@/lib/i18n';
 
 interface MostPopularProps {
   articles: Article[];
@@ -26,7 +27,7 @@ export default function MostPopular({ articles }: MostPopularProps) {
             const top3 = i < 3;
             return (
               <li key={a.id}>
-                <Link href={`/news/${a.id}`} className="flex items-start gap-2.5 group">
+                <Link href={localePath(lang, `/news/${a.id}`)} className="flex items-start gap-2.5 group">
                   <span
                     className="shrink-0 flex items-center justify-center text-sm font-bold mt-0.5"
                     style={

@@ -5,11 +5,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import { useLang } from '@/contexts/LangContext';
+import { localePath } from '@/lib/i18n';
 
 export default function ContactPage() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const c = t.contactForm;
   const router = useRouter();
+  const home = localePath(lang, '/');
 
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
@@ -49,7 +51,7 @@ export default function ContactPage() {
       <Navbar />
       <main className="max-w-2xl mx-auto px-4 py-6 sm:py-10">
         <nav className="text-sm mb-2" style={{ color: 'var(--text-4)' }}>
-          <Link href="/" className="hover:text-[var(--accent)] transition-colors">Home</Link>
+          <Link href={home} className="hover:text-[var(--accent)] transition-colors">Home</Link>
           <span className="mx-1.5">/</span>
           <span style={{ color: 'var(--accent)' }}>{c.pageTitle}</span>
         </nav>
@@ -62,7 +64,7 @@ export default function ContactPage() {
               <svg width="24" height="24" fill="none" stroke="#fff" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg>
             </div>
             <p className="text-base font-medium mb-6" style={{ color: 'var(--text-1)' }}>{c.thanks}</p>
-            <Link href="/" className="inline-block py-2.5 px-6 rounded-lg text-base font-semibold transition-opacity hover:opacity-90" style={{ background: 'var(--accent)', color: '#fff' }}>Home</Link>
+            <Link href={home} className="inline-block py-2.5 px-6 rounded-lg text-base font-semibold transition-opacity hover:opacity-90" style={{ background: 'var(--accent)', color: '#fff' }}>Home</Link>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="rounded-2xl p-5 space-y-4" style={{ background: 'var(--bg-card)' }}>
@@ -92,7 +94,7 @@ export default function ContactPage() {
               </button>
               <button
                 type="button"
-                onClick={() => router.push('/')}
+                onClick={() => router.push(home)}
                 className="flex-1 py-3 rounded-lg text-base font-semibold transition-colors"
                 style={{ background: 'var(--input-bg)', color: 'var(--text-2)', border: '1px solid var(--border-1)' }}
               >

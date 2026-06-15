@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useLang } from '@/contexts/LangContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { localePath } from '@/lib/i18n';
 import Logo from './Logo';
 import SearchOverlay from './SearchOverlay';
 import SearchBox from './SearchBox';
@@ -106,7 +107,7 @@ export default function Navbar() {
   // ニュースレター登録CTA。全ページの上部に常時表示（ダーク/ライト切替の左隣）。
   const newsletterCta = (
     <Link
-      href="/newsletter"
+      href={localePath(lang, '/newsletter')}
       className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold shrink-0 transition-opacity hover:opacity-90"
       style={{ background: 'var(--accent)', color: '#fff' }}
       aria-label={t.sections.newsletter}
@@ -136,7 +137,7 @@ export default function Navbar() {
   return (
     <nav className="sticky top-8 z-40 border-b" style={{ background: 'var(--bg-nav)', borderColor: 'var(--border-1)' }}>
       <div className="max-w-6xl mx-auto px-4 h-14 sm:h-[72px] flex items-center justify-between gap-2">
-        <Logo size="lg" />
+        <Logo size="lg" href={localePath(lang, '/')} />
 
         <div className="flex items-center gap-3 sm:gap-3">
           {/* Search: inline box on desktop, icon→overlay on mobile */}

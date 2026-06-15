@@ -7,8 +7,8 @@ import { useLang } from '@/contexts/LangContext';
 import { CATEGORY_STYLES } from '@/lib/categoryStyles';
 import { formatDateTime } from '@/lib/utils';
 import { companyNameFromLogoUrl } from '@/lib/logo';
-import { dummyArticles } from '@/lib/dummy';
 import { getClient } from '@/lib/supabase';
+import { localePath } from '@/lib/i18n';
 import type { Article } from '@/types';
 
 function extractYouTubeId(url: string): string | null {
@@ -16,65 +16,39 @@ function extractYouTubeId(url: string): string | null {
   return m ? m[1] : null;
 }
 
-
-export default function ArticlePage({ params }: { params: Promise<{ id: string }> }) {
+// 記事本文は親(サーバーコンポーネント)から initialArticle で受け取り、初期HTMLに含める（SEO）。
+// 言語切替・閲覧数+1・関連記事の取得はクライアントで行う。
+export default function ArticleView({ initialArticle }: { initialArticle: Article }) {
   const { lang, t } = useLang();
-  const [article, setArticle] = useState<Article | null>(null);
+  const article = initialArticle;
   const [related, setRelated] = useState<Article[]>([]);
 
   useEffect(() => {
-    params.then(async ({ id }) => {
-      let found: Article | null = null;
+    const id = article.id;
 
+    // 閲覧数を+1（MOST POPULARランキング用、失敗は無視）
+    fetch('/api/view', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    }).catch(() => {});
+
+    // 同カテゴリの実記事のみ。無ければ関連記事セクションは出さない（ダミーは使わない）
+    (async () => {
       try {
-        const { data } = await getClient()
+        const { data: rel } = await getClient()
           .from('articles')
           .select('*')
-          .eq('id', id)
-          .maybeSingle();
-        if (data) found = data;
-      } catch { /* Supabase未設定 */ }
-
-      if (!found) {
-        found = dummyArticles.find((a) => a.id === id) ?? dummyArticles[0];
+          .eq('category', article.category)
+          .neq('id', id)
+          .order('created_at', { ascending: false })
+          .limit(3);
+        setRelated(rel ?? []);
+      } catch {
+        setRelated([]);
       }
-      setArticle(found);
-
-      // 閲覧数を+1（MOST POPULARランキング用、失敗は無視）
-      fetch('/api/view', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
-      }).catch(() => {});
-
-      if (found) {
-        try {
-          const { data: rel } = await getClient()
-            .from('articles')
-            .select('*')
-            .eq('category', found.category)
-            .neq('id', found.id)
-            .order('created_at', { ascending: false })
-            .limit(3);
-          if (rel && rel.length > 0) {
-            setRelated(rel);
-          } else {
-            setRelated(dummyArticles.filter((a) => a.category === found!.category && a.id !== found!.id).slice(0, 3));
-          }
-        } catch {
-          setRelated(dummyArticles.filter((a) => a.category === found!.category && a.id !== found!.id).slice(0, 3));
-        }
-      }
-    });
-  }, [params]);
-
-  if (!article) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-page)' }}>
-        <div className="w-6 h-6 rounded-full border-2 border-[var(--accent)] border-t-transparent animate-spin" />
-      </div>
-    );
-  }
+    })();
+  }, [article.id, article.category]);
 
   const style = CATEGORY_STYLES[article.category] ?? CATEGORY_STYLES['AI産業'];
   const title = (lang === 'ko' ? article.title_ko : lang === 'en' ? article.title_en : null) ?? article.title_ja;
@@ -83,7 +57,6 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
   const logo = article.logo_url ?? null;          // タイトル横バッジ: 企業ロゴ
   const company = companyNameFromLogoUrl(article.logo_url);
   const ytId = article.video_url ? extractYouTubeId(article.video_url) : null;
-
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-page)' }}>
@@ -185,7 +158,7 @@ export default function ArticlePage({ params }: { params: Promise<{ id: string }
                 const relStyle = CATEGORY_STYLES[rel.category] ?? CATEGORY_STYLES['AI産業'];
                 const relTitle = (lang === 'ko' ? rel.title_ko : lang === 'en' ? rel.title_en : null) ?? rel.title_ja;
                 return (
-                  <Link key={rel.id} href={`/news/${rel.id}`}>
+                  <Link key={rel.id} href={localePath(lang, `/news/${rel.id}`)}>
                     <article
                       className="flex gap-3 p-3 rounded-xl transition-colors cursor-pointer"
                       style={{ background: 'transparent' }}

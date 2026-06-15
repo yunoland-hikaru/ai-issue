@@ -1,20 +1,12 @@
 import type { Metadata, Viewport } from 'next';
-import { cookies, headers } from 'next/headers';
+import { notFound } from 'next/navigation';
 import { Noto_Sans_JP, Noto_Sans_KR, Montserrat } from 'next/font/google';
 import { LangProvider } from '@/contexts/LangContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import Footer from '@/components/Footer';
 import TopDateBar from '@/components/TopDateBar';
-import type { Language } from '@/types';
-import './globals.css';
-
-// 既定言語: Cookie(手動選択)優先 → アクセス国(VercelのIPジオ) → それ以外は英語。
-function pickLang(cookieLang: string | undefined, country: string | null): Language {
-  if (cookieLang === 'ja' || cookieLang === 'ko' || cookieLang === 'en') return cookieLang;
-  if (country === 'KR') return 'ko';
-  if (country === 'JP') return 'ja';
-  return 'en';
-}
+import { LOCALES, isLocale } from '@/lib/i18n';
+import '../globals.css';
 
 // Google AdSense クライアントID
 const ADSENSE_CLIENT = 'ca-pub-8382620748313839';
@@ -55,7 +47,6 @@ export const metadata: Metadata = {
   },
   description: SITE_DESC,
   applicationName: 'AI issue',
-  alternates: { canonical: '/' },
   openGraph: {
     type: 'website',
     siteName: 'AI issue',
@@ -76,9 +67,13 @@ export const viewport: Viewport = {
   themeColor: '#f5f5fa',
 };
 
+// 静的に生成する3ロケール。
+export function generateStaticParams() {
+  return LOCALES.map((lang) => ({ lang }));
+}
+
 // Runs before React hydration to prevent flash of wrong theme.
-// 仕様: デフォルトは常にライト。OSの prefers-color-scheme には追従しない
-// （端末ごとに既定背景が変わる問題を防ぐ）。明示的に 'dark' を保存した場合のみダーク。
+// 仕様: デフォルトは常にライト。OSの prefers-color-scheme には追従しない。
 const themeScript = `
 (function(){
   try{
@@ -87,12 +82,18 @@ const themeScript = `
 })();
 `;
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const [cookieStore, headerStore] = await Promise.all([cookies(), headers()]);
-  const initialLang = pickLang(cookieStore.get('lang')?.value, headerStore.get('x-vercel-ip-country'));
+export default async function RootLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
 
   return (
-    <html lang={initialLang} className={`h-full antialiased ${notoSansJP.variable} ${notoSansKR.variable} ${montserrat.variable}`}>
+    <html lang={lang} className={`h-full antialiased ${notoSansJP.variable} ${notoSansKR.variable} ${montserrat.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         {/* Google AdSense ローダー（SSRのheadに実体の<script>を出す。crawlerが検出できる形）。 */}
@@ -104,7 +105,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
-          <LangProvider initialLang={initialLang}>
+          <LangProvider lang={lang}>
             <TopDateBar />
             {children}
             <Footer />

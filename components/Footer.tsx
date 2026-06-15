@@ -3,9 +3,10 @@
 import Link from 'next/link';
 import Logo from './Logo';
 import { useLang } from '@/contexts/LangContext';
+import { localePath } from '@/lib/i18n';
 
 export default function Footer() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const f = t.footer;
   const year = new Date().getFullYear();
 
@@ -20,7 +21,7 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row sm:justify-between gap-8">
           {/* Brand */}
           <div className="max-w-xs">
-            <Logo size="md" tone="onDark" />
+            <Logo size="md" tone="onDark" href={localePath(lang, '/')} />
             <p className="mt-4 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
               {f.tagline}
             </p>
@@ -32,18 +33,18 @@ export default function Footer() {
               <h3 className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
                 {f.navHeading}
               </h3>
-              <Link href="/" className={linkCls} style={linkStyle} onMouseEnter={hover} onMouseLeave={unhover}>{f.home}</Link>
-              <Link href="/about" className={linkCls} style={linkStyle} onMouseEnter={hover} onMouseLeave={unhover}>{f.about}</Link>
-              <Link href="/newsletter" className={linkCls} style={linkStyle} onMouseEnter={hover} onMouseLeave={unhover}>{f.newsletter}</Link>
+              <Link href={localePath(lang, '/')} className={linkCls} style={linkStyle} onMouseEnter={hover} onMouseLeave={unhover}>{f.home}</Link>
+              <Link href={localePath(lang, '/about')} className={linkCls} style={linkStyle} onMouseEnter={hover} onMouseLeave={unhover}>{f.about}</Link>
+              <Link href={localePath(lang, '/newsletter')} className={linkCls} style={linkStyle} onMouseEnter={hover} onMouseLeave={unhover}>{f.newsletter}</Link>
             </nav>
 
             <nav className="flex flex-col gap-2.5">
               <h3 className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
                 {f.infoHeading}
               </h3>
-              <Link href="/contact" className={linkCls} style={linkStyle} onMouseEnter={hover} onMouseLeave={unhover}>{f.contact}</Link>
-              <Link href="/privacy" className={linkCls} style={linkStyle} onMouseEnter={hover} onMouseLeave={unhover}>{f.privacy}</Link>
-              <Link href="/terms" className={linkCls} style={linkStyle} onMouseEnter={hover} onMouseLeave={unhover}>{f.terms}</Link>
+              <Link href={localePath(lang, '/contact')} className={linkCls} style={linkStyle} onMouseEnter={hover} onMouseLeave={unhover}>{f.contact}</Link>
+              <Link href={localePath(lang, '/privacy')} className={linkCls} style={linkStyle} onMouseEnter={hover} onMouseLeave={unhover}>{f.privacy}</Link>
+              <Link href={localePath(lang, '/terms')} className={linkCls} style={linkStyle} onMouseEnter={hover} onMouseLeave={unhover}>{f.terms}</Link>
             </nav>
           </div>
         </div>

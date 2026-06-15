@@ -6,6 +6,7 @@ import type { Article } from '@/types';
 import { useLang } from '@/contexts/LangContext';
 import { formatDateTime } from '@/lib/utils';
 import { companyNameFromLogoUrl } from '@/lib/logo';
+import { localePath } from '@/lib/i18n';
 
 /** ナビバー内のインライン検索ボックス（虫眼鏡内蔵 + 入力直下に結果ドロップダウン）。デスクトップ向け。 */
 export default function SearchBox() {
@@ -86,7 +87,7 @@ export default function SearchBox() {
               return (
                 <Link
                   key={a.id}
-                  href={`/news/${a.id}`}
+                  href={localePath(lang, `/news/${a.id}`)}
                   onClick={() => { setOpen(false); setQuery(''); }}
                   className="flex gap-3 px-4 py-3 border-b last:border-0 transition-colors hover:bg-[var(--input-bg)]"
                   style={{ borderColor: 'var(--border-2)' }}
