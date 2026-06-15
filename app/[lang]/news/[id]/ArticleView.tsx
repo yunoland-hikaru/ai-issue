@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import { useLang } from '@/contexts/LangContext';
-import { CATEGORY_STYLES } from '@/lib/categoryStyles';
+import { CATEGORY_STYLES, categoryLabel } from '@/lib/categoryStyles';
 import { formatDateTime } from '@/lib/utils';
 import { companyNameFromLogoUrl } from '@/lib/logo';
 import { getClient } from '@/lib/supabase';
@@ -70,7 +70,7 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
             className="inline-block text-sm font-semibold px-3 py-1 rounded-full"
             style={{ background: style.bg, color: style.text }}
           >
-            {article.category}
+            {categoryLabel(article.category, lang)}
           </span>
           {logo && (
             <span className="inline-flex items-center gap-1.5 text-sm font-medium" style={{ color: 'var(--text-3)' }}>
@@ -176,7 +176,7 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
                           className="inline-block text-sm font-semibold px-2 py-0.5 rounded-full mb-1"
                           style={{ background: relStyle.bg, color: relStyle.text }}
                         >
-                          {rel.category}
+                          {categoryLabel(rel.category, lang)}
                         </span>
                         <p className="text-sm sm:text-base font-medium line-clamp-2 leading-snug" style={{ color: 'var(--text-2)' }}>
                           {relTitle}
