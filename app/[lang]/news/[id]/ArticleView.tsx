@@ -9,6 +9,7 @@ import { formatDateTime } from '@/lib/utils';
 import { companyNameFromLogoUrl } from '@/lib/logo';
 import { getClient } from '@/lib/supabase';
 import { localePath } from '@/lib/i18n';
+import ArticleComments from './ArticleComments';
 import type { Article } from '@/types';
 
 function extractYouTubeId(url: string): string | null {
@@ -190,6 +191,9 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
             </div>
           </section>
         )}
+
+        {/* Comments */}
+        <ArticleComments articleId={article.id} />
       </main>
     </div>
   );
