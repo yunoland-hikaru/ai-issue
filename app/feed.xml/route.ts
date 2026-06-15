@@ -1,10 +1,12 @@
 import { getClient } from '@/lib/supabase';
-import type { Article } from '@/types';
+import { isLocale } from '@/lib/i18n';
+import type { Article, Language } from '@/types';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://ai-issue.com';
 
-// 外部の「RSS→X自動投稿」サービス(dlvr.it / Make / Zapier等)向けの英語フィード。
-// X投稿は英語運用のため、英語タイトル・要約・/en/news リンクで出力。
+// 外部の「RSS→SNS自動投稿」サービス(dlvr.it / Make / Zapier等)向けフィード。
+// 言語は ?lang=ja|ko|en で指定（既定 en）。X=英語、Threads=別言語…など用途別に使い分け可能。
+// タイトル末尾にハッシュタグを付与 → dlvr.it等が投稿本文(=title)に含める。
 export const dynamic = 'force-dynamic';
 
 function cdata(s: string): string {
@@ -17,7 +19,27 @@ function rfc822(dateStr: string): string {
   return Number.isNaN(d.getTime()) ? new Date().toUTCString() : d.toUTCString();
 }
 
-export async function GET() {
+function pick(a: Article, lang: Language, field: 'title' | 'summary'): string {
+  if (field === 'title') {
+    return ((lang === 'ko' ? a.title_ko : lang === 'en' ? a.title_en : null) ?? a.title_ja) || '';
+  }
+  return ((lang === 'ko' ? a.summary_ko : lang === 'en' ? a.summary_en : null) ?? a.summary_ja) || '';
+}
+
+function tagsOf(a: Article, lang: Language): string[] {
+  return (lang === 'ko' ? a.hashtags_ko : lang === 'en' ? a.hashtags_en : null) ?? a.hashtags_ja ?? [];
+}
+
+const CHANNEL_DESC: Record<Language, string> = {
+  ja: 'AI関連ニュースを毎日わかりやすく。',
+  ko: 'AI 관련 뉴스를 매일 알기 쉽게.',
+  en: 'Daily AI news, made easy to read.',
+};
+
+export async function GET(req: Request) {
+  const langParam = new URL(req.url).searchParams.get('lang');
+  const lang: Language = isLocale(langParam) ? langParam : 'en';
+
   let articles: Article[] = [];
   try {
     const { data } = await getClient()
@@ -30,12 +52,11 @@ export async function GET() {
 
   const items = articles
     .map((a) => {
-      const url = `${SITE}/en/news/${a.id}`;
-      // 英語ハッシュタグをタイトル末尾に付与 → dlvr.it がツイート本文(=title)に含める。最大4個。
-      const tags = (a.hashtags_en ?? []).slice(0, 4).map((h) => `#${h}`).join(' ');
-      const baseTitle = a.title_en || a.title_ja || '';
+      const url = `${SITE}/${lang}/news/${a.id}`;
+      const tags = tagsOf(a, lang).slice(0, 4).map((h) => `#${h}`).join(' ');
+      const baseTitle = pick(a, lang, 'title');
       const title = tags ? `${baseTitle} ${tags}` : baseTitle;
-      const desc = a.summary_en || a.summary_ja || '';
+      const desc = pick(a, lang, 'summary');
       const img = a.image_url
         ? `<enclosure url="${a.image_url.replace(/&/g, '&amp;')}" type="image/jpeg" />`
         : '';
@@ -54,9 +75,9 @@ export async function GET() {
 <rss version="2.0">
   <channel>
     <title>AI issue</title>
-    <link>${SITE}/en</link>
-    <description>Daily AI news, made easy to read.</description>
-    <language>en</language>
+    <link>${SITE}/${lang}</link>
+    <description>${cdata(CHANNEL_DESC[lang])}</description>
+    <language>${lang}</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
 ${items}
   </channel>
