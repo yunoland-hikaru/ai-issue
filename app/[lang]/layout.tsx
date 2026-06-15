@@ -130,6 +130,32 @@ gtag('config', '${GA_ID}');`,
     })(window, document, "clarity", "script", "${CLARITY_ID}");`,
           }}
         />
+        {/* Organization + WebSite 構造化データ（全ページ共通、ブランド/サイト認識用） */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@graph': [
+                {
+                  '@type': 'Organization',
+                  '@id': `${SITE_URL}/#org`,
+                  name: 'AI issue',
+                  url: SITE_URL,
+                  logo: `${SITE_URL}/email-logo.png`,
+                },
+                {
+                  '@type': 'WebSite',
+                  '@id': `${SITE_URL}/#website`,
+                  name: 'AI issue',
+                  url: SITE_URL,
+                  inLanguage: ['ja', 'ko', 'en'],
+                  publisher: { '@id': `${SITE_URL}/#org` },
+                },
+              ],
+            }),
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>

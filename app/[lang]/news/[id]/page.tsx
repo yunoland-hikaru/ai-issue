@@ -95,12 +95,31 @@ export default async function ArticlePage({ params }: { params: Promise<{ lang: 
       }
     : null;
 
+  // パンくず構造化データ（ホーム → 記事）。
+  const homeLabel = lang === 'ko' ? '홈' : lang === 'en' ? 'Home' : 'ホーム';
+  const breadcrumb = article
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: homeLabel, item: `${SITE_URL}/${lang}` },
+          { '@type': 'ListItem', position: 2, name: pickByLang(article, lang, 'title'), item: `${SITE_URL}/${lang}/news/${id}` },
+        ],
+      }
+    : null;
+
   return (
     <>
       {jsonLd && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      {breadcrumb && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
         />
       )}
       <ArticleView initialArticle={resolved} />
