@@ -11,7 +11,7 @@ import { LOCALES, isLocale } from '@/lib/i18n';
 import '../globals.css';
 
 // Google AdSense クライアントID
-const ADSENSE_CLIENT = 'ca-pub-8382620748313839';
+const ADSENSE_CLIENT = 'ca-pub-7459697768495563';
 
 // Google Analytics 測定ID（gtag.js）
 const GA_ID = 'G-M1KGG91194';
