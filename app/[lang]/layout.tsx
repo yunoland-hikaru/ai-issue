@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { Noto_Sans_JP, Noto_Sans_KR, Montserrat } from 'next/font/google';
 import { LangProvider } from '@/contexts/LangContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { AuthProvider } from '@/contexts/AuthContext';
 import Footer from '@/components/Footer';
 import TopDateBar from '@/components/TopDateBar';
 import { LOCALES, isLocale } from '@/lib/i18n';
@@ -106,9 +107,11 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
           <LangProvider lang={lang}>
-            <TopDateBar />
-            {children}
-            <Footer />
+            <AuthProvider>
+              <TopDateBar />
+              {children}
+              <Footer />
+            </AuthProvider>
           </LangProvider>
         </ThemeProvider>
       </body>

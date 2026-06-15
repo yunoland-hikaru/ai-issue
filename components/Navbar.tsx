@@ -6,6 +6,7 @@ import { useLang } from '@/contexts/LangContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { localePath } from '@/lib/i18n';
 import Logo from './Logo';
+import UserMenu from './UserMenu';
 import SearchOverlay from './SearchOverlay';
 import SearchBox from './SearchBox';
 import type { Language } from '@/types';
@@ -96,11 +97,7 @@ export default function Navbar() {
         )}
       </div>
 
-      <button className="transition-colors" style={{ color: 'var(--text-3)' }} aria-label={t.nav.user}>
-        <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-        </svg>
-      </button>
+      <UserMenu />
     </>
   );
 
