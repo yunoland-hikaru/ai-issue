@@ -64,7 +64,8 @@ export function buildDigestHtml(articles: Article[], dateLabel: string, unsubUrl
     <tr><td align="center">
       <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;padding:28px 24px">
         <tr><td style="padding-bottom:6px">
-          <span style="font-size:24px;font-weight:800;letter-spacing:-0.02em;color:#111827">AI&nbsp;issue</span>
+          <img src="${SITE_URL}/email-logo.png" alt="" width="28" height="28" style="vertical-align:middle;display:inline-block;border:0" />
+          <span style="font-size:24px;font-weight:800;letter-spacing:-0.02em;color:#111827;vertical-align:middle;margin-left:8px">AI&nbsp;issue</span>
         </td></tr>
         <tr><td style="padding-bottom:20px;border-bottom:1px solid rgba(0,0,0,0.08)">
           <span style="color:#6b7280;font-size:13px">${esc(dateLabel)} のAIニュース</span>
