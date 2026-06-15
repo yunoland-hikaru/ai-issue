@@ -36,7 +36,7 @@ export default function UserMenu() {
   // 未ログイン: ログインページへのリンク
   if (!user) {
     return (
-      <Link href={localePath(lang, '/login')} className="transition-colors" style={{ color: 'var(--text-3)' }} aria-label={l.login}>
+      <Link href={localePath(lang, '/login')} className="transition-colors p-1 -m-1" style={{ color: 'var(--text-3)' }} aria-label={l.login}>
         {userIcon}
       </Link>
     );

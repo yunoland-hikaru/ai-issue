@@ -99,11 +99,17 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
           </p>
         )}
 
-        {/* Hero image (top) — stock / AI photo */}
+        {/* Hero image (top) — stock / AI photo。16:9にクロップしてLCP最適化 */}
         {heroImage && (
-          <div className="rounded-2xl overflow-hidden mb-6">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={heroImage} alt="" className="w-full h-auto" />
+          <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden mb-6">
+            <Image
+              src={heroImage}
+              alt=""
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 768px"
+              className="object-cover"
+            />
           </div>
         )}
 
