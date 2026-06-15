@@ -82,15 +82,16 @@ export default function HomeView({
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-page)' }}>
       <Navbar />
-      <TabNav active={activeTab} onChange={changeTab} />
 
-      {/* サービス説明（ホーム上部・常時表示）。OAuth/検索向けに目的を明記。 */}
+      {/* サービス説明（カテゴリの上・常時表示）。OAuth/検索向けに目的を明記。 */}
       <p
-        className="max-w-6xl mx-auto px-4 pt-4 text-sm leading-relaxed"
+        className="max-w-6xl mx-auto px-4 py-3 text-sm leading-relaxed"
         style={{ color: 'var(--text-3)' }}
       >
         {intro}
       </p>
+
+      <TabNav active={activeTab} onChange={changeTab} />
 
       <main className="max-w-6xl mx-auto px-4 py-4 sm:py-6 flex flex-col lg:flex-row gap-5">
         {isEmpty ? (
