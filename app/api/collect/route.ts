@@ -90,16 +90,19 @@ export async function POST(req: NextRequest) {
     }
 
     if (imageBuffer) {
-      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-      const { error: uploadError } = await supabase.storage
-        .from('article-images')
-        .upload(fileName, imageBuffer, { contentType, upsert: false });
+      // 一時的な Bad Request 等に備えて最大2回リトライ（毎回ファイル名を変える）。
+      for (let attempt = 1; attempt <= 2 && !imageUrl; attempt++) {
+        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const { error: uploadError } = await supabase.storage
+          .from('article-images')
+          .upload(fileName, imageBuffer, { contentType, upsert: false });
 
-      if (!uploadError) {
-        const { data: urlData } = supabase.storage.from('article-images').getPublicUrl(fileName);
-        imageUrl = urlData.publicUrl;
-      } else {
-        results.errors.push(`Storage upload failed: ${uploadError.message}`);
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage.from('article-images').getPublicUrl(fileName);
+          imageUrl = urlData.publicUrl;
+        } else if (attempt === 2) {
+          results.errors.push(`Storage upload failed (x2): ${uploadError.message} (${imageBuffer.length}B, ${contentType})`);
+        }
       }
     } else if (generated.image_keywords || generated.image_prompt) {
       results.errors.push(`Image unavailable (stock + AI both failed): ${item.title}`);
