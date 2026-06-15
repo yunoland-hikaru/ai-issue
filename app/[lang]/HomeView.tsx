@@ -94,7 +94,7 @@ export default function HomeView({
             <div className="flex-1 min-w-0 space-y-4 sm:space-y-5">
               {hero && <HeroCard article={hero} lang={lang} />}
               <section className="rounded-2xl p-4" style={{ background: 'var(--bg-card)' }}>
-                <h2 className="text-base font-extrabold tracking-widest mb-3" style={{ color: 'var(--accent)' }}>{latestLabel}</h2>
+                <h2 className="text-base font-extrabold tracking-widest mb-3" style={{ color: 'var(--text-1)' }}>{latestLabel}</h2>
                 {rest.length > 0 ? (
                   <>
                     {visibleRest.map((a) => <NewsCard key={a.id} article={a} lang={lang} />)}
