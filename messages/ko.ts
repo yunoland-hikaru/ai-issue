@@ -22,7 +22,7 @@ const ko: Messages = {
     latestNews: '최신 뉴스',
     todayTools: '오늘의 신규 AI 툴',
     trending: '인기 키워드',
-    mostPopular: '인기 기사',
+    mostPopular: '많이 본 기사',
     newsletter: '뉴스레터',
     newsletterDesc: 'AI 최신 정보를 이메일로 받아보세요',
     newsletterPlaceholder: 'your@email.com',
