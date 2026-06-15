@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getClient } from '@/lib/supabase';
 import { isLocale } from '@/lib/i18n';
-import type { Article } from '@/types';
+import type { Article, Language } from '@/types';
 import HomeView from './HomeView';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://ai-issue.com';
@@ -10,12 +10,32 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://ai-issue.com';
 // ニュースは頻繁に増えるため1分ごとに再生成（ISR）。SEOの静的配信と鮮度を両立。
 export const revalidate = 60;
 
+// ホームの言語別タイトル/説明（共有カード・OG・検索用）。
+const HOME_META: Record<Language, { title: string; description: string }> = {
+  ja: {
+    title: 'AI issue — AIニュースをわかりやすく',
+    description: '毎日溢れるAI関連ニュース・新着AIツール情報をAIが自動収集し、わかりやすく届けるメディアです。',
+  },
+  ko: {
+    title: 'AI issue — AI 세상, 매일 한 눈에',
+    description: '매일 쏟아지는 AI 관련 뉴스와 신규 AI 툴 정보를 AI가 자동 수집해 알기 쉽게 전달합니다.',
+  },
+  en: {
+    title: 'AI issue — AI news, every day at a glance',
+    description: 'AI-curated daily news and new AI tools, made easy to read.',
+  },
+};
+
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params;
   if (!isLocale(lang)) return {};
+  const m = HOME_META[lang];
+  const url = `${SITE_URL}/${lang}`;
   return {
+    title: { absolute: m.title },
+    description: m.description,
     alternates: {
-      canonical: `${SITE_URL}/${lang}`,
+      canonical: url,
       languages: {
         ja: `${SITE_URL}/ja`,
         ko: `${SITE_URL}/ko`,
@@ -23,6 +43,8 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
         'x-default': `${SITE_URL}/en`,
       },
     },
+    openGraph: { title: m.title, description: m.description, url },
+    twitter: { title: m.title, description: m.description },
   };
 }
 

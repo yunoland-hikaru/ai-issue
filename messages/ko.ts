@@ -60,8 +60,8 @@ const ko: Messages = {
     errorMsg: '오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
   },
   footer: {
-    tagline: 'AI 세상, 매일 한눈에.',
-    description: '일본어·한국어·영어로 한눈에 확인하세요.',
+    tagline: 'AI 세상, 매일 한 눈에.',
+    description: '일본어·한국어·영어로 한 눈에 확인하세요.',
     navHeading: '내비게이션',
     infoHeading: '인포메이션',
     home: '홈',
