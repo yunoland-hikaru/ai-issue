@@ -6,7 +6,6 @@ import { generateImage } from '@/lib/openai';
 import { searchStockImage } from '@/lib/stock';
 import { logoUrlForDomain } from '@/lib/logo';
 import { getServiceClient } from '@/lib/supabase';
-import { postArticleToX } from '@/lib/x';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -31,7 +30,7 @@ export async function POST(req: NextRequest) {
   }
 
   const supabase = getServiceClient();
-  const results = { source: source.name, collected: 0, skipped: 0, tweeted: 0, errors: [] as string[] };
+  const results = { source: source.name, collected: 0, skipped: 0, errors: [] as string[] };
 
   let items;
   try {
@@ -106,9 +105,8 @@ export async function POST(req: NextRequest) {
       results.errors.push(`Image unavailable (stock + AI both failed): ${item.title}`);
     }
 
-    const titleJa = generated.title_ja || item.title;
-    const { data: inserted, error } = await supabase.from('articles').insert({
-      title_ja: titleJa,
+    const { error } = await supabase.from('articles').insert({
+      title_ja: generated.title_ja || item.title,
       title_ko: translation?.title_ko || null,
       title_en: translation?.title_en || null,
       content_ja: generated.content_ja,
@@ -125,24 +123,12 @@ export async function POST(req: NextRequest) {
       logo_url: logoUrlForDomain(generated.company_domain),
       video_url: generated.video_url ?? null,
       published_at: item.publishedAt,
-    }).select('id').single();
+    });
 
-    if (error || !inserted) {
-      results.errors.push(`DB insert failed: ${item.url} — ${error?.message ?? 'no id'}`);
+    if (error) {
+      results.errors.push(`DB insert failed: ${item.url} — ${error.message}`);
     } else {
       results.collected++;
-
-      // X(Twitter)へ自動ポスト（英語タイトル+ハッシュタグ+リンク）。best-effort: 失敗しても収集は継続。
-      const tweet = await postArticleToX({
-        id: inserted.id,
-        category: generated.category,
-        titleEn: translation?.title_en,
-        titleJa,
-      });
-      if (tweet.ok) results.tweeted++;
-      else if (tweet.error && tweet.error !== 'X not configured') {
-        results.errors.push(`X post failed: ${item.url} — ${tweet.error}`);
-      }
     }
   }
 
