@@ -65,10 +65,10 @@ export default function HomeView({
 
   const intro =
     lang === 'ko'
-      ? 'AI issue는 AI 관련 뉴스와 신규 AI 툴을 자동으로 수집·요약해 매일 알기 쉽게 전달하는 뉴스 미디어입니다.'
+      ? 'AI issue는 AI 관련 뉴스를 매일 알기 쉽게 전달하는 뉴스 미디어입니다.'
       : lang === 'en'
-        ? 'AI issue is a news media that automatically collects and summarizes AI news and new AI tools, delivered clearly every day.'
-        : 'AI issue は、AI関連ニュースや新着AIツールを自動で収集・要約し、毎日わかりやすくお届けするニュースメディアです。';
+        ? 'AI issue is a news media that delivers AI news in an easy-to-read way, every day.'
+        : 'AI issue は、AI関連ニュースを毎日わかりやすくお届けするニュースメディアです。';
 
   const latestLabel = lang === 'ko' ? '최신 뉴스' : lang === 'en' ? 'Latest News' : '最新ニュース';
   const moreLabel = lang === 'ko' ? '더보기' : lang === 'en' ? 'Show more' : 'もっと見る';
