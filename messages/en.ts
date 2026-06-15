@@ -22,7 +22,7 @@ const en: Messages = {
     latestNews: 'Latest News',
     todayTools: "Today's AI Tools",
     trending: 'Trending Keywords',
-    mostPopular: 'MOST POPULAR',
+    mostPopular: 'Most Popular',
     newsletter: 'Newsletter',
     newsletterDesc: 'Get the latest AI news in your inbox',
     newsletterPlaceholder: 'your@email.com',
