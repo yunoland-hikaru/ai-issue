@@ -7,9 +7,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { localePath } from '@/lib/i18n';
 
 const LABELS = {
-  ja: { login: 'ログイン', logout: 'ログアウト', account: 'アカウント' },
-  ko: { login: '로그인', logout: '로그아웃', account: '계정' },
-  en: { login: 'Log in', logout: 'Log out', account: 'Account' },
+  ja: { login: 'ログイン', logout: 'ログアウト', account: 'アカウント', mypage: 'マイページ' },
+  ko: { login: '로그인', logout: '로그아웃', account: '계정', mypage: '마이페이지' },
+  en: { login: 'Log in', logout: 'Log out', account: 'Account', mypage: 'My Page' },
 };
 
 const userIcon = (
@@ -65,6 +65,16 @@ export default function UserMenu() {
             <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-1)' }}>{name}</p>
             <p className="text-xs truncate" style={{ color: 'var(--text-4)' }}>{user.email}</p>
           </div>
+          <Link
+            href={localePath(lang, '/account')}
+            onClick={() => setOpen(false)}
+            className="block w-full text-left px-4 py-2.5 text-sm transition-colors"
+            style={{ color: 'var(--text-2)', background: 'transparent' }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--input-bg)'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; }}
+          >
+            {l.mypage}
+          </Link>
           <button
             onClick={() => { setOpen(false); signOut(); }}
             className="w-full text-left px-4 py-2.5 text-sm transition-colors"
