@@ -54,6 +54,7 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
   const style = CATEGORY_STYLES[article.category] ?? CATEGORY_STYLES['AI産業'];
   const title = (lang === 'ko' ? article.title_ko : lang === 'en' ? article.title_en : null) ?? article.title_ja;
   const content = (lang === 'ko' ? article.content_ko : lang === 'en' ? article.content_en : null) ?? article.content_ja;
+  const summary = (lang === 'ko' ? article.summary_ko : lang === 'en' ? article.summary_en : null) ?? article.summary_ja;
   const heroImage = article.image_url ?? null;   // 上部ヒーロー: ストック/AI画像
   const logo = article.logo_url ?? null;          // タイトル横バッジ: 企業ロゴ
   const company = companyNameFromLogoUrl(article.logo_url);
@@ -84,7 +85,17 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
         </div>
 
         {/* Title */}
-        <h1 className="text-2xl sm:text-3xl font-bold leading-snug mb-6" style={{ color: 'var(--text-1)' }}>{title}</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold leading-snug mb-5" style={{ color: 'var(--text-1)' }}>{title}</h1>
+
+        {/* Lead / summary — ホームのカードと同じ要約をリード文として表示 */}
+        {summary && (
+          <p
+            className="text-base sm:text-lg leading-relaxed mb-6 pl-4"
+            style={{ color: 'var(--text-2)', borderLeft: '3px solid var(--accent)' }}
+          >
+            {summary}
+          </p>
+        )}
 
         {/* Hero image (top) — stock / AI photo */}
         {heroImage && (
