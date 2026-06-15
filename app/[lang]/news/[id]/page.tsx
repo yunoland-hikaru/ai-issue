@@ -31,7 +31,7 @@ function languageAlternates(id: string): Record<string, string> {
     ja: `${SITE_URL}/ja/news/${id}`,
     ko: `${SITE_URL}/ko/news/${id}`,
     en: `${SITE_URL}/en/news/${id}`,
-    'x-default': `${SITE_URL}/ja/news/${id}`,
+    'x-default': `${SITE_URL}/en/news/${id}`,
   };
 }
 

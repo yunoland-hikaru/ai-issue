@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { LOCALES, DEFAULT_LOCALE } from '@/lib/i18n';
 
 // ロケール接頭辞の無いリクエストを /ja /ko /en のいずれかへリダイレクト。
-// 優先順: Cookie(手動選択) → アクセス国(IPジオ) → Accept-Language → 既定(ja=x-default)。
+// 優先順: Cookie(手動選択) → アクセス国(IPジオ: 韓国KR→ko / 日本JP→ja) → それ以外は既定 en。
 function detectLocale(request: NextRequest): string {
   const cookie = request.cookies.get('lang')?.value;
   if (cookie && LOCALES.includes(cookie as (typeof LOCALES)[number])) return cookie;
@@ -12,12 +12,7 @@ function detectLocale(request: NextRequest): string {
   if (country === 'KR') return 'ko';
   if (country === 'JP') return 'ja';
 
-  const accept = (request.headers.get('accept-language') ?? '').toLowerCase();
-  if (/(^|[,\s])ko\b/.test(accept)) return 'ko';
-  if (/(^|[,\s])ja\b/.test(accept)) return 'ja';
-  if (/(^|[,\s])en\b/.test(accept)) return 'en';
-
-  return DEFAULT_LOCALE;
+  return DEFAULT_LOCALE; // en
 }
 
 export function proxy(request: NextRequest) {
