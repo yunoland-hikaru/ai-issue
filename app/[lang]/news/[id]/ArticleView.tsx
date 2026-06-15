@@ -150,6 +150,9 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
           </div>
         )}
 
+        {/* Comments */}
+        <ArticleComments articleId={article.id} />
+
         {/* Related articles */}
         {related.length > 0 && (
           <section className="mt-10">
@@ -191,9 +194,6 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
             </div>
           </section>
         )}
-
-        {/* Comments */}
-        <ArticleComments articleId={article.id} />
       </main>
     </div>
   );

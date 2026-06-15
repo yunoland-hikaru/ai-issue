@@ -29,19 +29,19 @@ const STRINGS: Record<Language, Record<string, string>> = {
     title: 'コメント', placeholder: 'コメントを入力…', replyPlaceholder: '返信を入力…', post: '投稿',
     reply: '返信', loginToComment: 'コメントするにはログイン', empty: 'まだコメントはありません。最初のコメントを書いてみましょう！',
     edit: '編集', del: '削除', save: '保存', cancel: 'キャンセル', edited: '(編集済み)',
-    confirmDel: 'このコメントを削除しますか？', report: '通報', reported: '通報済み', err: 'エラーが発生しました。',
+    confirmDel: 'このコメントを削除しますか？', err: 'エラーが発生しました。',
   },
   ko: {
     title: '댓글', placeholder: '댓글을 입력하세요…', replyPlaceholder: '답글을 입력하세요…', post: '작성',
     reply: '답글', loginToComment: '댓글을 작성하려면 로그인하세요', empty: '아직 댓글이 없습니다. 첫 댓글을 남겨보세요!',
     edit: '수정', del: '삭제', save: '저장', cancel: '취소', edited: '(수정됨)',
-    confirmDel: '댓글을 삭제할까요?', report: '신고', reported: '신고됨', err: '오류가 발생했습니다.',
+    confirmDel: '댓글을 삭제할까요?', err: '오류가 발생했습니다.',
   },
   en: {
     title: 'Comments', placeholder: 'Write a comment…', replyPlaceholder: 'Write a reply…', post: 'Post',
     reply: 'Reply', loginToComment: 'Log in to comment', empty: 'No comments yet. Be the first to comment!',
     edit: 'Edit', del: 'Delete', save: 'Save', cancel: 'Cancel', edited: '(edited)',
-    confirmDel: 'Delete this comment?', report: 'Report', reported: 'Reported', err: 'Something went wrong.',
+    confirmDel: 'Delete this comment?', err: 'Something went wrong.',
   },
 };
 
@@ -55,7 +55,6 @@ export default function ArticleComments({ articleId }: { articleId: string }) {
 
   const [comments, setComments] = useState<Comment[]>([]);
   const [likes, setLikes] = useState<Record<string, LikeState>>({});
-  const [reported, setReported] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -173,18 +172,6 @@ export default function ArticleComments({ articleId }: { articleId: string }) {
     }
   }
 
-  async function report(id: string) {
-    if (!user) { router.push(loginHref); return; }
-    try {
-      const { error: repErr } = await getBrowserClient()
-        .from('comment_reports')
-        .insert({ comment_id: id, user_id: user.id });
-      // 23505 = 既に通報済み（重複）。それも通報済み表示にする。
-      if (repErr && repErr.code !== '23505') { setError(s.err); return; }
-    } catch { /* テーブル未作成等 */ }
-    setReported((set) => new Set(set).add(id));
-  }
-
   const topLevel = comments.filter((c) => !c.parent_id).sort((a, b) => b.created_at.localeCompare(a.created_at));
   const repliesOf = (id: string) => comments.filter((c) => c.parent_id === id).sort((a, b) => a.created_at.localeCompare(b.created_at));
 
@@ -194,7 +181,6 @@ export default function ArticleComments({ articleId }: { articleId: string }) {
   function renderComment(c: Comment, isReply: boolean) {
     const mine = user?.id === c.user_id;
     const lk = likes[c.id] ?? { count: 0, liked: false };
-    const isReported = reported.has(c.id);
     const initial = (c.author_name || 'U').charAt(0).toUpperCase();
 
     return (
@@ -241,16 +227,12 @@ export default function ArticleComments({ articleId }: { articleId: string }) {
                   <button onClick={() => { if (!user) { router.push(loginHref); return; } setReplyingTo(replyingTo === c.id ? null : c.id); setReplyDraft(''); }} className={actionBtn} style={{ color: 'var(--text-4)' }}>{s.reply}</button>
                 )}
 
-                {/* Own: edit/delete | others: report */}
-                {mine ? (
+                {/* Own: edit/delete */}
+                {mine && (
                   <>
                     <button onClick={() => { setEditingId(c.id); setEditDraft(c.content); }} className={actionBtn} style={{ color: 'var(--text-4)' }}>{s.edit}</button>
                     <button onClick={() => remove(c.id)} className={actionBtn} style={{ color: 'var(--text-4)' }}>{s.del}</button>
                   </>
-                ) : (
-                  isReported
-                    ? <span className="text-xs" style={{ color: 'var(--text-4)' }}>{s.reported}</span>
-                    : <button onClick={() => report(c.id)} className={actionBtn} style={{ color: 'var(--text-4)' }}>{s.report}</button>
                 )}
               </div>
 
