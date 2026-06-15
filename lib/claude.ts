@@ -99,6 +99,34 @@ JSON形式のみで返してください（他のテキスト不要）：
   });
 }
 
+// 既存記事のハッシュタグだけを生成（ja/ko/en同時、本文は変更しない）。バックフィル用。
+export async function generateHashtags(
+  titleJa: string,
+  summaryJa: string,
+): Promise<{ ja: string[]; ko: string[]; en: string[] }> {
+  const message = await anthropic.messages.create({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 512,
+    messages: [
+      {
+        role: 'user',
+        content: `次の記事の重要キーワード・トピックのハッシュタグを日本語・韓国語・英語でそれぞれ5〜7個生成してください。
+- #は付けない。各タグは空白を含まない単語。
+- 英語は複数語ならPascalCase（例: "MachineLearning"）、一般的な略語はそのまま（例: "LLM", "RAG", "AI"）。
+- 3言語は同じ概念・同じ個数・同じ順序で対応させる。
+
+タイトル: ${titleJa}
+要約: ${summaryJa}
+
+JSON形式のみで返してください：
+{"ja":["生成AI","LLM"],"ko":["생성AI","LLM"],"en":["GenerativeAI","LLM"]}`,
+      },
+    ],
+  });
+  const text = message.content[0].type === 'text' ? message.content[0].text : '';
+  return parseJson<{ ja: string[]; ko: string[]; en: string[] }>(text, { ja: [], ko: [], en: [] });
+}
+
 export interface ArticleTranslation {
   title_ko: string;
   title_en: string;
