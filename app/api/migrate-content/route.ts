@@ -65,7 +65,7 @@ export async function POST() {
       // 韓国語・英語へ翻訳（失敗しても日本語本文は保存する）
       let translation = null;
       try {
-        translation = await translateArticle(article.title_ja, generated.summary_ja, generated.content_ja);
+        translation = await translateArticle(article.title_ja, generated.summary_ja, generated.content_ja, generated.hashtags_ja);
       } catch (e) {
         results.errors.push(`Translate failed: ${article.id} — ${String(e)}`);
       }
@@ -84,6 +84,9 @@ export async function POST() {
           image_url: imageUrl,
           logo_url: logoUrlForDomain(generated.company_domain),
           video_url: generated.video_url ?? null,
+          hashtags_ja: generated.hashtags_ja?.length ? generated.hashtags_ja : null,
+          hashtags_ko: translation?.hashtags_ko?.length ? translation.hashtags_ko : null,
+          hashtags_en: translation?.hashtags_en?.length ? translation.hashtags_en : null,
         })
         .eq('id', article.id);
 

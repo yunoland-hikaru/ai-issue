@@ -22,6 +22,7 @@ export interface GeneratedArticle {
   company_domain: string | null;
   video_url: string | null;
   category: string;
+  hashtags_ja: string[];
 }
 
 // RSS原文 → 記者スタイルの日本語記事（本文・要約・画像プロンプト・カテゴリ）
@@ -64,6 +65,9 @@ export async function generateArticle(title: string, content: string): Promise<G
   - "AI産業": 企業・製品・サービス・投資・市場・半導体などのビジネス/業界動向
   - "AI技術": モデル・研究成果・新しいAIツール・技術的ブレイクスルー
   - "規制・政策": 政府・法規制・倫理・安全性・政策に関する話題
+- hashtags_ja: 記事の重要キーワード・トピックのハッシュタグを5〜7個（文字列の配列）
+  - #は付けない。各タグは空白を含まない単語（例: "生成AI", "LLM", "RAG", "AIエージェント", "半導体"）
+  - 一般的で検索されやすい語を選ぶ。固有名詞も可（例: "OpenAI"）
 
 JSON形式のみで返してください（他のテキスト不要）：
 {
@@ -74,7 +78,8 @@ JSON形式のみで返してください（他のテキスト不要）：
   "image_prompt": "English prompt: abstract conceptual editorial illustration of the topic, no real people, no logos, no text",
   "company_domain": "openai.com or null",
   "video_url": null,
-  "category": "AI産業 / AI技術 / 規制・政策 のいずれか1つ"
+  "category": "AI産業 / AI技術 / 規制・政策 のいずれか1つ",
+  "hashtags_ja": ["生成AI", "LLM", "RAG"]
 }`,
       },
     ],
@@ -90,6 +95,7 @@ JSON形式のみで返してください（他のテキスト不要）：
     company_domain: null,
     video_url: null,
     category: 'AI産業',
+    hashtags_ja: [],
   });
 }
 
@@ -100,13 +106,16 @@ export interface ArticleTranslation {
   summary_en: string;
   content_ko: string;
   content_en: string;
+  hashtags_ko: string[];
+  hashtags_en: string[];
 }
 
-// 日本語記事（タイトル・要約・本文）を韓国語・英語に翻訳
+// 日本語記事（タイトル・要約・本文・ハッシュタグ）を韓国語・英語に翻訳
 export async function translateArticle(
   titleJa: string,
   summaryJa: string,
   contentJa: string,
+  hashtagsJa: string[] = [],
 ): Promise<ArticleTranslation> {
   const message = await anthropic.messages.create({
     model: 'claude-haiku-4-5-20251001',
@@ -116,10 +125,12 @@ export async function translateArticle(
         role: 'user',
         content: `以下の日本語の記事を韓国語と英語に翻訳してください。
 content（本文）のHTMLタグ（<p>など）は構造を保ったまま翻訳してください。
+hashtags は各言語のハッシュタグ語に変換（#は付けない、空白を含まない単語。英語は複数語ならPascalCase 例: "MachineLearning"。一般的な略語はそのまま 例: "LLM", "RAG", "AI"）。配列の要素数・順序は元と揃える。
 
 タイトル: ${titleJa}
 要約: ${summaryJa}
 本文: ${contentJa}
+ハッシュタグ(ja): ${JSON.stringify(hashtagsJa)}
 
 JSON形式のみで返してください（他のテキスト不要）：
 {
@@ -128,7 +139,9 @@ JSON形式のみで返してください（他のテキスト不要）：
   "summary_ko": "...",
   "summary_en": "...",
   "content_ko": "<p>...</p>",
-  "content_en": "<p>...</p>"
+  "content_en": "<p>...</p>",
+  "hashtags_ko": ["..."],
+  "hashtags_en": ["..."]
 }`,
       },
     ],
@@ -142,5 +155,7 @@ JSON形式のみで返してください（他のテキスト不要）：
     summary_en: '',
     content_ko: '',
     content_en: '',
+    hashtags_ko: [],
+    hashtags_en: [],
   });
 }

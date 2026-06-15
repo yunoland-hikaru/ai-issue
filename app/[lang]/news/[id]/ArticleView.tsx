@@ -55,6 +55,7 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
   const title = (lang === 'ko' ? article.title_ko : lang === 'en' ? article.title_en : null) ?? article.title_ja;
   const content = (lang === 'ko' ? article.content_ko : lang === 'en' ? article.content_en : null) ?? article.content_ja;
   const summary = (lang === 'ko' ? article.summary_ko : lang === 'en' ? article.summary_en : null) ?? article.summary_ja;
+  const hashtags = ((lang === 'ko' ? article.hashtags_ko : lang === 'en' ? article.hashtags_en : null) ?? article.hashtags_ja) ?? [];
   const heroImage = article.image_url ?? null;   // 上部ヒーロー: ストック/AI画像
   const logo = article.logo_url ?? null;          // タイトル横バッジ: 企業ロゴ
   const company = companyNameFromLogoUrl(article.logo_url);
@@ -112,6 +113,21 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
             style={{ color: 'var(--text-2)' }}
             dangerouslySetInnerHTML={{ __html: content }}
           />
+        )}
+
+        {/* Hashtags（記事の重要キーワード） */}
+        {hashtags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-8">
+            {hashtags.map((h) => (
+              <span
+                key={h}
+                className="text-sm px-3 py-1 rounded-full"
+                style={{ background: 'var(--input-bg)', color: 'var(--text-3)' }}
+              >
+                #{h}
+              </span>
+            ))}
+          </div>
         )}
 
         {/* Video embed */}

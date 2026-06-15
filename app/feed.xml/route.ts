@@ -31,7 +31,10 @@ export async function GET() {
   const items = articles
     .map((a) => {
       const url = `${SITE}/en/news/${a.id}`;
-      const title = a.title_en || a.title_ja || '';
+      // 英語ハッシュタグをタイトル末尾に付与 → dlvr.it がツイート本文(=title)に含める。最大4個。
+      const tags = (a.hashtags_en ?? []).slice(0, 4).map((h) => `#${h}`).join(' ');
+      const baseTitle = a.title_en || a.title_ja || '';
+      const title = tags ? `${baseTitle} ${tags}` : baseTitle;
       const desc = a.summary_en || a.summary_ja || '';
       const img = a.image_url
         ? `<enclosure url="${a.image_url.replace(/&/g, '&amp;')}" type="image/jpeg" />`

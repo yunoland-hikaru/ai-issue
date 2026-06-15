@@ -65,6 +65,7 @@ export async function POST(req: NextRequest) {
         generated.title_ja || item.title,
         generated.summary_ja,
         generated.content_ja,
+        generated.hashtags_ja,
       );
     } catch (e) {
       results.errors.push(`Translate failed: ${item.title} — ${String(e)}`);
@@ -125,6 +126,9 @@ export async function POST(req: NextRequest) {
       image_url: imageUrl,
       logo_url: logoUrlForDomain(generated.company_domain),
       video_url: generated.video_url ?? null,
+      hashtags_ja: generated.hashtags_ja?.length ? generated.hashtags_ja : null,
+      hashtags_ko: translation?.hashtags_ko?.length ? translation.hashtags_ko : null,
+      hashtags_en: translation?.hashtags_en?.length ? translation.hashtags_en : null,
       published_at: item.publishedAt,
     });
 

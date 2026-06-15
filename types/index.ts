@@ -24,6 +24,9 @@ export interface Article {
   logo_url?: string;
   video_url?: string;
   views?: number;
+  hashtags_ja?: string[];
+  hashtags_ko?: string[];
+  hashtags_en?: string[];
   published_at: string;
   created_at: string;
 }
