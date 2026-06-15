@@ -1,0 +1,130 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import type { User } from '@supabase/supabase-js';
+import { useLang } from '@/contexts/LangContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { getBrowserClient } from '@/lib/supabaseClient';
+import type { Language } from '@/types';
+
+type Status = 'idle' | 'checking' | 'ok' | 'taken' | 'invalid';
+
+const T: Record<Language, Record<string, string>> = {
+  ja: {
+    title: 'ニックネームを設定', desc: 'コメントなどで表示される名前です。',
+    placeholder: 'ニックネーム', save: '保存', checking: '確認中…', available: '使用できます',
+    taken: 'すでに使用されています', invalid: '2〜20文字で入力してください', err: 'エラーが発生しました。', logout: 'ログアウト',
+  },
+  ko: {
+    title: '닉네임 설정', desc: '댓글 등에 표시되는 이름입니다.',
+    placeholder: '닉네임', save: '저장', checking: '확인 중…', available: '사용 가능합니다',
+    taken: '이미 사용 중입니다', invalid: '2~20자로 입력해 주세요', err: '오류가 발생했습니다.', logout: '로그아웃',
+  },
+  en: {
+    title: 'Set your nickname', desc: 'This name is shown on your comments.',
+    placeholder: 'Nickname', save: 'Save', checking: 'Checking…', available: 'Available',
+    taken: 'Already taken', invalid: 'Use 2–20 characters', err: 'Something went wrong.', logout: 'Log out',
+  },
+};
+
+function suggest(user: User | null): string {
+  const md = (user?.user_metadata ?? {}) as Record<string, unknown>;
+  const raw = (md.nickname as string) || (md.full_name as string) || (md.name as string) || user?.email?.split('@')[0] || '';
+  return raw.toString().trim().slice(0, 20);
+}
+
+export default function NicknameModal() {
+  const { user, applyNickname, signOut } = useAuth();
+  const { lang } = useLang();
+  const t = T[lang];
+
+  const [value, setValue] = useState(() => suggest(user));
+  const [status, setStatus] = useState<Status>('idle');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  // 重複チェック（デバウンス。setStateはタイマー内のみ）
+  useEffect(() => {
+    const v = value.trim();
+    const id = setTimeout(async () => {
+      if (v.length < 2 || v.length > 20) { setStatus(v ? 'invalid' : 'idle'); return; }
+      setStatus('checking');
+      try {
+        const pattern = v.replace(/[%_\\]/g, '\\$&'); // ilikeのワイルドカード無効化
+        const { data } = await getBrowserClient().from('profiles').select('id').ilike('nickname', pattern).limit(1);
+        const taken = (data as { id: string }[] | null ?? []).some((r) => r.id !== user?.id);
+        setStatus(taken ? 'taken' : 'ok');
+      } catch {
+        setStatus('ok'); // チェック失敗時は保存時のDB制約に委ねる
+      }
+    }, 300);
+    return () => clearTimeout(id);
+  }, [value, user?.id]);
+
+  async function save() {
+    const v = value.trim();
+    if (v.length < 2 || v.length > 20) { setError(t.invalid); return; }
+    if (status === 'taken') { setError(t.taken); return; }
+    if (!user) return;
+    setSaving(true); setError('');
+    try {
+      const { error: upErr } = await getBrowserClient()
+        .from('profiles')
+        .upsert({ id: user.id, nickname: v, updated_at: new Date().toISOString() }, { onConflict: 'id' });
+      if (upErr) {
+        if (upErr.code === '23505') { setStatus('taken'); setError(t.taken); } // nicknameユニーク違反
+        else setError(t.err);
+        return;
+      }
+      applyNickname(v);
+    } catch {
+      setError(t.err);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const v = value.trim();
+  const canSave = !saving && v.length >= 2 && v.length <= 20 && status !== 'taken' && status !== 'checking';
+
+  return (
+    <div className="fixed inset-0 z-[70] flex items-center justify-center px-4" style={{ background: 'rgba(0,0,0,0.5)' }}>
+      <div className="w-full max-w-sm rounded-2xl p-6" style={{ background: 'var(--bg-card)' }}>
+        <h2 className="text-lg font-bold mb-1" style={{ color: 'var(--text-1)' }}>{t.title}</h2>
+        <p className="text-sm mb-4" style={{ color: 'var(--text-3)' }}>{t.desc}</p>
+
+        <input
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder={t.placeholder}
+          maxLength={20}
+          autoFocus
+          onKeyDown={(e) => { if (e.key === 'Enter' && canSave) save(); }}
+          className="w-full rounded-lg px-3 py-2.5 text-base focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
+          style={{ color: 'var(--text-1)', background: 'var(--input-bg)', border: '1px solid var(--border-1)' }}
+        />
+
+        <div className="h-5 mt-1.5 text-xs">
+          {status === 'checking' && <span style={{ color: 'var(--text-4)' }}>{t.checking}</span>}
+          {status === 'ok' && <span style={{ color: '#16a34a' }}>{t.available}</span>}
+          {status === 'taken' && <span style={{ color: 'var(--accent)' }}>{t.taken}</span>}
+          {status === 'invalid' && <span style={{ color: 'var(--accent)' }}>{t.invalid}</span>}
+        </div>
+
+        {error && <p className="text-sm mb-2" style={{ color: 'var(--accent)' }}>{error}</p>}
+
+        <button
+          onClick={save}
+          disabled={!canSave}
+          className="w-full py-2.5 rounded-lg text-base font-semibold transition-opacity hover:opacity-90 disabled:opacity-40 mt-1"
+          style={{ background: 'var(--accent)', color: '#fff' }}
+        >
+          {saving ? '...' : t.save}
+        </button>
+        <button onClick={() => signOut()} className="w-full mt-2 text-xs transition-colors hover:text-[var(--accent)]" style={{ color: 'var(--text-4)' }}>
+          {t.logout}
+        </button>
+      </div>
+    </div>
+  );
+}

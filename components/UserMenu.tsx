@@ -20,7 +20,7 @@ const userIcon = (
 
 export default function UserMenu() {
   const { lang } = useLang();
-  const { user, signOut } = useAuth();
+  const { user, signOut, displayName } = useAuth();
   const l = LABELS[lang];
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -43,7 +43,7 @@ export default function UserMenu() {
   }
 
   // ログイン中: アバター（頭文字）＋ドロップダウン
-  const name = (user.user_metadata?.nickname as string) || user.email?.split('@')[0] || 'U';
+  const name = displayName;
   const initial = name.charAt(0).toUpperCase();
 
   return (

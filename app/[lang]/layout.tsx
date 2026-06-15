@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/contexts/ThemeContext';
 import { AuthProvider } from '@/contexts/AuthContext';
 import Footer from '@/components/Footer';
 import TopDateBar from '@/components/TopDateBar';
+import NicknameGate from '@/components/NicknameGate';
 import { LOCALES, isLocale } from '@/lib/i18n';
 import '../globals.css';
 
@@ -137,6 +138,7 @@ gtag('config', '${GA_ID}');`,
               <TopDateBar />
               {children}
               <Footer />
+              <NicknameGate />
             </AuthProvider>
           </LangProvider>
         </ThemeProvider>

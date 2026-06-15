@@ -47,7 +47,7 @@ const STRINGS: Record<Language, Record<string, string>> = {
 
 export default function ArticleComments({ articleId }: { articleId: string }) {
   const { lang } = useLang();
-  const { user } = useAuth();
+  const { user, displayName } = useAuth();
   const router = useRouter();
   const s = STRINGS[lang];
   const loginHref = localePath(lang, '/login');
@@ -103,7 +103,7 @@ export default function ArticleComments({ articleId }: { articleId: string }) {
     return () => { alive = false; };
   }, [articleId, uid]);
 
-  const authorName = (user?.user_metadata?.nickname as string) || user?.email?.split('@')[0] || 'User';
+  const authorName = displayName;
 
   async function insertComment(content: string, parentId: string | null) {
     const { data, error: insErr } = await getBrowserClient()
