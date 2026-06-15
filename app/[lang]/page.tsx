@@ -13,7 +13,7 @@ export const revalidate = 60;
 // ホームの言語別タイトル/説明（共有カード・OG・検索用）。
 const HOME_META: Record<Language, { title: string; description: string }> = {
   ja: {
-    title: 'AI issue — AIニュースをわかりやすく',
+    title: 'AI issue — AIの世界を、毎日ひと目で',
     description: '毎日溢れるAI関連ニュース・新着AIツール情報をAIが自動収集し、わかりやすく届けるメディアです。',
   },
   ko: {
