@@ -29,7 +29,7 @@ export interface GeneratedArticle {
 export async function generateArticle(title: string, content: string): Promise<GeneratedArticle> {
   const message = await anthropic.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 3072,
+    max_tokens: 4096,
     messages: [
       {
         role: 'user',
@@ -41,13 +41,13 @@ export async function generateArticle(title: string, content: string): Promise<G
 
 条件：
 - title_ja: 元タイトルを自然な日本語に翻訳・意訳（30文字以内推奨）
-- content_ja: 800〜1200文字の記事本文
-  - 記者が書いたような自然な文体
-  - 段落を<p>タグで区切って読みやすく
-  - 重要な数字・発言はそのまま使用
-  - 「AI要約」ではなく本文として作成
-  - リードなし、本文から直接開始
-  - 原文リンクは含めない
+- content_ja: 900〜1400文字の、プロの記者が書く「解説記事」の本文
+  - 単なる原文の翻訳・要約ではなく、再構成して付加価値を出す：
+    1) 何が起きたか（事実） 2) 背景・文脈（なぜ今か、これまでの経緯） 3) 意味・影響（業界・ユーザー・競合にとって何を意味するか）
+  - 記者としての抑制的な洞察・展望を1〜2文添える（例:「〜と見られる」「今後は〜が焦点になりそうだ」）。事実と意見・推測は明確に書き分ける
+  - 事実・数字・固有名詞・発言は原文に忠実に。原文にない具体的な数値や引用を捏造しない。不確かな点は断定しない
+  - 段落を<p>タグで区切って読みやすく。記者らしい自然な文体、リードなしで本文から直接開始
+  - 「AI要約」ではなく一本の記事として作成。原文リンクは含めない
 - summary_ja: 記事本文を3〜4文で要約（カード表示用、HTMLタグなしのプレーンテキスト）
 - image_keywords: 無料ストック写真検索用の一般的な英語キーワード（2〜3語）
   - 記事テーマを表す一般語（例: "artificial intelligence", "data center", "semiconductor chip"）
@@ -147,7 +147,7 @@ export async function translateArticle(
 ): Promise<ArticleTranslation> {
   const message = await anthropic.messages.create({
     model: 'claude-haiku-4-5-20251001',
-    max_tokens: 4096,
+    max_tokens: 8192,
     messages: [
       {
         role: 'user',
