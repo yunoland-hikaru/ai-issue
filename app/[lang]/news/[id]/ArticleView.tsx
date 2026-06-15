@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import { useLang } from '@/contexts/LangContext';
 import { CATEGORY_STYLES, categoryLabel } from '@/lib/categoryStyles';
@@ -197,9 +198,8 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
                       onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                     >
                       {rel.image_url && (
-                        <div className="shrink-0 w-16 h-14 rounded-lg overflow-hidden">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={rel.image_url} alt="" className="w-full h-full object-cover" />
+                        <div className="relative shrink-0 w-16 h-14 rounded-lg overflow-hidden">
+                          <Image src={rel.image_url} alt="" fill sizes="64px" className="object-cover" />
                         </div>
                       )}
                       <div className="flex-1 min-w-0">

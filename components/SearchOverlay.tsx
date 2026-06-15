@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Article } from '@/types';
 import { useLang } from '@/contexts/LangContext';
 import { formatDateTime } from '@/lib/utils';
@@ -90,9 +91,8 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
                 style={{ borderColor: 'var(--border-2)' }}
               >
                 {a.image_url && (
-                  <div className="shrink-0 w-14 h-12 rounded-lg overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={a.image_url} alt="" className="w-full h-full object-cover" />
+                  <div className="relative shrink-0 w-14 h-12 rounded-lg overflow-hidden">
+                    <Image src={a.image_url} alt="" fill sizes="56px" className="object-cover" />
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
