@@ -12,6 +12,9 @@ import '../globals.css';
 // Google AdSense クライアントID
 const ADSENSE_CLIENT = 'ca-pub-8382620748313839';
 
+// Google Analytics 測定ID（gtag.js）
+const GA_ID = 'G-M1KGG91194';
+
 // ロゴ用ワードマーク（テスラ風のジオメトリックな高級感）。
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -102,6 +105,16 @@ export default async function RootLayout({
           async
           src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
           crossOrigin="anonymous"
+        />
+        {/* Google Analytics (gtag.js) — 全ページ共通でheadに出力 */}
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_ID}');`,
+          }}
         />
       </head>
       <body className="min-h-full flex flex-col">
