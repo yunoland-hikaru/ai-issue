@@ -15,6 +15,9 @@ const ADSENSE_CLIENT = 'ca-pub-8382620748313839';
 // Google Analytics 測定ID（gtag.js）
 const GA_ID = 'G-M1KGG91194';
 
+// Microsoft Clarity プロジェクトID
+const CLARITY_ID = 'x79kekypbr';
+
 // ロゴ用ワードマーク（テスラ風のジオメトリックな高級感）。
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -114,6 +117,16 @@ export default async function RootLayout({
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', '${GA_ID}');`,
+          }}
+        />
+        {/* Microsoft Clarity — 全ページ共通でheadに出力 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "${CLARITY_ID}");`,
           }}
         />
       </head>
