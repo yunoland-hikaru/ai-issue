@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { getServiceClient } from '@/lib/supabase';
 import {
-  yesterdayJstWindow,
+  digestWindow,
   buildDigestHtml,
   unsubscribeUrl,
   NEWSLETTER_FROM,
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
   }
 
   const supabase = getServiceClient();
-  const { startUTC, endUTC, label } = yesterdayJstWindow();
+  const { startUTC, endUTC, label } = digestWindow();
 
   // 対象記事（前日のJST 1日分）
   const { data: articles, error: aErr } = await supabase

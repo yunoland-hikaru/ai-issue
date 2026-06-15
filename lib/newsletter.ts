@@ -5,20 +5,27 @@ export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://ai-issue.co
 export const NEWSLETTER_FROM = process.env.NEWSLETTER_FROM || 'AI issue <news@ai-issue.com>';
 
 /**
- * JST 08:00 に送る「前日分」の集計ウィンドウ。
- * 前日のJST 1日全体(00:00〜翌00:00) に created_at がある記事を対象にする（UTCで返す）。
+ * 朝のダイジェスト集計ウィンドウ: 直近の「JST 08:00」を終端とする過去24時間。
+ * 例) JST 6/15 08:00 配信 → 6/14 08:00〜6/15 08:00 の記事（UTCで返す）。
+ * 収集が24時間(2時間毎・最大12本/日)になったため、固定の「前日1日(00〜24時)」だと
+ * 配信直前(当日0〜8時)の記事が翌日まで漏れる。直近24時間にすることで
+ * 各記事を一度だけ・最大24時間以内に配信し、件数も安定する(約10〜12本)。
+ * label は配信日(終端日)＝朝刊と同じ感覚。
  */
-export function yesterdayJstWindow(now: Date = new Date()) {
+export function digestWindow(now: Date = new Date()) {
   const JST = 9 * 3600 * 1000;
   const jstNow = new Date(now.getTime() + JST);
-  const jstYesterday = new Date(jstNow.getTime() - 24 * 3600 * 1000);
-  const y = jstYesterday.getUTCFullYear();
-  const m = jstYesterday.getUTCMonth();
-  const d = jstYesterday.getUTCDate();
-  // 前日のJST 1日まるごと(00:00〜翌00:00)。JST→UTCは9時間引く（Date.UTCが繰り上げ正規化）。
-  // 収集が24時間(2時間毎)になったため、深夜帯の記事も取りこぼさない。
-  const startUTC = new Date(Date.UTC(y, m, d, 0 - 9, 0, 0));
-  const endUTC = new Date(Date.UTC(y, m, d, 24 - 9, 0, 0));
+  let y = jstNow.getUTCFullYear();
+  let m = jstNow.getUTCMonth();
+  let d = jstNow.getUTCDate();
+  // 終端は「その日の JST 08:00」。万一 08:00 より前に走った場合は前日の 08:00 を終端に。
+  if (jstNow.getUTCHours() < 8) {
+    const prev = new Date(Date.UTC(y, m, d) - 24 * 3600 * 1000);
+    y = prev.getUTCFullYear(); m = prev.getUTCMonth(); d = prev.getUTCDate();
+  }
+  // JST 08:00 → UTCは9時間引く（Date.UTCが繰り下げ正規化）。
+  const endUTC = new Date(Date.UTC(y, m, d, 8 - 9, 0, 0));
+  const startUTC = new Date(endUTC.getTime() - 24 * 3600 * 1000);
   const label = `${y}年${m + 1}月${d}日`;
   return { startUTC, endUTC, label };
 }
