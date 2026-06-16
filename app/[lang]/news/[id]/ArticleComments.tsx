@@ -115,6 +115,12 @@ export default function ArticleComments({ articleId }: { articleId: string }) {
     const row = data as Comment;
     setComments((c) => [...c, row]);
     setLikes((m) => ({ ...m, [row.id]: { count: 0, liked: false } }));
+    // 管理者へ新規コメント通知（best-effort）
+    fetch('/api/notify-comment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ commentId: row.id }),
+    }).catch(() => {});
     return row;
   }
 
