@@ -52,6 +52,12 @@ body {
   transition: background 0.2s, color 0.2s;
 }
 
+/* 韓国語は単語の途中で改行されると不自然（「…주세/요」のような孤立）。
+   韓国語ページのみ keep-all で単語単位の折り返しにする。日本語/英語には影響しない。 */
+html[lang="ko"] {
+  word-break: keep-all;
+}
+
 .scrollbar-none {
   scrollbar-width: none;
 }
