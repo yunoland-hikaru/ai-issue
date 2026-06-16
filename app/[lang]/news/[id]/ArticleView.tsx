@@ -64,7 +64,6 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
 
   // 作成者バイライン + AI作成の透明性表示（E-E-A-T / Google News向け）。
   const author = lang === 'ko' ? 'AI issue 편집부' : lang === 'en' ? 'AI issue Staff' : 'AI issue 編集部';
-  const authorLabel = lang === 'ko' ? '작성' : lang === 'en' ? 'Author' : '作成';
   const creditNote =
     lang === 'ko'
       ? 'AI issue 편집부가 선별한 출처를 바탕으로 AI가 기사를 작성하고, 편집부가 발행·관리합니다. 중요한 내용은 원문 출처를 확인해 주세요.'
@@ -149,7 +148,6 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
 
         {/* Author byline（出典行と同じ控えめなトーン） */}
         <div className="mt-8 text-sm" style={{ color: 'var(--text-3)' }}>
-          <span>{authorLabel}: </span>
           <Link
             href={localePath(lang, '/editorial')}
             className="font-medium transition-colors hover:text-[var(--accent)]"
