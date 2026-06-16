@@ -147,26 +147,15 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
         )}
 
         {/* Author byline + AI作成の透明性表示 */}
-        <div className="flex items-start gap-3 mb-8 p-4 rounded-xl" style={{ background: 'var(--bg-card)' }}>
-          <span
-            className="shrink-0 inline-flex items-center justify-center"
-            aria-hidden
+        <div className="mb-8 p-4 rounded-xl" style={{ background: 'var(--bg-card)' }}>
+          <Link
+            href={localePath(lang, '/editorial')}
+            className="text-sm font-semibold transition-colors hover:text-[var(--accent)]"
+            style={{ color: 'var(--text-1)' }}
           >
-            <svg viewBox="0 0 100 100" width="36" height="36">
-              <circle cx="50" cy="50" r="50" fill="var(--text-1)" />
-              <polygon points="50,27 73,69 27,69" fill="var(--bg-card)" />
-            </svg>
-          </span>
-          <div className="min-w-0">
-            <Link
-              href={localePath(lang, '/editorial')}
-              className="text-sm font-semibold transition-colors hover:text-[var(--accent)]"
-              style={{ color: 'var(--text-1)' }}
-            >
-              {author}
-            </Link>
-            <p className="text-xs mt-0.5 leading-relaxed" style={{ color: 'var(--text-4)' }}>{creditNote}</p>
-          </div>
+            {author}
+          </Link>
+          <p className="text-xs mt-0.5 leading-relaxed" style={{ color: 'var(--text-4)' }}>{creditNote}</p>
         </div>
 
         {/* Video embed */}
