@@ -62,6 +62,15 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
   const company = companyNameFromLogoUrl(article.logo_url);
   const ytId = article.video_url ? extractYouTubeId(article.video_url) : null;
 
+  // 作成者バイライン + AI作成の透明性表示（E-E-A-T / Google News向け）。
+  const author = lang === 'ko' ? 'AI issue 편집부' : lang === 'en' ? 'AI issue Staff' : 'AI issue 編集部';
+  const creditNote =
+    lang === 'ko'
+      ? '이 기사는 AI가 공개된 정보를 바탕으로 작성하고 편집부가 감수했습니다. 중요한 내용은 원문 출처를 확인해 주세요.'
+      : lang === 'en'
+        ? 'Written by AI from publicly available sources and reviewed by the AI issue editorial team. Please verify key details with the original source.'
+        : 'この記事はAIが公開情報をもとに作成し、編集部が監修しています。重要な内容は元の情報源をご確認ください。';
+
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-page)' }}>
       {/* Header — トップと同一（Navbar） */}
@@ -136,6 +145,23 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
             ))}
           </div>
         )}
+
+        {/* Author byline + AI作成の透明性表示 */}
+        <div className="flex items-start gap-3 mb-8 p-4 rounded-xl" style={{ background: 'var(--bg-card)' }}>
+          <span
+            className="shrink-0 inline-flex items-center justify-center"
+            aria-hidden
+          >
+            <svg viewBox="0 0 100 100" width="36" height="36">
+              <circle cx="50" cy="50" r="50" fill="var(--text-1)" />
+              <polygon points="50,27 73,69 27,69" fill="var(--bg-card)" />
+            </svg>
+          </span>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>{author}</p>
+            <p className="text-xs mt-0.5 leading-relaxed" style={{ color: 'var(--text-4)' }}>{creditNote}</p>
+          </div>
+        </div>
 
         {/* Video embed */}
         {ytId && (

@@ -90,7 +90,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ lang: 
         dateModified: article.created_at,
         inLanguage: lang,
         mainEntityOfPage: `${SITE_URL}/${lang}/news/${id}`,
-        author: { '@type': 'Organization', name: article.source_name || 'AI issue' },
+        author: { '@type': 'Organization', name: lang === 'ko' ? 'AI issue 편집부' : lang === 'en' ? 'AI issue Staff' : 'AI issue 編集部' },
         publisher: { '@type': 'Organization', name: 'AI issue' },
       }
     : null;
