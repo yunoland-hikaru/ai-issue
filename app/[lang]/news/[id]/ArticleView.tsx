@@ -66,10 +66,10 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
   const author = lang === 'ko' ? 'AI issue 편집부' : lang === 'en' ? 'AI issue Staff' : 'AI issue 編集部';
   const creditNote =
     lang === 'ko'
-      ? 'AI가 공개된 정보를 수집·요약·재구성해 작성합니다. 중요한 내용은 원문 출처를 확인해 주세요.'
+      ? 'AI issue 편집부가 선별한 출처를 바탕으로 AI가 기사를 작성하고, 편집부가 발행·관리합니다. 중요한 내용은 원문 출처를 확인해 주세요.'
       : lang === 'en'
-        ? 'Written by AI from publicly available sources (collected, summarized, and restructured). Please verify key details with the original source.'
-        : 'AIが公開情報を収集・要約・再構成して作成しています。重要な内容は元の情報源をご確認ください。';
+        ? 'Articles are written by AI from sources curated by the AI issue editorial team, which publishes and maintains them. Please verify key details with the original source.'
+        : 'AI issue 編集部が選定した情報源をもとにAIが記事を作成し、編集部が発行・管理しています。重要な内容は元の情報源をご確認ください。';
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-page)' }}>
