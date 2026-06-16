@@ -67,6 +67,7 @@ export interface Messages {
     contact: string;
     privacy: string;
     terms: string;
+    editorial: string;
     rights: string;
     toTop: string;
   };
@@ -158,6 +159,7 @@ const ja: Messages = {
     contact: 'お問い合わせ',
     privacy: 'プライバシーポリシー',
     terms: '利用規約',
+    editorial: '編集方針',
     rights: 'All rights reserved.',
     toTop: 'トップへ戻る',
   },

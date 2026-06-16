@@ -70,6 +70,7 @@ const en: Messages = {
     contact: 'Contact',
     privacy: 'Privacy Policy',
     terms: 'Terms of Service',
+    editorial: 'Editorial Policy',
     rights: 'All rights reserved.',
     toTop: 'Back to top',
   },

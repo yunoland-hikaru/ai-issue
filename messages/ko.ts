@@ -70,6 +70,7 @@ const ko: Messages = {
     contact: '문의하기',
     privacy: '개인정보처리방침',
     terms: '이용약관',
+    editorial: '편집 방침',
     rights: 'All rights reserved.',
     toTop: '맨 위로',
   },

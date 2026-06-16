@@ -86,6 +86,7 @@ export default function Footer() {
                 {f.infoHeading}
               </h3>
               <Link href={localePath(lang, '/contact')} className={linkCls} style={linkStyle} onMouseEnter={hover} onMouseLeave={unhover}>{f.contact}</Link>
+              <Link href={localePath(lang, '/editorial')} className={linkCls} style={linkStyle} onMouseEnter={hover} onMouseLeave={unhover}>{f.editorial}</Link>
               <Link href={localePath(lang, '/privacy')} className={linkCls} style={linkStyle} onMouseEnter={hover} onMouseLeave={unhover}>{f.privacy}</Link>
               <Link href={localePath(lang, '/terms')} className={linkCls} style={linkStyle} onMouseEnter={hover} onMouseLeave={unhover}>{f.terms}</Link>
             </nav>

@@ -20,7 +20,7 @@ function localizedEntries(path: string, lastModified: Date): MetadataRoute.Sitem
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
-  const staticPaths = ['', '/about', '/newsletter', '/contact', '/privacy', '/terms'];
+  const staticPaths = ['', '/about', '/newsletter', '/contact', '/editorial', '/privacy', '/terms'];
   const staticRoutes = staticPaths.flatMap((p) => localizedEntries(p, now));
 
   let articleRoutes: MetadataRoute.Sitemap = [];
