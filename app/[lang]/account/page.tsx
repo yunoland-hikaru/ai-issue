@@ -7,6 +7,7 @@ import { useLang } from '@/contexts/LangContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { getBrowserClient } from '@/lib/supabaseClient';
 import { localePath } from '@/lib/i18n';
+import { isValidNickname, NICKNAME_MAX } from '@/lib/nickname';
 import type { Language } from '@/types';
 
 type Status = 'idle' | 'checking' | 'ok' | 'taken' | 'invalid';
@@ -14,21 +15,24 @@ type Status = 'idle' | 'checking' | 'ok' | 'taken' | 'invalid';
 const T: Record<Language, Record<string, string>> = {
   ja: {
     title: 'マイページ', nicknameLabel: 'ニックネーム', email: 'メールアドレス', save: '保存', saved: '保存しました',
-    checking: '確認中…', available: '使用できます', taken: 'すでに使用されています', invalid: '2〜20文字で入力してください',
+    checking: '確認中…', available: '使用できます', taken: 'すでに使用されています', invalid: '2〜15文字・記号は使えません',
     err: 'エラーが発生しました。', loginNeeded: 'ログインが必要です', login: 'ログイン', home: 'ホーム',
     avatarLabel: 'プロフィール画像', change: '画像を変更', remove: '削除', uploading: 'アップロード中…', avatarHint: 'JPG・PNG・WebP / 2MBまで',
+    nicknameHint: 'ニックネームは15文字以内で、記号（特殊文字）は使用できません。',
   },
   ko: {
     title: '마이페이지', nicknameLabel: '닉네임', email: '이메일', save: '저장', saved: '저장되었습니다',
-    checking: '확인 중…', available: '사용 가능합니다', taken: '이미 사용 중입니다', invalid: '2~20자로 입력해 주세요',
+    checking: '확인 중…', available: '사용 가능합니다', taken: '이미 사용 중입니다', invalid: '2~15자, 특수문자는 사용할 수 없습니다',
     err: '오류가 발생했습니다.', loginNeeded: '로그인이 필요합니다', login: '로그인', home: '홈',
     avatarLabel: '프로필 사진', change: '사진 변경', remove: '삭제', uploading: '업로드 중…', avatarHint: 'JPG·PNG·WebP / 최대 2MB',
+    nicknameHint: '닉네임은 15자 이하로 정하고 특수문자는 허용되지 않습니다.',
   },
   en: {
     title: 'My Page', nicknameLabel: 'Nickname', email: 'Email', save: 'Save', saved: 'Saved',
-    checking: 'Checking…', available: 'Available', taken: 'Already taken', invalid: 'Use 2–20 characters',
+    checking: 'Checking…', available: 'Available', taken: 'Already taken', invalid: '2–15 characters, no symbols',
     err: 'Something went wrong.', loginNeeded: 'Login required', login: 'Log in', home: 'Home',
     avatarLabel: 'Profile photo', change: 'Change photo', remove: 'Remove', uploading: 'Uploading…', avatarHint: 'JPG, PNG, WebP / up to 2MB',
+    nicknameHint: 'Nicknames must be 15 characters or fewer, with no special characters.',
   },
 };
 
@@ -168,7 +172,7 @@ function NicknameForm({ t, initial }: { t: Record<string, string>; initial: stri
     const v = value.trim();
     if (v === initial) { return; } // 変更なしはチェック不要
     const id = setTimeout(async () => {
-      if (v.length < 2 || v.length > 20) { setStatus('invalid'); return; }
+      if (!isValidNickname(v)) { setStatus('invalid'); return; }
       setStatus('checking');
       try {
         const pattern = v.replace(/[%_\\]/g, '\\$&');
@@ -182,7 +186,7 @@ function NicknameForm({ t, initial }: { t: Record<string, string>; initial: stri
 
   async function save() {
     const v = value.trim();
-    if (v.length < 2 || v.length > 20) { setError(t.invalid); return; }
+    if (!isValidNickname(v)) { setError(t.invalid); return; }
     if (status === 'taken' || !user) return;
     setSaving(true); setError(''); setDone(false);
     try {
@@ -202,7 +206,7 @@ function NicknameForm({ t, initial }: { t: Record<string, string>; initial: stri
 
   const v = value.trim();
   const changed = v !== initial;
-  const canSave = !saving && changed && v.length >= 2 && v.length <= 20 && status !== 'taken' && status !== 'checking';
+  const canSave = !saving && changed && isValidNickname(v) && status !== 'taken' && status !== 'checking';
 
   return (
     <div>
@@ -210,11 +214,12 @@ function NicknameForm({ t, initial }: { t: Record<string, string>; initial: stri
       <input
         value={value}
         onChange={(e) => { setValue(e.target.value); setDone(false); }}
-        maxLength={20}
+        maxLength={NICKNAME_MAX}
         className={inputCls}
         style={fieldStyle}
       />
-      <div className="h-5 mt-1.5 text-xs">
+      <p className="text-xs mt-1.5" style={{ color: 'var(--text-4)' }}>{t.nicknameHint}</p>
+      <div className="h-5 mt-1 text-xs">
         {changed && status === 'checking' && <span style={{ color: 'var(--text-4)' }}>{t.checking}</span>}
         {changed && status === 'ok' && <span style={{ color: '#16a34a' }}>{t.available}</span>}
         {changed && status === 'taken' && <span style={{ color: 'var(--accent)' }}>{t.taken}</span>}
