@@ -35,8 +35,8 @@ jobs:
             echo "force=true → skip probability & delay, collect now"
           fi
 
-          # ランダムなソースから1本（0=TechCrunch, 1=VentureBeat, 2=The Verge）
-          SOURCE=$((RANDOM % 3))
+          # ランダムなソースから1本（0=TechCrunch,1=VentureBeat,2=The Decoder,3=Synced,4=AI Business,5=InfoQ）
+          SOURCE=$((RANDOM % 6))
           echo "→ collecting source=$SOURCE"
 
           # レスポンス本文とHTTPコードを両方取得（無言失敗を防ぐ）

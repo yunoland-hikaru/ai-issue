@@ -7,13 +7,17 @@ const parser = new Parser({
   },
 });
 
-// 出典は一般メディア。記事は原文の文体・構成をなぞらず「事実だけ」を使って新規作成する前提
-// （事実自体は著作権の対象外。lib/claude.ts のファクト抽出＋独自文体プロンプト参照）。
-// ただし「AI学習・活用禁止」を明記する媒体（旧AI Times）は使わない。
+// 出典は独立系・専門のAIメディア6社。記事は原文の文体・構成をなぞらず「事実だけ」を使って
+// 新規作成する前提（事実自体は著作権の対象外。lib/claude.ts のファクト抽出＋独自文体プロンプト参照）。
+// 出典を増やすことで同一ソースからの連続収集（=出典が推測されるリスク）も避ける。
+// 除外: 「AI学習・活用禁止」明記(旧AI Times) / AIスクレイピングに強硬な大手(The Verge=Vox, Condé Nast, MIT TR 等)。
 export const RSS_SOURCES = [
   { url: 'https://techcrunch.com/feed/', lang: 'en', name: 'TechCrunch' },
   { url: 'https://venturebeat.com/feed', lang: 'en', name: 'VentureBeat' },
-  { url: 'https://www.theverge.com/rss/ai-artificial-intelligence/index.xml', lang: 'en', name: 'The Verge' },
+  { url: 'https://the-decoder.com/feed/', lang: 'en', name: 'The Decoder' },
+  { url: 'https://syncedreview.com/feed/', lang: 'en', name: 'Synced' },
+  { url: 'https://aibusiness.com/rss.xml', lang: 'en', name: 'AI Business' },
+  { url: 'https://feed.infoq.com/ai-ml-data-eng/', lang: 'en', name: 'InfoQ' },
 ] as const;
 
 export interface RssItem {
