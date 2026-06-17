@@ -21,7 +21,7 @@ function extractYouTubeId(url: string): string | null {
 // 記事本文は親(サーバーコンポーネント)から initialArticle で受け取り、初期HTMLに含める（SEO）。
 // 言語切替・閲覧数+1・関連記事の取得はクライアントで行う。
 export default function ArticleView({ initialArticle }: { initialArticle: Article }) {
-  const { lang, t } = useLang();
+  const { lang } = useLang();
   const article = initialArticle;
   const [related, setRelated] = useState<Article[]>([]);
 
@@ -62,14 +62,14 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
   const company = companyNameFromLogoUrl(article.logo_url);
   const ytId = article.video_url ? extractYouTubeId(article.video_url) : null;
 
-  // 作成者バイライン + AI作成の透明性表示（E-E-A-T / Google News向け）。
+  // 作成者バイライン + 著作権の主張（自社で事実から独自作成した独立著作物）。
   const author = lang === 'ko' ? 'AI issue 편집부' : lang === 'en' ? 'AI issue Staff' : 'AI issue 編集部';
   const creditNote =
     lang === 'ko'
-      ? 'AI issue 편집부가 선별한 출처를 바탕으로 AI가 기사를 작성하고, 편집부가 발행·관리합니다. 중요한 내용은 원문 출처를 확인해 주세요.'
+      ? '본 기사는 AI issue 편집부가 사실(fact)을 바탕으로 독자적으로 작성·편집한 저작물입니다. 저작권은 AI issue에 있으며, 무단 전재·재배포 및 AI 학습·활용을 금합니다.'
       : lang === 'en'
-        ? 'Articles are written by AI from sources curated by the AI issue editorial team, which publishes and maintains them. Please verify key details with the original source.'
-        : 'AI issue 編集部が選定した情報源をもとにAIが記事を作成し、編集部が発行・管理しています。重要な内容は元の情報源をご確認ください。';
+        ? 'This article is an original work independently written and edited by the AI issue editorial team based on factual reporting. © AI issue. Unauthorized reproduction, redistribution, or use for AI training is prohibited.'
+        : '本記事は、AI issue編集部が事実(ファクト)をもとに独自に作成・編集した著作物です。著作権はAI issueに帰属し、無断転載・再配布およびAIの学習・活用を禁じます。';
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-page)' }}>
@@ -170,38 +170,6 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
                 allowFullScreen
               />
             </div>
-          </div>
-        )}
-
-        {/* Source attribution — 原文へのリンク（出典明示） */}
-        {article.source_url && (
-          <div
-            className="mt-8 pt-5 text-sm flex flex-wrap items-center gap-x-1.5 gap-y-1"
-            style={{ borderTop: '1px solid var(--border-1)', color: 'var(--text-3)' }}
-          >
-            <span>{t.article.source}:</span>
-            <a
-              href={article.source_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 font-medium transition-colors hover:text-[var(--accent)]"
-              style={{ color: 'var(--text-2)' }}
-            >
-              {article.source_name || article.source_url}
-              <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M7 17 17 7M8 7h9v9" />
-              </svg>
-            </a>
-            <span>·</span>
-            <a
-              href={article.source_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-medium transition-colors hover:opacity-80"
-              style={{ color: 'var(--accent)' }}
-            >
-              {t.article.readOriginal}
-            </a>
           </div>
         )}
 

@@ -49,6 +49,9 @@ export function LangProvider({
       segments.splice(1, 0, next);
     }
     router.push(segments.join('/') || `/${next}`);
+    // クライアントのRouter Cacheに残った切替先ロケールの古いRSC（新着記事が欠ける）を破棄し、
+    // サーバーから最新を取り直す。これをしないと言語切替直後に新着が出ず、手動更新が必要になる。
+    router.refresh();
   }
 
   return (
