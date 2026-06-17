@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
 // POST /api/collect?source=0&limit=1
-// source: 0=OpenAI, 1=Google DeepMind, 2=Hugging Face, 3=arXiv
+// source: 0=TechCrunch, 1=VentureBeat, 2=The Verge
 // limit: max new articles per call (default 1, max 10)
 export async function POST(req: NextRequest) {
   const { searchParams } = new URL(req.url);
