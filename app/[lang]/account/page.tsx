@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import { useLang } from '@/contexts/LangContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -68,8 +69,9 @@ async function resizeToSquare(file: File, size = 256): Promise<Blob> {
 
 // プロフィール（画像＋ニックネーム）編集フォーム。
 // 画像を選んだ時点ではプレビューのみ。画像もニックネームも「保存」を押したときにまとめて反映する。
-function AccountForm({ t, initialNickname, email }: { t: Record<string, string>; initialNickname: string; email: string }) {
+function AccountForm({ t, initialNickname, email, homeHref }: { t: Record<string, string>; initialNickname: string; email: string; homeHref: string }) {
   const { user, avatarUrl, applyNickname, applyAvatar } = useAuth();
+  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
 
   // ニックネーム
@@ -137,14 +139,10 @@ function AccountForm({ t, initialNickname, email }: { t: Record<string, string>;
     setDone(false);
   }
 
-  // 変更をすべて取り消して元の状態に戻す。
-  function reset() {
-    setValue(initialNickname);
-    setStatus('idle');
-    setPendingBlob(null);
-    setPendingPreview(null);
-    setRemovePhoto(false);
-    setError(''); setDone(false);
+  // キャンセル: 編集内容（ニックネーム・画像）を破棄してホームへ戻る（常に有効）。
+  // ページ遷移でコンポーネントがアンマウントされ、保留中の変更はそのまま破棄される。
+  function cancel() {
+    router.push(homeHref);
   }
 
   async function save() {
@@ -283,9 +281,8 @@ function AccountForm({ t, initialNickname, email }: { t: Record<string, string>;
           {saving ? '...' : t.save}
         </button>
         <button
-          onClick={reset}
-          disabled={saving || !dirty}
-          className="py-2.5 px-6 rounded-lg text-base font-semibold transition-colors disabled:opacity-40"
+          onClick={cancel}
+          className="py-2.5 px-6 rounded-lg text-base font-semibold transition-colors"
           style={{ background: 'var(--input-bg)', color: 'var(--text-2)', border: '1px solid var(--border-1)' }}
         >
           {t.cancel}
@@ -325,7 +322,7 @@ export default function AccountPage() {
           </div>
         ) : (
           <div className="rounded-2xl p-5 sm:p-6" style={{ background: 'var(--bg-card)' }}>
-            <AccountForm key={nickname ?? ''} t={t} initialNickname={nickname ?? displayName} email={user.email ?? ''} />
+            <AccountForm key={nickname ?? ''} t={t} initialNickname={nickname ?? displayName} email={user.email ?? ''} homeHref={home} />
           </div>
         )}
       </main>

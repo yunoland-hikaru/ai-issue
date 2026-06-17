@@ -39,6 +39,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: `RSS fetch failed: ${String(e)}` }, { status: 500 });
   }
 
+  // 直近記事で使ったストック写真IDを集めて重複画像を避ける（image_source_id列が無ければ無視）。
+  const usedSourceIds: string[] = [];
+  try {
+    const { data: used } = await supabase
+      .from('articles')
+      .select('image_source_id')
+      .not('image_source_id', 'is', null)
+      .order('created_at', { ascending: false })
+      .limit(60);
+    for (const r of (used as { image_source_id: string | null }[] | null) ?? []) {
+      if (r.image_source_id) usedSourceIds.push(r.image_source_id);
+    }
+  } catch { /* 列未追加などは無視 */ }
+
   for (const item of items) {
     if (results.collected >= limit) break;
 
@@ -75,13 +89,15 @@ export async function POST(req: NextRequest) {
     // どちらもライセンス上問題なし。RSS元画像（第三者著作物）は使わない。
     let imageUrl: string | null = null;
     let imageBuffer: Buffer | null = null;
+    let stockSourceId: string | null = null;
     let contentType = 'image/png';
     let ext = 'png';
 
     if (generated.image_keywords) {
-      const stock = await searchStockImage(generated.image_keywords);
+      const stock = await searchStockImage(generated.image_keywords, usedSourceIds);
       if (stock) {
-        imageBuffer = stock;
+        imageBuffer = stock.buffer;
+        stockSourceId = stock.sourceId;
         contentType = 'image/jpeg';
         ext = 'jpg';
       }
@@ -109,7 +125,7 @@ export async function POST(req: NextRequest) {
       results.errors.push(`Image unavailable (stock + AI both failed): ${item.title}`);
     }
 
-    const { error } = await supabase.from('articles').insert({
+    const { data: inserted, error } = await supabase.from('articles').insert({
       title_ja: generated.title_ja || item.title,
       title_ko: translation?.title_ko || null,
       title_en: translation?.title_en || null,
@@ -130,12 +146,21 @@ export async function POST(req: NextRequest) {
       hashtags_ko: translation?.hashtags_ko?.length ? translation.hashtags_ko : null,
       hashtags_en: translation?.hashtags_en?.length ? translation.hashtags_en : null,
       published_at: item.publishedAt,
-    });
+    }).select('id').single();
 
     if (error) {
       results.errors.push(`DB insert failed: ${item.url} — ${error.message}`);
     } else {
       results.collected++;
+      // 使用したストック写真IDを記録（次回以降の重複回避）。列が無ければ無視。同一バッチ内の重複も避ける。
+      if (stockSourceId && inserted?.id) {
+        usedSourceIds.unshift(stockSourceId);
+        const { error: srcErr } = await supabase
+          .from('articles')
+          .update({ image_source_id: stockSourceId })
+          .eq('id', inserted.id);
+        if (srcErr) { /* image_source_id列未追加などは無視 */ }
+      }
     }
   }
 

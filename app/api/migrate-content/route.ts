@@ -38,7 +38,7 @@ export async function POST() {
         if (generated.image_keywords) {
           const stock = await searchStockImage(generated.image_keywords);
           if (stock) {
-            imageBuffer = stock;
+            imageBuffer = stock.buffer;
             contentType = 'image/jpeg';
             ext = 'jpg';
           }

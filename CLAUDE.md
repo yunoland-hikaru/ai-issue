@@ -86,6 +86,8 @@ ALTER TABLE articles ADD COLUMN IF NOT EXISTS views integer NOT NULL DEFAULT 0;
 ALTER TABLE articles ADD COLUMN IF NOT EXISTS hashtags_ja text[];
 ALTER TABLE articles ADD COLUMN IF NOT EXISTS hashtags_ko text[];
 ALTER TABLE articles ADD COLUMN IF NOT EXISTS hashtags_en text[];
+ALTER TABLE articles ADD COLUMN IF NOT EXISTS image_source_id text;
+-- ↑ image_source_id: 採用したPexels写真ID。collectが直近60件のIDを集めて`searchStockImage(keywords, excludeIds)`に渡し、同じ写真の使い回しを避ける（記事間の画像重複防止）。未追加でも収集は動く（dedupeが無効になるだけ／best-effort update）。
 -- ↑ 記事の重要キーワードのハッシュタグ(言語別)。記事ページ下部にチップ表示、英語(hashtags_en)はRSS(/feed.xml)経由でXツイートに付与。未追加でも収集は動く(null扱い)。
 -- ↑ views: 記事閲覧数。MOST POPULARランキング(`/api/articles?sort=popular`)の元データ。
 --   記事を開くと `/api/view` が+1。未追加でも sort=popular は新着順にフォールバックして動く。
