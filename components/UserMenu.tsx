@@ -20,7 +20,7 @@ const userIcon = (
 
 export default function UserMenu() {
   const { lang } = useLang();
-  const { user, signOut, displayName } = useAuth();
+  const { user, signOut, displayName, avatarUrl } = useAuth();
   const l = LABELS[lang];
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -50,20 +50,38 @@ export default function UserMenu() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold transition-opacity hover:opacity-90"
+        className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold overflow-hidden transition-opacity hover:opacity-90"
         style={{ background: 'var(--accent)', color: '#fff' }}
         aria-label={l.account}
       >
-        {initial}
+        {avatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
+        ) : (
+          initial
+        )}
       </button>
       {open && (
         <div
           className="absolute right-0 mt-2 w-56 rounded-xl shadow-xl overflow-hidden z-50 border"
           style={{ background: 'var(--bg-card)', borderColor: 'var(--border-1)' }}
         >
-          <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--border-2)' }}>
-            <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-1)' }}>{name}</p>
-            <p className="text-xs truncate" style={{ color: 'var(--text-4)' }}>{user.email}</p>
+          <div className="px-4 py-3 border-b flex items-center gap-3" style={{ borderColor: 'var(--border-2)' }}>
+            <span
+              className="w-9 h-9 shrink-0 rounded-full flex items-center justify-center text-sm font-bold overflow-hidden"
+              style={{ background: 'var(--accent)', color: '#fff' }}
+            >
+              {avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
+              ) : (
+                initial
+              )}
+            </span>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-1)' }}>{name}</p>
+              <p className="text-xs truncate" style={{ color: 'var(--text-4)' }}>{user.email}</p>
+            </div>
           </div>
           <Link
             href={localePath(lang, '/account')}

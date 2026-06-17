@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import { useLang } from '@/contexts/LangContext';
@@ -16,21 +16,144 @@ const T: Record<Language, Record<string, string>> = {
     title: 'マイページ', nicknameLabel: 'ニックネーム', email: 'メールアドレス', save: '保存', saved: '保存しました',
     checking: '確認中…', available: '使用できます', taken: 'すでに使用されています', invalid: '2〜20文字で入力してください',
     err: 'エラーが発生しました。', loginNeeded: 'ログインが必要です', login: 'ログイン', home: 'ホーム',
+    avatarLabel: 'プロフィール画像', change: '画像を変更', remove: '削除', uploading: 'アップロード中…', avatarHint: 'JPG・PNG・WebP / 2MBまで',
   },
   ko: {
     title: '마이페이지', nicknameLabel: '닉네임', email: '이메일', save: '저장', saved: '저장되었습니다',
     checking: '확인 중…', available: '사용 가능합니다', taken: '이미 사용 중입니다', invalid: '2~20자로 입력해 주세요',
     err: '오류가 발생했습니다.', loginNeeded: '로그인이 필요합니다', login: '로그인', home: '홈',
+    avatarLabel: '프로필 사진', change: '사진 변경', remove: '삭제', uploading: '업로드 중…', avatarHint: 'JPG·PNG·WebP / 최대 2MB',
   },
   en: {
     title: 'My Page', nicknameLabel: 'Nickname', email: 'Email', save: 'Save', saved: 'Saved',
     checking: 'Checking…', available: 'Available', taken: 'Already taken', invalid: 'Use 2–20 characters',
     err: 'Something went wrong.', loginNeeded: 'Login required', login: 'Log in', home: 'Home',
+    avatarLabel: 'Profile photo', change: 'Change photo', remove: 'Remove', uploading: 'Uploading…', avatarHint: 'JPG, PNG, WebP / up to 2MB',
   },
 };
 
 const fieldStyle = { color: 'var(--text-1)', background: 'var(--input-bg)', border: '1px solid var(--border-1)' } as const;
 const inputCls = 'w-full rounded-lg px-3 py-2.5 text-base focus:outline-none focus:ring-1 focus:ring-[var(--accent)]';
+
+// 画像をブラウザ側で256pxの正方形にリサイズ → JPEG Blob を返す（容量を抑える）。
+async function resizeToSquare(file: File, size = 256): Promise<Blob> {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = document.createElement('img');
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve();
+      img.onerror = () => reject(new Error('image load failed'));
+      img.src = url;
+    });
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('no canvas');
+    const scale = Math.max(size / img.width, size / img.height);
+    const w = img.width * scale;
+    const h = img.height * scale;
+    ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+    return await new Promise<Blob>((resolve, reject) =>
+      canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('toBlob failed'))), 'image/jpeg', 0.85),
+    );
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+// プロフィール画像のアップロード/削除フォーム。
+function AvatarForm({ t }: { t: Record<string, string> }) {
+  const { avatarUrl, displayName, applyAvatar } = useAuth();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const initial = displayName.charAt(0).toUpperCase();
+
+  async function token() {
+    const { data } = await getBrowserClient().auth.getSession();
+    return data.session?.access_token ?? '';
+  }
+
+  async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { setError(t.err); return; }
+    setBusy(true); setError('');
+    try {
+      const blob = await resizeToSquare(file);
+      const fd = new FormData();
+      fd.append('file', blob, 'avatar.jpg');
+      const res = await fetch('/api/avatar', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${await token()}` },
+        body: fd,
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'failed');
+      applyAvatar(json.url as string);
+    } catch { setError(t.err); }
+    finally { setBusy(false); }
+  }
+
+  async function onRemove() {
+    setBusy(true); setError('');
+    try {
+      const res = await fetch('/api/avatar', {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${await token()}` },
+      });
+      if (!res.ok) throw new Error('failed');
+      applyAvatar(null);
+    } catch { setError(t.err); }
+    finally { setBusy(false); }
+  }
+
+  return (
+    <div>
+      <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-2)' }}>{t.avatarLabel}</label>
+      <div className="flex items-center gap-4">
+        <span
+          className="w-16 h-16 shrink-0 rounded-full flex items-center justify-center text-xl font-bold overflow-hidden"
+          style={{ background: 'var(--accent)', color: '#fff' }}
+        >
+          {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
+          ) : (
+            initial
+          )}
+        </span>
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => inputRef.current?.click()}
+              disabled={busy}
+              className="py-1.5 px-4 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-40"
+              style={{ background: 'var(--accent)', color: '#fff' }}
+            >
+              {busy ? t.uploading : t.change}
+            </button>
+            {avatarUrl && (
+              <button
+                onClick={onRemove}
+                disabled={busy}
+                className="py-1.5 px-4 rounded-lg text-sm font-semibold transition-colors disabled:opacity-40"
+                style={{ background: 'var(--input-bg)', color: 'var(--text-2)', border: '1px solid var(--border-1)' }}
+              >
+                {t.remove}
+              </button>
+            )}
+          </div>
+          <span className="text-xs" style={{ color: 'var(--text-4)' }}>{t.avatarHint}</span>
+        </div>
+      </div>
+      {error && <p className="text-sm mt-2" style={{ color: 'var(--accent)' }}>{error}</p>}
+      <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={onPick} className="hidden" />
+    </div>
+  );
+}
 
 // ニックネーム編集フォーム。key={現在のニックネーム} で再マウントし初期値を同期する。
 function NicknameForm({ t, initial }: { t: Record<string, string>; initial: string }) {
@@ -139,6 +262,7 @@ export default function AccountPage() {
           </div>
         ) : (
           <div className="rounded-2xl p-5 sm:p-6 space-y-5" style={{ background: 'var(--bg-card)' }}>
+            <AvatarForm t={t} />
             <div>
               <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--text-2)' }}>{t.email}</label>
               <input value={user.email ?? ''} readOnly className={inputCls} style={{ ...fieldStyle, color: 'var(--text-4)' }} />

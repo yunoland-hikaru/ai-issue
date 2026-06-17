@@ -8,20 +8,24 @@ interface AuthContextValue {
   user: User | null;
   loading: boolean;
   nickname: string | null;
+  avatarUrl: string | null;
   displayName: string;
   needsNickname: boolean;
   signOut: () => Promise<void>;
   applyNickname: (n: string) => void;
+  applyAvatar: (url: string | null) => void;
 }
 
 const AuthContext = createContext<AuthContextValue>({
   user: null,
   loading: true,
   nickname: null,
+  avatarUrl: null,
   displayName: '',
   needsNickname: false,
   signOut: async () => {},
   applyNickname: () => {},
+  applyAvatar: () => {},
 });
 
 /** ログイン状態 + profiles(ニックネーム)を供給。ニックネーム未設定なら needsNickname=true。 */
@@ -29,6 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [nickname, setNickname] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [profilesOk, setProfilesOk] = useState(true); // profilesテーブル未作成時はモーダルを強制しない
 
@@ -37,11 +42,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let active = true;
 
     async function loadProfile(u: User | null) {
-      if (!u) { setNickname(null); setProfileLoaded(true); return; }
-      const { data, error } = await sb.from('profiles').select('nickname').eq('id', u.id).maybeSingle();
+      if (!u) { setNickname(null); setAvatarUrl(null); setProfileLoaded(true); return; }
+      // select('*') にして avatar_url 列が未追加でもエラーにしない（nickname読み込みを壊さない）。
+      const { data, error } = await sb.from('profiles').select('*').eq('id', u.id).maybeSingle();
       if (!active) return;
-      if (error) { setProfilesOk(false); setNickname(null); }
-      else { setProfilesOk(true); setNickname((data?.nickname as string) ?? null); }
+      if (error) { setProfilesOk(false); setNickname(null); setAvatarUrl(null); }
+      else {
+        setProfilesOk(true);
+        setNickname((data?.nickname as string) ?? null);
+        setAvatarUrl((data?.avatar_url as string) ?? null);
+      }
       setProfileLoaded(true);
     }
 
@@ -63,6 +73,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   function applyNickname(n: string) {
     setNickname(n);
   }
+  function applyAvatar(url: string | null) {
+    setAvatarUrl(url);
+  }
 
   const md = (user?.user_metadata ?? {}) as Record<string, unknown>;
   const displayName =
@@ -72,7 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const needsNickname = !!user && profileLoaded && profilesOk && !nickname;
 
   return (
-    <AuthContext.Provider value={{ user, loading, nickname, displayName, needsNickname, signOut, applyNickname }}>
+    <AuthContext.Provider value={{ user, loading, nickname, avatarUrl, displayName, needsNickname, signOut, applyNickname, applyAvatar }}>
       {children}
     </AuthContext.Provider>
   );

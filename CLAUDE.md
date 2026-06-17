@@ -105,6 +105,11 @@ CREATE TABLE IF NOT EXISTS contacts (
   created_at timestamptz DEFAULT now()
 );
 
+-- ログインユーザーのプロフィール画像(アバター)。profilesは id/nickname/created_at/updated_at が既存。
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS avatar_url text;
+-- ↑ 未追加だとアバター保存(POST /api/avatar)が失敗する（読み込み側はselect('*')なので壊れない＝頭文字表示にフォールバック）。
+-- 画像は Supabase Storage の `avatars` バケット(Public)に保存。アップロードは service role 経由(/api/avatar)なのでStorage RLS設定は不要。
+
 ## 環境変数（.env.local / Vercel 両方に）
 
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `PEXELS_API_KEY`（無料ストック）, `LOGODEV_TOKEN`（高解像度ロゴ、pk_...）。
