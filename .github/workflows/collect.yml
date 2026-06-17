@@ -35,7 +35,7 @@ jobs:
             echo "force=true → skip probability & delay, collect now"
           fi
 
-          # ランダムなソースから1本（0=AI Times, 1=TechCrunch, 2=VentureBeat, 3=The Verge）
+          # ランダムなソースから1本（0=OpenAI, 1=Google DeepMind, 2=Hugging Face, 3=arXiv）
           SOURCE=$((RANDOM % 4))
           echo "→ collecting source=$SOURCE"
 

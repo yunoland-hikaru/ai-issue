@@ -1,16 +1,19 @@
 import Parser from 'rss-parser';
 
 const parser = new Parser({
+  headers: { 'User-Agent': 'Mozilla/5.0 (compatible; AIissueBot/1.0; +https://ai-issue.com)' },
   customFields: {
     item: ['media:content', 'media:thumbnail', 'enclosure'],
   },
 });
 
+// 出典は「公開・拡散を意図した一次情報源（公式AIブログ/研究）」のみ。
+// 二次ニュース媒体や「AI学習・活用禁止」を明記する媒体（旧AI Times等）は著作権リスクのため使わない。
 export const RSS_SOURCES = [
-  { url: 'https://www.aitimes.com/rss/allArticle.xml', lang: 'ko', name: 'AI Times' },
-  { url: 'https://techcrunch.com/feed/', lang: 'en', name: 'TechCrunch' },
-  { url: 'https://venturebeat.com/feed/', lang: 'en', name: 'VentureBeat' },
-  { url: 'https://www.theverge.com/rss/ai-artificial-intelligence/index.xml', lang: 'en', name: 'The Verge' },
+  { url: 'https://openai.com/news/rss.xml', lang: 'en', name: 'OpenAI' },
+  { url: 'https://deepmind.google/blog/rss.xml', lang: 'en', name: 'Google DeepMind' },
+  { url: 'https://huggingface.co/blog/feed.xml', lang: 'en', name: 'Hugging Face' },
+  { url: 'https://rss.arxiv.org/rss/cs.AI', lang: 'en', name: 'arXiv' },
 ] as const;
 
 export interface RssItem {
