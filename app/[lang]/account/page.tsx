@@ -14,21 +14,21 @@ type Status = 'idle' | 'checking' | 'ok' | 'taken' | 'invalid';
 
 const T: Record<Language, Record<string, string>> = {
   ja: {
-    title: 'マイページ', nicknameLabel: 'ニックネーム', email: 'メールアドレス', save: '保存', saved: '保存しました',
+    title: 'マイページ', nicknameLabel: 'ニックネーム', email: 'メールアドレス', save: '保存', cancel: 'キャンセル', saved: '保存しました',
     checking: '確認中…', available: '使用できます', taken: 'すでに使用されています', invalid: '2〜15文字・記号は使えません',
     err: 'エラーが発生しました。', loginNeeded: 'ログインが必要です', login: 'ログイン', home: 'ホーム',
     avatarLabel: 'プロフィール画像', change: '画像を選択', remove: '削除', uploading: 'アップロード中…', avatarHint: 'JPG・PNG・WebP / 2MBまで',
     nicknameHint: 'ニックネームは15文字以内で、記号（特殊文字）は使用できません。',
   },
   ko: {
-    title: '마이페이지', nicknameLabel: '닉네임', email: '이메일', save: '저장', saved: '저장되었습니다',
+    title: '마이페이지', nicknameLabel: '닉네임', email: '이메일', save: '저장', cancel: '취소', saved: '저장되었습니다',
     checking: '확인 중…', available: '사용 가능합니다', taken: '이미 사용 중입니다', invalid: '2~15자, 특수문자는 사용할 수 없습니다',
     err: '오류가 발생했습니다.', loginNeeded: '로그인이 필요합니다', login: '로그인', home: '홈',
     avatarLabel: '프로필 사진', change: '사진 선택', remove: '삭제', uploading: '업로드 중…', avatarHint: 'JPG·PNG·WebP / 최대 2MB',
     nicknameHint: '닉네임은 15자 이하로 정하고 특수문자는 허용되지 않습니다.',
   },
   en: {
-    title: 'My Page', nicknameLabel: 'Nickname', email: 'Email', save: 'Save', saved: 'Saved',
+    title: 'My Page', nicknameLabel: 'Nickname', email: 'Email', save: 'Save', cancel: 'Cancel', saved: 'Saved',
     checking: 'Checking…', available: 'Available', taken: 'Already taken', invalid: '2–15 characters, no symbols',
     err: 'Something went wrong.', loginNeeded: 'Login required', login: 'Log in', home: 'Home',
     avatarLabel: 'Profile photo', change: 'Choose image', remove: 'Remove', uploading: 'Uploading…', avatarHint: 'JPG, PNG, WebP / up to 2MB',
@@ -135,6 +135,16 @@ function AccountForm({ t, initialNickname, email }: { t: Record<string, string>;
     setPendingPreview(null);
     setRemovePhoto(true);
     setDone(false);
+  }
+
+  // 変更をすべて取り消して元の状態に戻す。
+  function reset() {
+    setValue(initialNickname);
+    setStatus('idle');
+    setPendingBlob(null);
+    setPendingPreview(null);
+    setRemovePhoto(false);
+    setError(''); setDone(false);
   }
 
   async function save() {
@@ -263,14 +273,24 @@ function AccountForm({ t, initialNickname, email }: { t: Record<string, string>;
       {error && <p className="text-sm" style={{ color: 'var(--accent)' }}>{error}</p>}
       {done && <p className="text-sm" style={{ color: '#16a34a' }}>{t.saved}</p>}
 
-      <button
-        onClick={save}
-        disabled={!canSave}
-        className="w-full py-2.5 rounded-lg text-base font-semibold transition-opacity hover:opacity-90 disabled:opacity-40"
-        style={{ background: 'var(--accent)', color: '#fff' }}
-      >
-        {saving ? '...' : t.save}
-      </button>
+      <div className="flex gap-2">
+        <button
+          onClick={save}
+          disabled={!canSave}
+          className="flex-1 py-2.5 rounded-lg text-base font-semibold transition-opacity hover:opacity-90 disabled:opacity-40"
+          style={{ background: 'var(--accent)', color: '#fff' }}
+        >
+          {saving ? '...' : t.save}
+        </button>
+        <button
+          onClick={reset}
+          disabled={saving || !dirty}
+          className="py-2.5 px-6 rounded-lg text-base font-semibold transition-colors disabled:opacity-40"
+          style={{ background: 'var(--input-bg)', color: 'var(--text-2)', border: '1px solid var(--border-1)' }}
+        >
+          {t.cancel}
+        </button>
+      </div>
 
       <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={onPick} className="hidden" />
     </div>

@@ -47,13 +47,14 @@ const STRINGS: Record<Language, Record<string, string>> = {
 
 export default function ArticleComments({ articleId }: { articleId: string }) {
   const { lang } = useLang();
-  const { user, displayName } = useAuth();
+  const { user, displayName, avatarUrl } = useAuth();
   const router = useRouter();
   const s = STRINGS[lang];
   const loginHref = localePath(lang, '/login');
   const uid = user?.id;
 
   const [comments, setComments] = useState<Comment[]>([]);
+  const [avatars, setAvatars] = useState<Record<string, string>>({}); // user_id -> avatar_url
   const [likes, setLikes] = useState<Record<string, LikeState>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -80,6 +81,20 @@ export default function ArticleComments({ articleId }: { articleId: string }) {
         const list = ((cs as Comment[]) ?? []).filter((c) => !c.hidden);
         setComments(list);
         setLoading(false);
+
+        // コメント投稿者のアバター（profiles.avatar_url）をまとめて取得（ベストエフォート）
+        const userIds = [...new Set(list.map((c) => c.user_id))];
+        if (userIds.length) {
+          try {
+            const { data: ps } = await sb.from('profiles').select('id, avatar_url').in('id', userIds);
+            if (!alive) return;
+            const amap: Record<string, string> = {};
+            (ps as { id: string; avatar_url: string | null }[] | null ?? []).forEach((p) => {
+              if (p.avatar_url) amap[p.id] = p.avatar_url;
+            });
+            setAvatars(amap);
+          } catch { /* avatar_url列なし等は無視（頭文字表示にフォールバック） */ }
+        }
 
         // いいね（テーブル未作成でもコメントは表示。ベストエフォート）
         const ids = list.map((c) => c.id);
@@ -115,6 +130,7 @@ export default function ArticleComments({ articleId }: { articleId: string }) {
     const row = data as Comment;
     setComments((c) => [...c, row]);
     setLikes((m) => ({ ...m, [row.id]: { count: 0, liked: false } }));
+    if (avatarUrl) setAvatars((m) => ({ ...m, [user!.id]: avatarUrl }));
     // 管理者へ新規コメント通知（best-effort）
     fetch('/api/notify-comment', {
       method: 'POST',
@@ -188,11 +204,17 @@ export default function ArticleComments({ articleId }: { articleId: string }) {
     const mine = user?.id === c.user_id;
     const lk = likes[c.id] ?? { count: 0, liked: false };
     const initial = (c.author_name || 'U').charAt(0).toUpperCase();
+    const av = avatars[c.user_id];
 
     return (
       <div key={c.id} className="flex gap-3">
-        <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style={{ background: 'var(--accent)', color: '#fff' }}>
-          {initial}
+        <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold overflow-hidden" style={{ background: 'var(--accent)', color: '#fff' }}>
+          {av ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={av} alt="" className="w-full h-full object-cover" />
+          ) : (
+            initial
+          )}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
