@@ -17,25 +17,26 @@ export async function POST(req: NextRequest) {
 
   // 翻訳済み（content_ko あり）の新しめの記事を広めに取得し、JS側で訳し漏れを判定する。
   // （Supabaseクエリで日本語混入を直接フィルタできないため、候補を取得してから絞り込む）
+  // 原文(content_ja)がある記事を広めに取得。ko/en の欠落・残留は JS 側で判定する。
+  // ※ content_ko で絞ると「タイトルに日本語が残るが本文がnull」の記事を取りこぼすため content_ja 基準にする。
   const { data: candidates, error } = await supabase
     .from('articles')
     .select('id, title_ja, summary_ja, content_ja, hashtags_ja, title_ko, summary_ko, content_ko, title_en, summary_en, content_en')
-    .not('content_ko', 'is', null)
+    .not('content_ja', 'is', null)
     .order('created_at', { ascending: false })
     .limit(200);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  // ko/en のいずれかに日本語の文字が残っている記事だけを対象に。
-  const targets = (candidates ?? [])
-    .filter((a) =>
-      a.content_ja &&
-      hasJpResidue(a.title_ko, a.summary_ko, a.content_ko, a.title_en, a.summary_en, a.content_en),
-    )
-    .slice(0, limit);
+  // 対象: ①ko/en のいずれかに日本語の文字が残っている、または ②ko/en の本文・タイトルが欠落している記事。
+  const needsFix = (a: NonNullable<typeof candidates>[number]) =>
+    !a.title_ko || !a.content_ko || !a.title_en || !a.content_en ||
+    hasJpResidue(a.title_ko, a.summary_ko, a.content_ko, a.title_en, a.summary_en, a.content_en);
+
+  const targets = (candidates ?? []).filter(needsFix).slice(0, limit);
 
   if (targets.length === 0) {
-    return NextResponse.json({ updated: 0, message: '対象記事なし（ko/enに日本語の残留は見つからず）' });
+    return NextResponse.json({ updated: 0, message: '対象記事なし（ko/enの欠落・日本語残留は見つからず）' });
   }
 
   const results = { updated: 0, scanned: candidates?.length ?? 0, errors: [] as string[] };

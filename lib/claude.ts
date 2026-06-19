@@ -187,9 +187,14 @@ export async function translateArticle(
   hashtagsJa: string[] = [],
 ): Promise<ArticleTranslation> {
   const result = await runTranslation(titleJa, summaryJa, contentJa, hashtagsJa, false);
-  if (jpResidueCount(result) === 0) return result;
-  // 日本語が残っている → 強い注意を付けて1回だけ再翻訳。残りが少ない方を採用。
+  const empty = !result.content_ko && !result.content_en; // JSON解析失敗（崩れた出力）
+  // 訳し漏れ無し かつ 中身あり ならそのまま採用。
+  if (!empty && jpResidueCount(result) === 0) return result;
+  // 日本語が残った or 解析失敗で空 → 強い注意を付けて1回だけ再翻訳。
   const retry = await runTranslation(titleJa, summaryJa, contentJa, hashtagsJa, true);
+  const retryEmpty = !retry.content_ko && !retry.content_en;
+  if (retryEmpty) return result;        // 再試行も空なら最初の結果（壊さない）
+  if (empty) return retry;              // 最初が空・再試行は中身あり → 再試行を採用
   return jpResidueCount(retry) < jpResidueCount(result) ? retry : result;
 }
 
