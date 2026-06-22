@@ -48,6 +48,7 @@ export async function POST(req: NextRequest) {
         article.summary_ja ?? article.title_ja,
         article.content_ja as string,
         article.hashtags_ja ?? [],
+        { retryOnResidue: true }, // 訳し漏れ修正が本業の非同期バックストップなので再試行を有効化
       );
       if (!t.content_ko && !t.content_en) {
         results.errors.push(`Empty translation: ${article.id}`);

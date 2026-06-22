@@ -179,14 +179,21 @@ export function hasJpResidue(...vals: (string | null | undefined)[]): boolean {
 }
 
 // 日本語記事（タイトル・要約・本文・ハッシュタグ）を韓国語・英語に翻訳。
-// ko/en に日本語の文字が残った場合は訳し漏れとみなし、一度だけ強めて再試行する。
+// retryOnResidue=true のときだけ、ko/en に日本語の文字が残った場合に一度強めて再試行する。
+//   - collect/migrate-content（Vercel 60秒のホットパス）は false（Haiku 1回のみ＝高速）。
+//     訳し漏れ・空訳は後追いの POST /api/migrate-translations が拾って修正する。
+//   - migrate-translations（訳し漏れ修正が本業の非同期バックストップ）は true で呼ぶ。
+// ※ 以前は常に再試行していたが、本文長文化と相まって 1記事の生成が 60秒を超えて
+//   collect が頻繁にタイムアウトしていたため、ホットパスでは再試行を切る。
 export async function translateArticle(
   titleJa: string,
   summaryJa: string,
   contentJa: string,
   hashtagsJa: string[] = [],
+  opts: { retryOnResidue?: boolean } = {},
 ): Promise<ArticleTranslation> {
   const result = await runTranslation(titleJa, summaryJa, contentJa, hashtagsJa, false);
+  if (!opts.retryOnResidue) return result; // 高速パス: 再試行しない（後追いで補正）
   const empty = !result.content_ko && !result.content_en; // JSON解析失敗（崩れた出力）
   // 訳し漏れ無し かつ 中身あり ならそのまま採用。
   if (!empty && jpResidueCount(result) === 0) return result;
