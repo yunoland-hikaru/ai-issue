@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
@@ -10,6 +10,7 @@ import { formatDateTime } from '@/lib/utils';
 import { companyNameFromLogoUrl } from '@/lib/logo';
 import { getClient } from '@/lib/supabase';
 import { localePath } from '@/lib/i18n';
+import { trackEvent } from '@/lib/gtag';
 import ArticleComments from './ArticleComments';
 import type { Article } from '@/types';
 
@@ -24,6 +25,29 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
   const { lang } = useLang();
   const article = initialArticle;
   const [related, setRelated] = useState<Article[]>([]);
+  const [shared, setShared] = useState(false);
+  const bodyRef = useRef<HTMLDivElement>(null);
+
+  // 精読計測: 本文を75%までスクロールしたら一度だけ article_read を送る（GA Key event候補）。
+  useEffect(() => {
+    const el = bodyRef.current;
+    if (!el) return;
+    let fired = false;
+    const onScroll = () => {
+      if (fired) return;
+      const rect = el.getBoundingClientRect();
+      // 本文上端からの読了率 =（画面下端 − 本文上端）/ 本文高さ
+      const read = rect.height > 0 ? (window.innerHeight - rect.top) / rect.height : 0;
+      if (read >= 0.75) {
+        fired = true;
+        trackEvent('article_read', { article_id: article.id, percent: 75 });
+        window.removeEventListener('scroll', onScroll);
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll(); // 画面に収まる短い記事も拾う
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [article.id]);
 
   useEffect(() => {
     const id = article.id;
@@ -62,6 +86,25 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
   const company = companyNameFromLogoUrl(article.logo_url);
   const ytId = article.video_url ? extractYouTubeId(article.video_url) : null;
 
+  // シェア: Web Share API があればネイティブ共有、無ければURLをクリップボードへコピー。
+  // 完了時のみ share イベントを送る（キャンセルは計測しない）。
+  const shareLabel = lang === 'ko' ? '공유' : lang === 'en' ? 'Share' : 'シェア';
+  const sharedLabel = lang === 'ko' ? '복사됨' : lang === 'en' ? 'Copied' : 'コピーしました';
+  async function handleShare() {
+    const url = window.location.href;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, url });
+        trackEvent('share', { method: 'web_share', article_id: article.id });
+      } else {
+        await navigator.clipboard.writeText(url);
+        setShared(true);
+        trackEvent('share', { method: 'clipboard', article_id: article.id });
+        setTimeout(() => setShared(false), 2000);
+      }
+    } catch { /* ユーザーがキャンセル / 権限拒否 */ }
+  }
+
   // 作成者バイライン + 著作権の主張（自社で事実から独自作成した独立著作物）。
   const author = lang === 'ko' ? 'AI issue 편집부' : lang === 'en' ? 'AI issue Staff' : 'AI issue 編集部';
   const creditNote =
@@ -93,6 +136,19 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
             </span>
           )}
           <span className="text-sm" style={{ color: 'var(--text-4)' }}>{formatDateTime(article.created_at, lang)}</span>
+          <button
+            type="button"
+            onClick={handleShare}
+            className="ml-auto inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1 rounded-full transition-colors hover:text-[var(--accent)]"
+            style={{ background: 'var(--input-bg)', color: 'var(--text-3)' }}
+            aria-label={shareLabel}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+            </svg>
+            {shared ? sharedLabel : shareLabel}
+          </button>
         </div>
 
         {/* Title */}
@@ -125,6 +181,7 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
         {/* Article body */}
         {content && (
           <div
+            ref={bodyRef}
             className="leading-relaxed text-base sm:text-lg space-y-4 mb-8"
             style={{ color: 'var(--text-2)' }}
             dangerouslySetInnerHTML={{ __html: content }}

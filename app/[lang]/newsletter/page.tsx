@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import { useLang } from '@/contexts/LangContext';
 import { localePath } from '@/lib/i18n';
+import { trackEvent } from '@/lib/gtag';
 
 export default function NewsletterPage() {
   const { t, lang } = useLang();
@@ -42,6 +43,8 @@ export default function NewsletterPage() {
       if (res.ok) {
         setStatus('done');
         setMessage(data.alreadyRegistered ? f.alreadyRegistered : f.thanks);
+        // 新規購読のみ転換として計測（既登録は除外）
+        if (!data.alreadyRegistered) trackEvent('sign_up', { method: 'newsletter' });
       } else {
         setStatus('error');
         setMessage(f.errorMsg);
