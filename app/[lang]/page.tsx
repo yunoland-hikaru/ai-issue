@@ -7,8 +7,10 @@ import HomeView from './HomeView';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://ai-issue.com';
 
-// ニュースは頻繁に増えるため1分ごとに再生成（ISR）。SEOの静的配信と鮮度を両立。
-export const revalidate = 60;
+// ニュースは約2時間に1本ペースなので10分ごとの再生成で十分（ISR）。
+// SEOの静的配信と鮮度を両立しつつ、ISR Writes（Vercel無料枠20万/月）を抑える。
+// ※ 以前は60秒だったが 3ロケール×毎分再生成で書き込みが膨らみ無料枠の75%に達したため緩和。
+export const revalidate = 600;
 
 // ホームの言語別タイトル/説明（共有カード・OG・検索用）。
 const HOME_META: Record<Language, { title: string; description: string }> = {
