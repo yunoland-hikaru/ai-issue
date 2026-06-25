@@ -83,12 +83,15 @@ jobs:
       # して表示されてしまう。migrate-translations が ja 原文から ko/en を再翻訳して上書きする。
       # ・常に実行（収集をスキップ/失敗したスロットでも未訳記事は直す）= if: always()
       # ・このステップ自体は失敗させない（収集の成否と無関係。失敗メールのノイズを増やさない）
+      # ・limit=2: 長文の Haiku 翻訳は1件 ≈ 25〜30秒。Vercel 60秒制限内に収めるため2件まで。
+      #   （途中で切れても順次 DB 反映するので前の件は残る。12スロット×85%×2 ≈ 20件/日で
+      #    新規 ~10件/日を上回り、過去の取りこぼしも徐々に解消する）
       - name: Backfill missing / residual translations
         if: always()
         run: |
           echo "→ fixing untranslated / JP-residue articles"
-          RESPONSE=$(curl -sS --max-time 180 -w $'\n%{http_code}' \
-            -X POST "https://ai-issue.vercel.app/api/migrate-translations?limit=3" || true)
+          RESPONSE=$(curl -sS --max-time 90 -w $'\n%{http_code}' \
+            -X POST "https://ai-issue.vercel.app/api/migrate-translations?limit=2" || true)
           HTTP_CODE=$(printf '%s' "$RESPONSE" | tail -n1)
           BODY=$(printf '%s' "$RESPONSE" | sed '$d')
           echo "HTTP $HTTP_CODE"
