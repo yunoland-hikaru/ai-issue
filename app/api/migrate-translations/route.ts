@@ -76,10 +76,10 @@ export async function POST(req: NextRequest) {
   }
 
   // ko/en を埋めたらホーム(ISR)を無効化し、翻訳済みタイトルを即反映。
-  // collect は ja のみ保存→ここで ko/en が付くため、ko/en ホームの再生成が要る。
+  // ja 原文はここでは変えないため ja は再検証しない（無駄な ISR Write を避ける）。
   if (results.updated > 0) {
     try {
-      for (const l of ['ja', 'ko', 'en']) revalidatePath(`/${l}`);
+      for (const l of ['ko', 'en']) revalidatePath(`/${l}`);
     } catch (e) {
       results.errors.push(`Revalidate failed: ${String(e)}`);
     }
