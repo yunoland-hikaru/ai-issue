@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getServiceClient } from '@/lib/supabase';
 import { generateArticle } from '@/lib/claude';
 import { generateImage } from '@/lib/openai';
@@ -75,6 +76,15 @@ export async function POST(req: NextRequest) {
       else results.updated++;
     } catch (e) {
       results.errors.push(`Failed: ${article.id} — ${String(e)}`);
+    }
+  }
+
+  // 画像を埋めたらホーム(ISR)を無効化し、カードのサムネイルを即反映。
+  if (results.updated > 0) {
+    try {
+      for (const l of ['ja', 'ko', 'en']) revalidatePath(`/${l}`);
+    } catch (e) {
+      results.errors.push(`Revalidate failed: ${String(e)}`);
     }
   }
 
