@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getServiceClient } from '@/lib/supabase';
 import { translateArticle, hasJpResidue } from '@/lib/claude';
 
@@ -71,6 +72,16 @@ export async function POST(req: NextRequest) {
       else results.updated++;
     } catch (e) {
       results.errors.push(`Failed: ${article.id} — ${String(e)}`);
+    }
+  }
+
+  // ko/en を埋めたらホーム(ISR)を無効化し、翻訳済みタイトルを即反映。
+  // collect は ja のみ保存→ここで ko/en が付くため、ko/en ホームの再生成が要る。
+  if (results.updated > 0) {
+    try {
+      for (const l of ['ja', 'ko', 'en']) revalidatePath(`/${l}`);
+    } catch (e) {
+      results.errors.push(`Revalidate failed: ${String(e)}`);
     }
   }
 

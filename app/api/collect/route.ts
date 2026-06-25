@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { fetchRssFeed, RSS_SOURCES } from '@/lib/rss';
 import { generateArticle } from '@/lib/claude';
 import type { GeneratedArticle } from '@/lib/claude';
@@ -162,6 +163,17 @@ export async function POST(req: NextRequest) {
       }
     } catch (e) {
       results.errors.push(`Image step failed: ${item.title} — ${String(e)}`);
+    }
+  }
+
+  // 新規記事が入ったら3ロケールのホーム(ISR revalidate=600)を即無効化。
+  // これをしないと新着が最大10分・ロケール別にバラついて反映される（F5で出ない/言語切替で出たり消えたり）。
+  // 再生成は新着が出た時だけ＝1日 ~10本×3 ≈ 30回/月900回で無料枠に対し無視できる。
+  if (results.collected > 0) {
+    try {
+      for (const l of ['ja', 'ko', 'en']) revalidatePath(`/${l}`);
+    } catch (e) {
+      results.errors.push(`Revalidate failed: ${String(e)}`);
     }
   }
 
