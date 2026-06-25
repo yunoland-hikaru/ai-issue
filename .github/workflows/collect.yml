@@ -76,3 +76,21 @@ jobs:
           fi
 
           echo "✅ collected $COLLECTED article(s)"
+
+      # 翻訳の後追い補正（バックストップ）。
+      # collect の高速パスは Haiku 翻訳を1回しか試さないため、稀に ko/en が空（JSON崩れ・
+      # 切り詰め）や日本語残留のまま保存される。その記事は ko/en ページで日本語にフォールバック
+      # して表示されてしまう。migrate-translations が ja 原文から ko/en を再翻訳して上書きする。
+      # ・常に実行（収集をスキップ/失敗したスロットでも未訳記事は直す）= if: always()
+      # ・このステップ自体は失敗させない（収集の成否と無関係。失敗メールのノイズを増やさない）
+      - name: Backfill missing / residual translations
+        if: always()
+        run: |
+          echo "→ fixing untranslated / JP-residue articles"
+          RESPONSE=$(curl -sS --max-time 180 -w $'\n%{http_code}' \
+            -X POST "https://ai-issue.vercel.app/api/migrate-translations?limit=3" || true)
+          HTTP_CODE=$(printf '%s' "$RESPONSE" | tail -n1)
+          BODY=$(printf '%s' "$RESPONSE" | sed '$d')
+          echo "HTTP $HTTP_CODE"
+          echo "$BODY"
+          exit 0
