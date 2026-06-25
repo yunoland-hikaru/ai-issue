@@ -77,10 +77,11 @@ jobs:
 
           echo "✅ collected $COLLECTED article(s)"
 
-      # 翻訳の後追い補正（バックストップ）。
-      # collect の高速パスは Haiku 翻訳を1回しか試さないため、稀に ko/en が空（JSON崩れ・
-      # 切り詰め）や日本語残留のまま保存される。その記事は ko/en ページで日本語にフォールバック
-      # して表示されてしまう。migrate-translations が ja 原文から ko/en を再翻訳して上書きする。
+      # 翻訳の後追い（ko/en）。
+      # collect は 60秒(Vercel Hobby)に収めるため翻訳を行わず ja のみ保存する。ko/en は
+      # ここで埋める。migrate-translations は最新順に走査するので、直前の collect で作った
+      # 新規記事(ja のみ)が最優先で翻訳される＝新規記事も同 run 内・数十秒で ko/en が付く。
+      # 空訳・日本語残留の既存記事の補正も兼ねる。
       # ・常に実行（収集をスキップ/失敗したスロットでも未訳記事は直す）= if: always()
       # ・このステップ自体は失敗させない（収集の成否と無関係。失敗メールのノイズを増やさない）
       # ・limit=2: 長文の Haiku 翻訳は1件 ≈ 25〜30秒。Vercel 60秒制限内に収めるため2件まで。
@@ -89,9 +90,27 @@ jobs:
       - name: Backfill missing / residual translations
         if: always()
         run: |
-          echo "→ fixing untranslated / JP-residue articles"
+          echo "→ translating ja-only / fixing JP-residue articles (ko/en)"
           RESPONSE=$(curl -sS --max-time 90 -w $'\n%{http_code}' \
             -X POST "https://ai-issue.vercel.app/api/migrate-translations?limit=2" || true)
+          HTTP_CODE=$(printf '%s' "$RESPONSE" | tail -n1)
+          BODY=$(printf '%s' "$RESPONSE" | sed '$d')
+          echo "HTTP $HTTP_CODE"
+          echo "$BODY"
+          exit 0
+
+      # 画像の後追い（保険）。collect は画像を best-effort で同 request 内に付けるが、
+      # ごく稀に画像生成中に 60秒で打ち切られると image_url=null の記事が残る。これを補完する。
+      # ・image_url=null が0件なら migrate-images は即返す（Sonnet を呼ばない＝平時はコスト0）。
+      # ・limit=1: migrate-images は画像キーワード取得のため記事ごとに Sonnet を回す（重い）ので
+      #   1件のみ。Vercel 60秒内に収める。
+      # ・このステップ自体は失敗させない。
+      - name: Backfill missing images
+        if: always()
+        run: |
+          echo "→ filling articles with image_url=null"
+          RESPONSE=$(curl -sS --max-time 90 -w $'\n%{http_code}' \
+            -X POST "https://ai-issue.vercel.app/api/migrate-images?limit=1" || true)
           HTTP_CODE=$(printf '%s' "$RESPONSE" | tail -n1)
           BODY=$(printf '%s' "$RESPONSE" | sed '$d')
           echo "HTTP $HTTP_CODE"
