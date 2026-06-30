@@ -10,7 +10,7 @@ const ABOUT: Record<Language, { title: string; blocks: LegalBlock[] }> = {
   ja: {
     title: 'AI issue について',
     blocks: [
-      { t: 'p', text: 'AI issue は、日々生まれる大量のAI関連ニュースや新着AIツールの情報を自動で収集し、記者スタイルの読みやすい記事として届けるメディアです。「AIの世界を、毎日ひと目で。」をコンセプトに、忙しい毎日でも要点をすばやく把握できることを目指しています。' },
+      { t: 'p', text: 'AI issue は、日々生まれる大量のAI関連ニュースや新着AIツールの情報を、確かな事実をもとに記者スタイルの読みやすい独自記事として書き起こして届けるメディアです。「AIの世界を、毎日ひと目で。」をコンセプトに、忙しい毎日でも要点をすばやく把握できることを目指しています。' },
       { t: 'h2', text: '提供する情報' },
       { t: 'p', text: '記事は大きく3つのカテゴリに分けて提供しています。' },
       { t: 'ul', items: ['AI産業 — 企業・製品・投資・市場などのビジネス/業界動向', 'AI技術 — モデル・研究成果・新しいAIツール・技術的ブレイクスルー', '規制・政策 — 政府・法規制・倫理・安全性に関する話題'] },
@@ -28,7 +28,7 @@ const ABOUT: Record<Language, { title: string; blocks: LegalBlock[] }> = {
   ko: {
     title: 'AI issue 소개',
     blocks: [
-      { t: 'p', text: 'AI issue는 매일 쏟아지는 방대한 AI 관련 뉴스와 신규 AI 툴 정보를 자동으로 수집해, 기자 스타일의 읽기 쉬운 기사로 전달하는 미디어입니다. "AI 세상, 매일 한 눈에."를 모토로, 바쁜 일상에서도 핵심을 빠르게 파악할 수 있도록 돕습니다.' },
+      { t: 'p', text: 'AI issue는 매일 쏟아지는 방대한 AI 관련 뉴스와 신규 AI 툴 정보를, 확인된 사실을 바탕으로 기자 스타일의 읽기 쉬운 독자 기사로 새롭게 작성해 전달하는 미디어입니다. "AI 세상, 매일 한 눈에."를 모토로, 바쁜 일상에서도 핵심을 빠르게 파악할 수 있도록 돕습니다.' },
       { t: 'h2', text: '제공하는 정보' },
       { t: 'p', text: '기사는 크게 3가지 카테고리로 나누어 제공합니다.' },
       { t: 'ul', items: ['AI 산업 — 기업·제품·투자·시장 등 비즈니스/업계 동향', 'AI 기술 — 모델·연구 성과·신규 AI 툴·기술적 돌파구', '규제·정책 — 정부·법규제·윤리·안전성 관련 이슈'] },
@@ -46,12 +46,12 @@ const ABOUT: Record<Language, { title: string; blocks: LegalBlock[] }> = {
   en: {
     title: 'About AI issue',
     blocks: [
-      { t: 'p', text: 'AI issue automatically collects the flood of daily AI news and newly launched AI tools, and delivers them as clear, reporter-style articles. Guided by "The AI world, every day at a glance," we help you grasp the essentials quickly, even on a busy day.' },
+      { t: 'p', text: 'AI issue turns the flood of daily AI news and newly launched AI tools into clear, reporter-style original articles written from verified facts. Guided by "The AI world, every day at a glance," we help you grasp the essentials quickly, even on a busy day.' },
       { t: 'h2', text: 'What We Cover' },
       { t: 'p', text: 'Articles are organized into three broad categories.' },
       { t: 'ul', items: ['AI Industry — companies, products, investment, and market trends', 'AI Technology — models, research, new AI tools, and breakthroughs', 'Policy & Regulation — government, law, ethics, and safety'] },
       { t: 'h2', text: 'How Articles Are Made' },
-      { t: 'p', text: 'The AI issue editorial team extracts only the facts from curated public information, and AI uses those facts to write fresh articles in Japanese, Korean, and English. Rather than copying the original wording or structure, we gloss technical terms and rewrite everything into clear, easy-to-read prose — an original work in AI issue’s own voice. Copyright belongs to AI issue. Because articles are produced by AI, we do not guarantee 100% accuracy, completeness, or timeliness; for important decisions, please verify with primary sources (see our Editorial Policy for details).' },
+      { t: 'p', text: 'The AI issue editorial team extracts only the facts from selected public sources, and AI uses those facts to write fresh articles in Japanese, Korean, and English. Rather than copying the original wording or structure, we gloss technical terms and rewrite everything into clear, easy-to-read prose — an original work in AI issue’s own voice. Copyright belongs to AI issue. Because articles are produced by AI, we do not guarantee 100% accuracy, completeness, or timeliness; for important decisions, please verify with primary sources (see our Editorial Policy for details).' },
       { t: 'h2', text: 'Newsletter' },
       { t: 'p', text: 'Subscribe to receive a daily digest of AI news by email. You can unsubscribe at any time.' },
       { t: 'h2', text: 'Comments & Accounts' },

@@ -17,15 +17,15 @@ export const revalidate = 3600;
 const HOME_META: Record<Language, { title: string; description: string }> = {
   ja: {
     title: 'AI issue — AIの世界を、毎日ひと目で',
-    description: '毎日溢れるAI関連ニュース・新着AIツール情報をAIが自動収集し、わかりやすく届けるメディアです。',
+    description: '毎日溢れるAI関連ニュース・新着AIツール情報を、AIが事実をもとに独自記事として書き起こし、わかりやすく届けるAIニュースメディアです。',
   },
   ko: {
     title: 'AI issue — AI 세상, 매일 한 눈에',
-    description: '매일 쏟아지는 AI 관련 뉴스와 신규 AI 툴 정보를 AI가 자동 수집해 알기 쉽게 전달합니다.',
+    description: '매일 쏟아지는 AI 관련 뉴스와 신규 AI 툴 정보를, AI가 사실을 바탕으로 독자 기사로 새롭게 작성해 알기 쉽게 전달하는 AI 뉴스 미디어입니다.',
   },
   en: {
     title: 'AI issue — AI news, every day at a glance',
-    description: 'AI-curated daily news and new AI tools, made easy to read.',
+    description: 'Original, easy-to-read daily articles on AI news and new AI tools, written by AI from verified facts.',
   },
 };
 

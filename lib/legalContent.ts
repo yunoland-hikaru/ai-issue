@@ -110,7 +110,7 @@ export const TERMS: Record<Language, LegalDoc> = {
     blocks: [
       { t: 'p', text: '本規約は、AI issue（以下「本サービス」）の利用条件を定めるものです。' },
       { t: 'h2', text: '1. サービスの概要' },
-      { t: 'p', text: 'AI issueは、人工知能に関するニュースおよび新しいツール情報を自動的に収集・要約して提供するキュレーションサービスです。会員登録なしで記事の閲覧やニュースレターの購読をご利用いただけます。会員登録（任意）を行うと、記事へのコメント投稿が可能になります。' },
+      { t: 'p', text: 'AI issueは、人工知能に関するニュースや新しいツールの情報を、編集部が確認した事実をもとにAIが独自の記事として書き起こして提供するAIニュースメディアです。会員登録なしで記事の閲覧やニュースレターの購読をご利用いただけます。会員登録（任意）を行うと、記事へのコメント投稿が可能になります。' },
       { t: 'h2', text: '2. コンテンツの免責事項' },
       { t: 'p', text: '本サービスの記事は、編集部が公開情報から事実(ファクト)を確認し、その事実のみをもとにAIが新たに書き起こした独立した著作物です。元記事の文章や構成をそのまま転載するものではありません。' },
       { t: 'ul', items: ['記事の作成にAIが関与するため、内容の正確性・完全性・最新性を100%保証するものではありません。', '本サービスの運営者は、コンテンツの利用によって生じた損害について責任を負いません。', '重要な意思決定を行う際は、必ず一次情報をご確認ください。'] },
@@ -136,7 +136,7 @@ export const TERMS: Record<Language, LegalDoc> = {
     blocks: [
       { t: 'p', text: '본 약관은 AI issue(이하 "서비스")의 이용 조건을 규정합니다.' },
       { t: 'h2', text: '1. 서비스 소개' },
-      { t: 'p', text: 'AI issue는 인공지능 관련 뉴스 및 신규 툴 정보를 자동으로 수집·요약하여 제공하는 큐레이션 서비스입니다. 회원가입 없이도 기사 열람과 뉴스레터 구독을 이용할 수 있으며, 회원가입(선택)을 하면 기사에 댓글을 남길 수 있습니다.' },
+      { t: 'p', text: 'AI issue는 인공지능 관련 뉴스와 신규 툴 정보를, 편집부가 확인한 사실을 바탕으로 AI가 독자적인 기사로 새롭게 작성해 제공하는 AI 뉴스 미디어입니다. 회원가입 없이도 기사 열람과 뉴스레터 구독을 이용할 수 있으며, 회원가입(선택)을 하면 기사에 댓글을 남길 수 있습니다.' },
       { t: 'h2', text: '2. 콘텐츠 면책 조항' },
       { t: 'p', text: '서비스의 기사는 편집부가 공개된 정보에서 사실(fact)을 확인하고, 그 사실만을 바탕으로 AI가 새롭게 작성한 독립 저작물입니다. 원문의 문장이나 구성을 그대로 옮기지 않습니다.' },
       { t: 'ul', items: ['기사 작성에 AI가 관여하므로 내용의 정확성·완전성·최신성을 100% 보장하지 않습니다.', '서비스 운영자는 콘텐츠 이용으로 인해 발생한 손해에 대해 책임을 지지 않습니다.', '중요한 의사결정에는 1차 정보를 직접 확인하시기 바랍니다.'] },
@@ -162,7 +162,7 @@ export const TERMS: Record<Language, LegalDoc> = {
     blocks: [
       { t: 'p', text: 'These Terms of Service govern your use of AI issue (the "Service").' },
       { t: 'h2', text: '1. About the Service' },
-      { t: 'p', text: 'AI issue is a curation service that automatically collects and summarizes news and information about artificial intelligence tools. You can browse articles and subscribe to the newsletter without registration. Creating an account (optional) lets you post comments on articles.' },
+      { t: 'p', text: 'AI issue is an AI news media outlet that publishes original articles written by AI from facts verified by our editorial team, covering AI news and newly launched AI tools. You can browse articles and subscribe to the newsletter without registration. Creating an account (optional) lets you post comments on articles.' },
       { t: 'h2', text: '2. Content Disclaimer' },
       { t: 'p', text: 'Articles on the Service are independent works newly written by AI based solely on facts our editorial team verifies from publicly available information. They do not reproduce the wording or structure of any original article.' },
       { t: 'ul', items: ['Because AI is involved in producing the articles, we do not guarantee 100% accuracy, completeness, or timeliness.', 'The Service operator is not liable for any damages arising from your use of the content.', 'For important decisions, please verify with primary sources directly.'] },

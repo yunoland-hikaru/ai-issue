@@ -45,7 +45,7 @@ const notoSansKR = Noto_Sans_KR({
 });
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://ai-issue.com';
-const SITE_DESC = '毎日溢れるAI関連ニュース・新着AIツール情報をAIが自動収集し、わかりやすく届けるメディアプラットフォーム';
+const SITE_DESC = '毎日溢れるAI関連ニュース・新着AIツール情報を、AIが事実をもとに独自記事として書き起こし、わかりやすく届けるAIニュースメディア';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
