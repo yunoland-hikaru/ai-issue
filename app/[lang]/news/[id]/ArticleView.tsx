@@ -169,7 +169,7 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
           <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden mb-6">
             <Image
               src={heroImage}
-              alt=""
+              alt={title}
               fill
               priority
               sizes="(max-width: 768px) 100vw, 768px"

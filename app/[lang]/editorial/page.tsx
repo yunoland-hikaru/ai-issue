@@ -10,7 +10,7 @@ const EDITORIAL: Record<Language, { title: string; blocks: LegalBlock[] }> = {
   ja: {
     title: '編集方針・著者について',
     blocks: [
-      { t: 'p', text: 'AI issue は、AI技術で運営される「AIニュースメディア」です。記事はすべて「AI issue 編集部」の名義で発行しています。AIを活用して記事を作成するメディアであることを、透明に公開しています。' },
+      { t: 'p', text: 'AI issue は、「AI issue 編集部」が発行するAIニュースメディアです。編集部が公開情報から事実を確認し、その事実をもとにAIを活用して記事を作成・編集しています。制作の過程をオープンにし、透明性を大切にしています。' },
       { t: 'h2', text: '記事の作り方' },
       { t: 'p', text: 'AI issue 編集部が公開情報から「事実(ファクト)」を確認し、その事実だけをもとに、AIが日本語・韓国語・英語で完全に新しく書き起こします。元記事の文章や構成をそのまま写すことはせず、専門用語をかみ砕いて「やさしく・読みやすく」整えた、AI issue独自の独立した著作物です。編集部が発行・管理しています。' },
       { t: 'h2', text: '著作権と透明性' },
@@ -23,7 +23,7 @@ const EDITORIAL: Record<Language, { title: string; blocks: LegalBlock[] }> = {
   ko: {
     title: '편집 방침 · 작성자 안내',
     blocks: [
-      { t: 'p', text: 'AI issue는 AI 기술로 운영되는 "AI 뉴스 미디어"입니다. 모든 기사는 "AI issue 편집부" 명의로 발행됩니다. AI를 활용해 기사를 작성하는 미디어임을 투명하게 밝힙니다.' },
+      { t: 'p', text: 'AI issue는 "AI issue 편집부"가 발행하는 AI 뉴스 미디어입니다. 편집부가 공개된 정보에서 사실을 확인하고, 그 사실을 바탕으로 AI를 활용해 기사를 작성·편집합니다. 제작 과정을 공개하며 투명성을 중요하게 여깁니다.' },
       { t: 'h2', text: '기사 제작 방식' },
       { t: 'p', text: 'AI issue 편집부가 공개된 정보에서 "사실(fact)"을 확인하고, 그 사실만을 바탕으로 AI가 한국어·일본어·영어로 완전히 새롭게 작성합니다. 원문의 문장이나 구성을 그대로 옮기지 않고, 전문용어를 풀어 "쉽고 읽기 편하게" 다듬은 AI issue 고유의 독립 저작물이며, 편집부가 발행·관리합니다.' },
       { t: 'h2', text: '저작권과 투명성' },
@@ -36,7 +36,7 @@ const EDITORIAL: Record<Language, { title: string; blocks: LegalBlock[] }> = {
   en: {
     title: 'Editorial Policy & Authorship',
     blocks: [
-      { t: 'p', text: 'AI issue is an AI news media powered by AI technology. All articles are published under the name "AI issue Staff." We transparently disclose that this is a media outlet that produces articles with the help of AI.' },
+      { t: 'p', text: 'AI issue is an AI news media outlet published under the name "AI issue Staff." Our editorial team verifies facts from public information and uses those facts to write and edit articles with the help of AI. We keep our process open and value transparency.' },
       { t: 'h2', text: 'How Articles Are Made' },
       { t: 'p', text: 'The AI issue editorial team verifies facts from public information, and based on those facts alone, AI writes entirely new articles in Japanese, Korean, and English. We do not copy the wording or structure of any source; instead we gloss technical terms and rewrite everything into clear, easy-to-read prose — an independent work in AI issue’s own voice, published and maintained by the editorial team.' },
       { t: 'h2', text: 'Copyright & Transparency' },

@@ -48,7 +48,7 @@ export default function NewsCard({ article, lang = 'ja' }: NewsCardProps) {
           <div className="relative shrink-0 w-16 h-14 sm:w-20 sm:h-16 rounded-lg overflow-hidden">
             <Image
               src={article.image_url}
-              alt=""
+              alt={title ?? article.title_ja}
               fill
               sizes="80px"
               className="object-cover group-hover:scale-105 transition-transform duration-300"
