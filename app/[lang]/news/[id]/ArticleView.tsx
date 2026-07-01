@@ -92,8 +92,14 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
   const sharedLabel = lang === 'ko' ? '복사됨' : lang === 'en' ? 'Copied' : 'コピーしました';
   async function handleShare() {
     const url = window.location.href;
+    // Web Share はタッチ端末(モバイル)でのみ使う。デスクトップのネイティブ共有UIは
+    // 空白のまま固まる等 UX が不安定なため、URLをクリップボードにコピーする方に倒す。
+    const coarse =
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(pointer: coarse)').matches;
     try {
-      if (navigator.share) {
+      if (coarse && navigator.share) {
         await navigator.share({ title, url });
         trackEvent('share', { method: 'web_share', article_id: article.id });
       } else {
@@ -139,7 +145,7 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
           <button
             type="button"
             onClick={handleShare}
-            className="ml-auto inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1 rounded-full transition-colors hover:text-[var(--accent)]"
+            className="hov-accent ml-auto inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1 rounded-full"
             style={{ background: 'var(--input-bg)', color: 'var(--text-3)' }}
             aria-label={shareLabel}
           >
@@ -207,7 +213,7 @@ export default function ArticleView({ initialArticle }: { initialArticle: Articl
         <div className="mt-8 text-sm" style={{ color: 'var(--text-3)' }}>
           <Link
             href={localePath(lang, '/editorial')}
-            className="font-medium transition-colors hover:text-[var(--accent)]"
+            className="hov-accent font-medium"
             style={{ color: 'var(--text-2)' }}
           >
             {author}

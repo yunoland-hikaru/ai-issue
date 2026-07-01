@@ -127,7 +127,7 @@ export default function NicknameModal() {
         >
           {saving ? '...' : t.save}
         </button>
-        <button onClick={() => signOut()} className="w-full mt-2 text-xs transition-colors hover:text-[var(--accent)]" style={{ color: 'var(--text-4)' }}>
+        <button onClick={() => signOut()} className="hov-accent w-full mt-2 text-xs" style={{ color: 'var(--text-4)' }}>
           {t.logout}
         </button>
       </div>

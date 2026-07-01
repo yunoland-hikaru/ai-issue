@@ -39,7 +39,7 @@ export default function Navbar() {
       {/* Dark/light toggle */}
       <button
         onClick={toggleTheme}
-        className="transition-colors p-1 -m-1"
+        className="hov-text1 p-1 -m-1"
         style={{ color: 'var(--text-3)' }}
         aria-label={theme === 'dark' ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
       >
@@ -58,7 +58,7 @@ export default function Navbar() {
       <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setDropdownOpen((v) => !v)}
-          className="transition-colors p-1 -m-1"
+          className="hov-text1 p-1 -m-1"
           style={{ color: 'var(--text-3)' }}
           aria-label={t.nav.language}
         >
@@ -121,7 +121,7 @@ export default function Navbar() {
   const mobileSearchButton = (
     <button
       onClick={() => setSearchOpen(true)}
-      className="transition-colors sm:hidden p-1 -m-1"
+      className="hov-text1 sm:hidden p-1 -m-1"
       style={{ color: 'var(--text-3)' }}
       aria-label={t.nav.search}
     >

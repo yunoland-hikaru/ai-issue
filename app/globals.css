@@ -68,6 +68,17 @@ html[lang="ko"] {
   display: none;
 }
 
+/* ── ホバー用ヘルパー ──
+   ボタンの色はテーマ用CSS変数を inline style で当てているが、inline style は
+   Tailwind の hover: 変種より優先される（＝ hover:text-* が視覚的に効かない）。
+   そのため :hover を !important で指定して確実に上書きする（意図的）。 */
+.hov-accent { transition: color 0.15s ease, background 0.15s ease; }
+.hov-accent:hover { color: var(--accent) !important; }
+.hov-text1 { transition: color 0.15s ease; }
+.hov-text1:hover { color: var(--text-1) !important; }
+.hov-fill { transition: background 0.15s ease; }
+.hov-fill:hover { background: var(--border-1) !important; }
+
 /* 法務ページ（プライバシー/利用規約）の本文スタイル */
 .legal { color: var(--text-2); font-size: 0.95rem; line-height: 1.85; }
 .legal h2 { color: var(--text-1); font-size: 1.05rem; font-weight: 700; margin: 1.9rem 0 0.6rem; padding-top: 1.4rem; border-top: 1px solid var(--border-2); }

@@ -117,7 +117,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={handleGoogle}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-base font-semibold transition-colors"
+              className="hov-fill w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-base font-semibold"
               style={{ background: 'var(--input-bg)', color: 'var(--text-1)', border: '1px solid var(--border-1)' }}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
