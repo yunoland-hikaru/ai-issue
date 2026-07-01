@@ -36,7 +36,7 @@ export default function UserMenu() {
   // 未ログイン: ログインページへのリンク
   if (!user) {
     return (
-      <Link href={localePath(lang, '/login')} className="transition-colors p-1 -m-1" style={{ color: 'var(--text-3)' }} aria-label={l.login}>
+      <Link href={localePath(lang, '/login')} className="hov-text1 p-1 -m-1" style={{ color: 'var(--text-3)' }} aria-label={l.login}>
         {userIcon}
       </Link>
     );
@@ -50,7 +50,7 @@ export default function UserMenu() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold overflow-hidden transition-opacity hover:opacity-90"
+        className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold overflow-hidden transition hover:brightness-110"
         style={{ background: 'var(--accent)', color: '#fff' }}
         aria-label={l.account}
       >
